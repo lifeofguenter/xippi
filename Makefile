@@ -4,8 +4,11 @@ SHELL := /bin/bash
 PACKAGES := CurveMath XMPPCore XippiStore OMEMO XippiCalls XippiSession
 PKG ?=
 FILTER ?=
+CONFIGURATION ?= Debug
+# Extra xcodebuild arguments, e.g. CODE_SIGNING_ALLOWED=NO on CI runners without a team.
+XCODEBUILD_FLAGS ?= -allowProvisioningUpdates
 
-XCODEBUILD := xcodebuild -project Xippi.xcodeproj -scheme Xippi -configuration Debug -destination 'platform=macOS'
+XCODEBUILD := xcodebuild -project Xippi.xcodeproj -scheme Xippi -configuration $(CONFIGURATION) -destination 'platform=macOS' $(XCODEBUILD_FLAGS)
 
 .DEFAULT_GOAL := help
 
@@ -35,8 +38,8 @@ certs: ## New test CA and server certificate in dev/certs (restart the servers a
 	dev/make-certs.sh
 
 .PHONY: build
-build: ## Build the app (Debug)
-	$(XCODEBUILD) -allowProvisioningUpdates build
+build: ## Build the app (CONFIGURATION=Debug or Release)
+	$(XCODEBUILD) build
 
 .PHONY: test
 test: ## Package tests: PKG=<Package> for one package, FILTER=<Suite> to narrow
@@ -55,9 +58,13 @@ test-integration-disruptive: ## Integration tests that restart the test servers 
 	XIPPI_INTEGRATION=1 XIPPI_INTEGRATION_DISRUPTIVE=1 swift test --package-path Packages/XMPPCore --filter '$(or $(FILTER),ServerRestartIntegrationTests)'
 	XIPPI_INTEGRATION=1 XIPPI_INTEGRATION_DISRUPTIVE=1 swift test --package-path Packages/XippiSession --filter '$(or $(FILTER),XMPPIntegrationTests.DisruptiveIntegrationTests)'
 
+.PHONY: build-tests
+build-tests: ## Build the app and its UI tests without running them
+	$(XCODEBUILD) build-for-testing
+
 .PHONY: test-ui
 test-ui: ## UI tests
-	$(XCODEBUILD) -allowProvisioningUpdates test -only-testing:XippiUITests
+	$(XCODEBUILD) test -only-testing:XippiUITests
 
 .PHONY: test-perf
 test-perf: ## UI performance tests in the Performance configuration (needs UI automation)
@@ -68,12 +75,27 @@ lint: ## swift format in strict mode
 	swift format lint --strict -r Packages App AppUITests
 
 .PHONY: cover
-cover: ## Package tests with code coverage, writes coverage/<Package>.json
+cover: ## Package tests with code coverage: coverage/coverage.json (llvm-cov) and coverage/coverage.xml (Cobertura)
 	@set -e; mkdir -p coverage; for p in $(or $(PKG),$(PACKAGES)); do \
 		echo "==> $$p"; \
 		swift test --package-path "Packages/$$p" --enable-code-coverage $(if $(FILTER),--filter '$(FILTER)'); \
-		cp "$$(swift test --package-path "Packages/$$p" --show-codecov-path)" "coverage/$$p.json"; \
+		json="$$(swift test --package-path "Packages/$$p" --show-codecov-path)"; \
+		cp "$$json" "coverage/$$p.json"; \
+		bin="$$(swift build --package-path "Packages/$$p" --show-bin-path)"; \
+		objects=(); for bundle in "$$bin"/*.xctest; do \
+			objects+=(-object "$$bundle/Contents/MacOS/$$(basename "$$bundle" .xctest)"); \
+		done; \
+		xcrun llvm-cov export -format=lcov -instr-profile="$$(dirname "$$json")/default.profdata" \
+			"$${objects[@]}" > "coverage/$$p.lcov"; \
 	done
+	@python3 scripts/lcov-to-cobertura.py . \
+		$(foreach p,$(or $(PKG),$(PACKAGES)),$(p)=coverage/$(p).lcov) > coverage/coverage.xml
+	@# One export with each package's own sources only: a package's report also covers the
+	@# local packages it depends on and its tests, which would count those files twice.
+	@jq -s '{type: .[0].type, version: .[0].version, data: [.[] | .data[] | {files: .files}]}' \
+		$(foreach p,$(or $(PKG),$(PACKAGES)),<(jq --arg p "/Packages/$(p)/Sources/" \
+			'.data[].files |= map(select(.filename | contains($$p)))' coverage/$(p).json)) \
+		> coverage/coverage.json
 
 .PHONY: clean
 clean: ## Remove build and test output

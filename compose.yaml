@@ -51,7 +51,7 @@ services:
   ejabberd:
     # ghcr.io/processone/ejabberd is the same container as ejabberd/ecs,
     # which is published for amd64 only.
-    image: ghcr.io/processone/ejabberd:26.09
+    image: ghcr.io/processone/ejabberd:26.09.1
     pull_policy: always
     environment:
       CTL_ON_CREATE: >-

@@ -1,0 +1,93 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ["*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # The xcode-27 image defaults to Xcode 27.1; the project needs 27.2 (Swift 6.4, macOS 27 SDK).
+  DEVELOPER_DIR: /Applications/Xcode_27.2.app/Contents/Developer
+
+jobs:
+  test:
+    name: lint · test · coverage
+    runs-on: xcode-27
+    permissions:
+      contents: read
+      # Upload to GitHub's code coverage (part of GitHub Code Quality).
+      code-quality: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Coverage belongs to the pull request's head commit, not the merge commit.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - uses: actions/cache@v6
+        with:
+          path: ~/Library/Caches/org.swift.swiftpm
+          key: swiftpm-${{ hashFiles('Packages/*/Package.swift', 'Packages/*/Package.resolved') }}
+          restore-keys: swiftpm-
+
+      - name: Lint
+        run: make lint
+
+      # Unit tests of every package with coverage. The integration tests need the Docker test
+      # servers, which macOS runners do not have; they skip themselves without XIPPI_INTEGRATION.
+      - name: Test + coverage
+        run: make cover
+
+      - name: Coverage summary
+        if: always()
+        run: node scripts/coverage-summary.mjs coverage/coverage.json >> "$GITHUB_STEP_SUMMARY"
+
+      # GitHub's own coverage: the pull request comment and the per-file view compare against
+      # the last upload from main, so both pull requests and pushes to main upload. Not from
+      # forks (no write token) and not for tags. Needs GitHub Code Quality enabled for the
+      # repository; until it is, the upload fails without failing the run.
+      - name: Upload coverage to GitHub
+        if: >-
+          always() && !startsWith(github.ref, 'refs/tags/') &&
+          (github.event_name != 'pull_request' ||
+          github.event.pull_request.head.repo.full_name == github.repository)
+        continue-on-error: true
+        uses: actions/upload-code-coverage@v1
+        with:
+          file: coverage/coverage.xml
+          language: Swift
+          label: code-coverage/swift-test
+
+  build:
+    name: build app (Debug, Release, UI tests)
+    runs-on: xcode-27
+    env:
+      # No signing team on the runner: build unsigned.
+      XCODEBUILD_FLAGS: >-
+        CODE_SIGNING_ALLOWED=NO
+        -skipMacroValidation
+        -skipPackagePluginValidation
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/cache@v6
+        with:
+          path: ~/Library/Caches/org.swift.swiftpm
+          key: swiftpm-${{ hashFiles('Packages/*/Package.swift', 'Packages/*/Package.resolved') }}
+          restore-keys: swiftpm-
+
+      - name: Build (Debug)
+        run: make build CONFIGURATION=Debug
+
+      - name: Build (Release)
+        run: make build CONFIGURATION=Release
+
+      - name: Build UI tests
+        run: make build-tests CONFIGURATION=Debug
