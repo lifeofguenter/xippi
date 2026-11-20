@@ -30,3 +30,4 @@ xcuserdata/
 # Test output
 coverage/
 test-results/
+*.profraw

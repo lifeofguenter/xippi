@@ -142,8 +142,13 @@ struct SessionAbortTests {
         let rig = try await Rig()
         defer { rig.cleanUp() }
         try await rig.stopRunningOut()
-        // The next session joined the room meanwhile.
+        // The cut's own writes (its rooms not joined) reach the board first: a next session
+        // connects and joins long after that, and a loaded machine can run that write late.
         let chatID = rig.roomChatID
+        try await waitUntil("the cut's rooms on the board") {
+            await MainActor.run { rig.harness.board.rooms[chatID] } == .notJoined
+        }
+        // The next session joined the room meanwhile.
         let next = StatusPublisher(board: rig.harness.board, interval: .zero)
         next.setRoom(.joined, chatID: chatID)
         await next.flush()

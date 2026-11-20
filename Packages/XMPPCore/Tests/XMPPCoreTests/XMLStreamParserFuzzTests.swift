@@ -1,5 +1,6 @@
 import Testing
 import XMPPCore
+import XMPPTestSupport
 
 /// Stanzas as servers send them: the seed corpus for the mutation fuzzer.
 let recordedStanzas: [String] = [
@@ -168,8 +169,7 @@ private func roundTrips(_ element: Element) -> Bool {
         let header = Array(streamHeader.utf8)
         var parsed = 0
         var refused = 0
-        let clock = ContinuousClock()
-        let started = clock.now
+        let started = threadCPUTime()
         for index in 0..<10_000 {
             let seed = Array((recordedStanzas.randomElement(using: &rng) ?? "").utf8)
             // Most cases mutate a stanza; some mutate the stream header with it.
@@ -195,7 +195,7 @@ private func roundTrips(_ element: Element) -> Bool {
                 #expect(parser.feed(header) == [.failed(error)], "case \(index): failure not kept")
             }
         }
-        let elapsed = clock.now - started
+        let elapsed = threadCPUTime() - started
         #expect(parsed > 1_000)
         #expect(refused > 1_000)
         #expect(elapsed < .seconds(10), "fuzz run took \(elapsed)")

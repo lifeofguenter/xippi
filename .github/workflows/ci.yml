@@ -21,6 +21,14 @@ jobs:
   test:
     name: lint · test · coverage
     runs-on: xcode-27
+    # A hung test fails the run here instead of holding the runner for GitHub's six hours.
+    timeout-minutes: 30
+    env:
+      # Swift Testing runs at most 4 tests at a time. Unbounded, it starts a package's whole
+      # suite at once, and on the runner's 3 cores the tests' timing assumptions stop holding.
+      SWT_EXPERIMENTAL_MAXIMUM_PARALLELIZATION_WIDTH: "4"
+      # A package's tests are stopped after 5 minutes (scripts/cover.sh), well inside the job's.
+      TEST_TIME_LIMIT: "300"
     permissions:
       contents: read
       # Upload to GitHub's code coverage (part of GitHub Code Quality).
@@ -52,6 +60,14 @@ jobs:
         if: ${{ !cancelled() }}
         run: make -s test-summary >> "$GITHUB_STEP_SUMMARY"
 
+      # Console logs, and for a package stopped at its time limit, what its tests waited on.
+      - name: Keep test results
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: test-results/
+
       - name: Coverage summary
         if: ${{ !cancelled() && hashFiles('coverage/coverage.json') != '' }}
         run: node scripts/coverage-summary.mjs coverage/coverage.json >> "$GITHUB_STEP_SUMMARY"
@@ -76,6 +92,7 @@ jobs:
   build:
     name: build app (Debug, Release, UI tests)
     runs-on: xcode-27
+    timeout-minutes: 45
     env:
       # No signing team on the runner: build unsigned.
       XCODEBUILD_FLAGS: >-

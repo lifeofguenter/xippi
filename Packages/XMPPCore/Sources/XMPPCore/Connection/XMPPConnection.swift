@@ -1529,13 +1529,15 @@ public actor XMPPConnection: StanzaSending {
     }
 
     /// An element of the streams namespace with its `stream:` prefix, as on the wire.
-    private static func streamXML(_ element: Element) -> String {
+    static func streamXML(_ element: Element) -> String {
         var element = element
         element.namespace = nil
         let name = element.name
         var xml = "<stream:" + element.xml().dropFirst()
-        if xml.hasSuffix("</\(name)>") {
-            xml = xml.dropLast(name.utf8.count + 3) + "</stream:\(name)>"
+        let close = "</\(name)>"
+        if xml.hasSuffix(close) {
+            // In characters, as `dropLast` counts.
+            xml = xml.dropLast(close.count) + "</stream:\(name)>"
         }
         return xml
     }

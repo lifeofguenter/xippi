@@ -4,8 +4,9 @@
     scripts/test-summary.py RESULTS_DIR PACKAGE...
 
 A line per package, then every failed test with the issues it recorded. The
-test names are the ones `make test FILTER=...` takes. A package without
-results is listed as not run: its tests did not build.
+test names are the ones `make test FILTER=...` takes. A package stopped at its
+time limit has no xUnit file: its console log names the tests that did not
+finish. A package with neither is listed as not run: its tests did not build.
 """
 
 import html
@@ -31,6 +32,30 @@ def issue(element):
     return text
 
 
+# Swift Testing's console lines, for a run that was stopped before it wrote its xUnit file.
+STARTED = re.compile(r"^◇ Test (\S+?\(.*?\)) started\.")
+FINISHED = re.compile(r"^([✔✘]) Test (\S+?\(.*?\))(?: with \d+ test cases?)? (?:passed|failed) after ")
+ISSUE = re.compile(r"^✘ Test (\S+?\(.*?\)) recorded an issue(?: with .*?)? at (\S+?:\d+:\d+): (.*)$")
+
+
+def from_log(log):
+    """(passed, skipped, failures) from a console log, the unfinished tests among the failures."""
+    started, finished, passed, issues = [], set(), 0, {}
+    for line in log.read_text(errors="replace").splitlines():
+        if match := STARTED.match(line):
+            started.append(match.group(1))
+        elif match := FINISHED.match(line):
+            finished.add(match.group(2))
+            passed += match.group(1) == "✔"
+        elif match := ISSUE.match(line):
+            issues.setdefault(match.group(1), []).append(f"{match.group(2)}: {match.group(3)}")
+    if not started:
+        return None
+    failures = [(name, texts) for name, texts in issues.items()]
+    failures += [(name, ["Did not finish"]) for name in dict.fromkeys(started) if name not in finished]
+    return passed, 0, failures
+
+
 def results(directory, package):
     """(passed, skipped, failures) for one package, None when it has no results.
 
@@ -38,7 +63,8 @@ def results(directory, package):
     files = [directory / f"{package}.xml", directory / f"{package}-swift-testing.xml"]
     files = [file for file in files if file.exists()]
     if not files:
-        return None
+        log = directory / f"{package}.log"
+        return from_log(log) if log.exists() else None
     passed, skipped, failures = 0, 0, []
     for file in files:
         for case in ET.parse(file).iter("testcase"):

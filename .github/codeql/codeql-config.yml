@@ -1,0 +1,13 @@
+# CodeQL configuration for Xippi.
+#
+# swift/cleartext-storage-database reports any value it takes for a secret on its way into
+# the app's store. Its heuristic reads every name containing "account" as an account number,
+# so each query keyed by accountID, a row number of the local store, is reported, and so is
+# GRDB's own code beneath them. The store is the app's database by design, in its sandbox
+# container. The account password is kept in the Keychain and never in the store; a room's
+# password is kept in the store, as the server keeps it in the room's bookmark.
+name: xippi
+
+query-filters:
+  - exclude:
+      id: swift/cleartext-storage-database

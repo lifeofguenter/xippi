@@ -24,6 +24,14 @@ import XippiStore
                 createdAt: CatchUpFixture.base))
     }
 
+    /// Waits until the running session follows the real JIDs written into its store behind its
+    /// back, as Settings writes them: it reads such a change a moment later.
+    static func followed(_ harness: SessionHarness) async throws {
+        try await waitUntil("real JIDs followed") {
+            await harness.session.ignoreCache?.hasRealJIDs == true
+        }
+    }
+
     // MARK: Archive (C1)
 
     /// A channel's archive stamps the sender's real JID (`<mix><jid/>`): a real-JID entry
@@ -237,11 +245,16 @@ import XippiStore
     @Test func aLiveRoomMessageIsDroppedThroughTheRememberedPairing() async throws {
         let harness = try await RoomBlockTests.harness()
         try await harness.goOnline()
+        // The blocklist fetched on connect replaces the session's list: let it land first.
+        try await waitUntil("blocklist fetched") {
+            await MainActor.run { harness.board.blocklists[harness.accountID] } != nil
+        }
         try Self.entry(
             harness.database, harness.accountID, .realJID, "spam@example.net", room: nil)
         try harness.database.rememberOccupants(
             accountID: harness.accountID, room: Self.room, kind: .occupantID,
             pairs: [(value: "occ-spam", realJID: "spam@example.net")], at: CatchUpFixture.base)
+        try await Self.followed(harness)
         try RoomBlockTests.say(harness, from: "spam", "buy now", occupantID: "occ-spam")
         #expect(try await RoomBlockTests.bodies(after: harness) == ["from a friend"])
         await harness.stop()
@@ -253,6 +266,10 @@ import XippiStore
         let channel = ChannelToolsTests.channel
         let harness = try await ChannelToolsTests.harness()
         try await harness.goOnline()
+        // The blocklist fetched on connect replaces the session's list: let it land first.
+        try await waitUntil("blocklist fetched") {
+            await MainActor.run { harness.board.blocklists[harness.accountID] } != nil
+        }
         let target = try #require(
             SafetyTarget.channelMember(
                 ChannelMember(id: "p-spam", nick: "spam", jid: nil, isSelf: false),
@@ -260,6 +277,7 @@ import XippiStore
         try await harness.session.block(target)
         try Self.entry(
             harness.database, harness.accountID, .realJID, "eve@example.net", room: nil)
+        try await Self.followed(harness)
 
         try harness.deliver(
             ChannelToolsTests.channelMessage(

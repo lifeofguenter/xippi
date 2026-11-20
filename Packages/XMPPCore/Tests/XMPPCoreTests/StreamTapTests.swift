@@ -267,6 +267,14 @@ import XMPPTestSupport
         #expect(shown.contains(">hidden</"), "\(shown)")
     }
 
+    /// A stream element's closing tag is swapped for its `stream:` form whole, whatever
+    /// letters its name has (code scanning: a byte count once cut a letter more).
+    @Test func streamElementNamesOutsideASCIIKeepEveryLetter() {
+        var element = Element("fé", namespace: "http://etherx.jabber.org/streams")
+        element.append(text: "x")
+        #expect(XMPPConnection.streamXML(element) == "<stream:fé>x</stream:fé>")
+    }
+
     /// A message about passwords carries none: it is shown as it came.
     @Test func ordinaryStanzasAreUnchanged() {
         for xml in [

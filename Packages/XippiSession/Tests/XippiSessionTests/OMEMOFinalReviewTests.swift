@@ -329,11 +329,10 @@ import XippiStore
     /// one pass over the original.
     @Test(.timeLimit(.minutes(1)))
     func quoteCheckStaysFastOnHostileInput() {
-        let clock = ContinuousClock()
         let original = String(repeating: "a ", count: 40_000)
         let quote = "> " + String(repeating: "a ", count: 20_000) + "b\n"
         var found = true
-        var elapsed = clock.measure { found = AccountSession.isQuote(quote, of: original) }
+        var elapsed = measureCPU { found = AccountSession.isQuote(quote, of: original) }
         #expect(!found)
         #expect(elapsed < .milliseconds(100), "80k original, 40k quote: \(elapsed)")
 
@@ -341,7 +340,7 @@ import XippiStore
         // (a debug build under a full parallel run included, hence the margin).
         let nearCap = "> " + String(repeating: "a ", count: 2_000) + "b\n"
         #expect(nearCap.utf8.count <= 4096)
-        elapsed = clock.measure { found = AccountSession.isQuote(nearCap, of: original) }
+        elapsed = measureCPU { found = AccountSession.isQuote(nearCap, of: original) }
         #expect(!found)
         #expect(elapsed < .milliseconds(500), "80k original, 4k quote: \(elapsed)")
     }

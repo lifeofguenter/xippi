@@ -1838,6 +1838,7 @@ extension RoomSessionTests {
         let first = try await SessionHarness()
         Self.serveBookmarks(on: first.server, autojoin: nil, accept: false)
         try await first.goOnline()
+        try await Self.waitSetUp(first)
         let chatID = try await first.session.joinRoom(jid: try JID(Self.room), nick: "alice")
         try await waitUntil("refused") { Self.changes(first) == ["publish"] }
         try await first.barrier()
