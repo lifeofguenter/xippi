@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0406 MIX-ADMIN. Node names and form types from the XEP; item bodies per its examples. -->
+<examples xep='0406'>
+<example name='config-result'><![CDATA[
+<iq type='result' from='coven@mix.shakespeare.example' id='c1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <items node='urn:xmpp:mix:nodes:config'>
+      <item id='2016-05-30T09:00:00Z'>
+        <x xmlns='jabber:x:data' type='result'>
+          <field var='FORM_TYPE' type='hidden'><value>urn:xmpp:mix:admin:0</value></field>
+          <field var='Owner' type='jid-multi'><value>hecate@shakespeare.example</value></field>
+          <field var='Administrator' type='jid-multi'><value>hag66@shakespeare.example</value></field>
+        </x>
+      </item>
+    </items>
+  </pubsub>
+</iq>
+]]></example>
+<example name='config-set'><![CDATA[
+<iq type='set' to='coven@mix.shakespeare.example' id='c2'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='urn:xmpp:mix:nodes:config'>
+      <item>
+        <x xmlns='jabber:x:data' type='submit'>
+          <field var='FORM_TYPE' type='hidden'><value>urn:xmpp:mix:admin:0</value></field>
+          <field var='Owner'><value>hecate@shakespeare.example</value></field>
+        </x>
+      </item>
+    </publish>
+  </pubsub>
+</iq>
+]]></example>
+<example name='banned-result'><![CDATA[
+<iq type='result' from='coven@mix.shakespeare.example' id='b1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <items node='urn:xmpp:mix:nodes:banned'>
+      <item id='lear@shakespeare.example'/>
+      <item id='evil.example'/>
+    </items>
+  </pubsub>
+</iq>
+]]></example>
+<example name='allow'><![CDATA[
+<iq type='set' to='coven@mix.shakespeare.example' id='a1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='urn:xmpp:mix:nodes:allowed'><item id='marlow.example'/></publish>
+  </pubsub>
+</iq>
+]]></example>
+<example name='unban'><![CDATA[
+<iq type='set' to='coven@mix.shakespeare.example' id='a2'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <retract node='urn:xmpp:mix:nodes:banned'><item id='lear@shakespeare.example'/></retract>
+  </pubsub>
+</iq>
+]]></example>
+<example name='info-set'><![CDATA[
+<iq type='set' to='coven@mix.shakespeare.example' id='i1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='urn:xmpp:mix:nodes:info'>
+      <item>
+        <x xmlns='jabber:x:data' type='submit'>
+          <field var='FORM_TYPE' type='hidden'><value>urn:xmpp:mix:core:1</value></field>
+          <field var='Name'><value>Witches</value></field>
+        </x>
+      </item>
+    </publish>
+  </pubsub>
+</iq>
+]]></example>
+</examples>

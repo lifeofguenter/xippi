@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0280: Message Carbons, version 1.0.1 (2021-12-26). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0280.html; each 'source' names the XEP's example number. -->
+<examples xep='0280' version='1.0.1'>
+<example name='received' source='Example 10. Server sends carbon to Romeo&#x27;s other clients'><![CDATA[
+<message xmlns='jabber:client'
+         from='romeo@montague.example'
+         to='romeo@montague.example/home'
+         type='chat'>
+  <received xmlns='urn:xmpp:carbons:2'>
+    <forwarded xmlns='urn:xmpp:forward:0'>
+      <message xmlns='jabber:client'
+               from='juliet@capulet.example/balcony'
+               to='romeo@montague.example/garden'
+               type='chat'>
+        <body>What man art thou that, thus bescreen'd in night, so stumblest on my counsel?</body>
+        <thread>0e3141cd80894871a68e6fe6b1ec56fa</thread>
+      </message>
+    </forwarded>
+  </received>
+</message>
+]]></example>
+<example name='impersonation' source='Example 11. Tybalt attempts Carbons impersonation attack on Romeo'><![CDATA[
+<message xmlns='jabber:client'
+         from='tybalt@capulet.example/home'
+         to='romeo@montague.example'
+         type='chat'>
+  <received xmlns='urn:xmpp:carbons:2'>
+    <forwarded xmlns='urn:xmpp:forward:0'>
+      <message xmlns='jabber:client'
+               from='juliet@capulet.example/balcony'
+               to='romeo@montague.example/garden'
+               type='chat'>
+        <body>Thou shall meet me tonite, at our house's hall!</body>
+      </message>
+    </forwarded>
+  </received>
+</message>
+]]></example>
+<example name='sent' source='Example 13. Romeo&#x27;s other Carbons-enabled clients                     receive a copy'><![CDATA[
+<message xmlns='jabber:client'
+        from='romeo@montague.example'
+        to='romeo@montague.example/garden'
+        type='chat'>
+  <sent xmlns='urn:xmpp:carbons:2'>
+    <forwarded xmlns='urn:xmpp:forward:0'>
+      <message xmlns='jabber:client'
+               to='juliet@capulet.example/balcony'
+               from='romeo@montague.example/home'
+               type='chat'>
+        <body>Neither, fair saint, if either thee dislike.</body>
+        <thread>0e3141cd80894871a68e6fe6b1ec56fa</thread>
+      </message>
+    </forwarded>
+  </sent>
+</message>
+]]></example>
+<example name='private' source='Example 14. Romeo sends to Juliet, excluding Carbons'><![CDATA[
+<message xmlns='jabber:client'
+         from='romeo@montague.example/home'
+         to='juliet@capulet.example/home'
+         type='chat'>
+  <body>Neither, fair saint, if either thee dislike.</body>
+  <thread>0e3141cd80894871a68e6fe6b1ec56fa</thread>
+  <private xmlns='urn:xmpp:carbons:2'/>
+  <no-copy xmlns='urn:xmpp:hints'/>
+</message>
+]]></example>
+</examples>

@@ -1,0 +1,101 @@
+# Test servers for the Xippi integration tests. Local use only.
+#
+# Ports on localhost:
+#   prosody    5222   c2s STARTTLS, domain prosody.test
+#              5223   c2s direct TLS
+#              5281   https, http_file_share (upload.prosody.test)
+#   ejabberd   15222  c2s STARTTLS, domain ejabberd.test
+#              15223  c2s direct TLS
+#              15443  https, http_upload
+#   toxiproxy  25222  proxy prosody-starttls -> prosody:5222
+#              25223  proxy prosody-tls -> prosody:5223
+#              26000-26099  proxies a test creates for itself through the API
+#              8474   API
+#
+# Accounts on both servers: alice, bob, carol, password xippi-test.
+# Prosody also has admin@prosody.test with the same password.
+# Every TLS port serves dev/certs/server.pem, issued by dev/certs/test-ca.pem
+# (make certs).
+
+name: xippi
+
+services:
+  prosody:
+    image: prosodyim/prosody:13.0
+    pull_policy: always
+    entrypoint: ["/usr/bin/tini", "--", "/usr/local/bin/xippi-entrypoint.sh"]
+    command: ["prosody", "-F"]
+    volumes:
+      - ./dev/prosody/prosody.cfg.lua:/etc/prosody/prosody.cfg.lua:ro
+      - ./dev/prosody/modules:/etc/prosody/modules:ro
+      - ./dev/prosody/entrypoint.sh:/usr/local/bin/xippi-entrypoint.sh:ro
+      - ./dev/certs:/etc/prosody/certs:ro
+    ports:
+      - "127.0.0.1:5222:5222"
+      - "127.0.0.1:5223:5223"
+      - "127.0.0.1:5281:5281"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          openssl s_client -brief -verify_return_error -CAfile /etc/prosody/certs/test-ca.pem
+          -starttls xmpp -xmpphost prosody.test -connect 127.0.0.1:5222 </dev/null >/dev/null 2>&1
+          && openssl s_client -brief -verify_return_error -CAfile /etc/prosody/certs/test-ca.pem
+          -servername prosody.test -connect 127.0.0.1:5223 </dev/null >/dev/null 2>&1
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+      start_interval: 1s
+
+  ejabberd:
+    # ghcr.io/processone/ejabberd is the same container as ejabberd/ecs,
+    # which is published for amd64 only.
+    image: ghcr.io/processone/ejabberd:26.09
+    pull_policy: always
+    environment:
+      CTL_ON_CREATE: >-
+        register alice ejabberd.test xippi-test ;
+        register bob ejabberd.test xippi-test ;
+        register carol ejabberd.test xippi-test
+    volumes:
+      - ./dev/ejabberd/ejabberd.yml:/opt/ejabberd/conf/ejabberd.yml:ro
+      - ./dev/certs:/opt/ejabberd/certs:ro
+    ports:
+      - "127.0.0.1:15222:5222"
+      - "127.0.0.1:15223:5223"
+      - "127.0.0.1:15443:5443"
+    healthcheck:
+      # carol is registered last, after the listeners are up.
+      test:
+        - CMD-SHELL
+        - >-
+          ejabberdctl check_account carol ejabberd.test
+          && nc -z 127.0.0.1 5222 && nc -z 127.0.0.1 5223
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+      start_interval: 1s
+
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy:2.13.0
+    pull_policy: always
+    command: ["-host=0.0.0.0", "-config=/etc/toxiproxy.json"]
+    volumes:
+      - ./dev/toxiproxy.json:/etc/toxiproxy.json:ro
+    ports:
+      - "127.0.0.1:8474:8474"
+      - "127.0.0.1:25222:25222"
+      - "127.0.0.1:25223:25223"
+      - "127.0.0.1:26000-26099:26000-26099"
+    depends_on:
+      prosody:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/toxiproxy-cli", "inspect", "prosody-tls"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+      start_interval: 1s

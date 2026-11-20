@@ -1,0 +1,32 @@
+{
+  "fill" : {
+    "solid" : "extended-srgb:0.96471,0.82353,0.76078,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "image-name" : "x.svg",
+          "name" : "x"
+        },
+        {
+          "image-name" : "bubble.svg",
+          "name" : "bubble"
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : [
+      "macOS"
+    ]
+  }
+}

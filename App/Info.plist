@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>eu.xippi.Xippi.xmpp</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>xmpp</string>
+			</array>
+		</dict>
+	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<true/>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.social-networking</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Video calls</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Calls and file transfers on this network</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Sharing your location in a chat</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Sharing your location in a chat</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Calls and voice messages</string>
+</dict>
+</plist>

@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0092: Software Version, version 1.1 (2007-02-15). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0092.html; each 'source' names the XEP's example number. -->
+<examples xep='0092' version='1.1'>
+<example name='request' source='Example 1. Querying Another Entity for its Software Version'><![CDATA[
+<iq
+    type='get'
+    from='romeo@montague.net/orchard'
+    to='juliet@capulet.com/balcony'
+    id='version_1'>
+  <query xmlns='jabber:iq:version'/>
+</iq>
+]]></example>
+<example name='reply' source='Example 2. Receiving a Reply Regarding Software Version'><![CDATA[
+<iq
+    type='result'
+    to='romeo@montague.net/orchard'
+    from='juliet@capulet.com/balcony'
+    id='version_1'>
+  <query xmlns='jabber:iq:version'>
+    <name>Exodus</name>
+    <version>0.7.0.4</version>
+    <os>Windows-XP 5.01.2600</os>
+  </query>
+</iq>
+]]></example>
+</examples>

@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0199: XMPP Ping, version 2.0.1 (2019-03-26). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0199.html; each 'source' names the XEP's example number. -->
+<examples xep='0199' version='2.0.1'>
+<example name='ping' source='Example 1. Ping'><![CDATA[
+<iq from='capulet.lit' to='juliet@capulet.lit/balcony' id='s2c1' type='get'>
+  <ping xmlns='urn:xmpp:ping'/>
+</iq>
+]]></example>
+<example name='pong' source='Example 2. Pong'><![CDATA[
+<iq from='juliet@capulet.lit/balcony' to='capulet.lit' id='s2c1' type='result'/>
+]]></example>
+<example name='not-supported' source='Example 3. Ping Not Supported'><![CDATA[
+<iq from='juliet@capulet.lit/balcony' to='capulet.lit' id='s2c1' type='error'>
+  <ping xmlns='urn:xmpp:ping'/>
+  <error type='cancel'>
+    <service-unavailable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+  </error>
+</iq>
+]]></example>
+</examples>

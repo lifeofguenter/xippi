@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0045: Multi-User Chat, version 1.35.6 (2026-11-12). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0045.html; each 'source' names the XEP's example number. -->
+<examples xep='0045' version='1.35.6'>
+<example name='self-presence' source='Example 24. Service Sends New Occupant&#x27;s Presence to New Occupant'><![CDATA[
+<presence
+    from='coven@chat.shakespeare.lit/thirdwitch'
+    id='n13mt3l'
+    to='hag66@shakespeare.lit/pda'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='member' role='participant'/>
+    <status code='100'/>
+    <status code='110'/>
+    <status code='210'/>
+  </x>
+</presence>
+]]></example>
+<example name='nick-change' source='Example 50. Service Updates Nick'><![CDATA[
+<presence
+    from='coven@chat.shakespeare.lit/thirdwitch'
+    id='5C1B95B3-7CCC-4422-A952-8885A050BDE9'
+    to='crone1@shakespeare.lit/desktop'
+    type='unavailable'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='member'
+          jid='hag66@shakespeare.lit/pda'
+          nick='oldhag'
+          role='participant'/>
+    <status code='303'/>
+  </x>
+</presence>
+<presence
+    from='coven@chat.shakespeare.lit/thirdwitch'
+    id='B0E6ABD5-575D-42F0-8242-569004D88F73'
+    to='wiccarocks@shakespeare.lit/laptop'
+    type='unavailable'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='member'
+          jid='hag66@shakespeare.lit/pda'
+          nick='oldhag'
+          role='participant'/>
+    <status code='303'/>
+  </x>
+</presence>
+<presence
+    from='coven@chat.shakespeare.lit/thirdwitch'
+    id='DC352437-C019-40EC-B590-AF29E879AF98'
+    to='hag66@shakespeare.lit/pda'
+    type='unavailable'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='member'
+          jid='hag66@shakespeare.lit/pda'
+          nick='oldhag'
+          role='participant'/>
+    <status code='303'/>
+    <status code='110'/>
+  </x>
+</presence>
+
+<presence
+    from='coven@chat.shakespeare.lit/oldhag'
+    id='19E41EB3-3F4C-444F-8A1B-713A8860980C'
+    to='crone1@shakespeare.lit/desktop'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='member'
+          jid='hag66@shakespeare.lit/pda'
+          role='participant'/>
+  </x>
+</presence>
+<presence
+    from='coven@chat.shakespeare.lit/oldhag'
+    id='79225CEA-F610-49BE-9B97-FEFA8737185B'
+    to='wiccarocks@shakespeare.lit/laptop'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='member'
+          jid='hag66@shakespeare.lit/pda'
+          role='participant'/>
+  </x>
+</presence>
+<presence
+    from='coven@chat.shakespeare.lit/oldhag'
+    id='5B4F27A4-25ED-43F7-A699-382C6B4AFC67'
+    to='hag66@shakespeare.lit/pda'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='member'
+          jid='hag66@shakespeare.lit/pda'
+          role='participant'/>
+    <status code='110'/>
+  </x>
+</presence>
+]]></example>
+<example name='kicked' source='Example 90. Service Removes Kicked Occupant'><![CDATA[
+<presence
+    from='harfleur@chat.shakespeare.lit/pistol'
+    to='pistol@shakespeare.lit/harfleur'
+    type='unavailable'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='none' role='none'>
+      <actor nick='Fluellen'/>
+      <reason>Avaunt, you cullion!</reason>
+    </item>
+    <status code='110'/>
+    <status code='307'/>
+  </x>
+</presence>
+]]></example>
+<example name='destroyed' source='Example 202. Service Removes Each Occupant'><![CDATA[
+<presence
+    from='heath@chat.shakespeare.lit/firstwitch'
+    to='crone1@shakespeare.lit/desktop'
+    type='unavailable'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='none' role='none'/>
+    <destroy jid='coven@chat.shakespeare.lit'>
+      <reason>Macbeth doth come.</reason>
+    </destroy>
+  </x>
+</presence>
+
+<presence
+    from='heath@chat.shakespeare.lit/secondwitch'
+    to='wiccarocks@shakespeare.lit/laptop'
+    type='unavailable'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='none' role='none'/>
+    <destroy jid='coven@chat.shakespeare.lit'>
+      <reason>Macbeth doth come.</reason>
+    </destroy>
+  </x>
+</presence>
+
+<presence
+    from='heath@chat.shakespeare.lit/thirdwitch'
+    to='hag66@shakespeare.lit/pda'
+    type='unavailable'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='none' role='none'/>
+    <destroy jid='coven@chat.shakespeare.lit'>
+      <reason>Macbeth doth come.</reason>
+    </destroy>
+  </x>
+</presence>
+]]></example>
+</examples>

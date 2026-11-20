@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0115: Entity Capabilities, version 1.6.0 (2022-03-08). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0115.html; each 'source' names the XEP's example number. -->
+<examples xep='0115' version='1.6.0'>
+<example name='presence-caps' source='Example 1. Presence with caps'><![CDATA[
+<presence>
+  <c xmlns='http://jabber.org/protocol/caps'
+     hash='sha-1'
+     node='http://code.google.com/p/exodus'
+     ver='QgayPKawpkPSDYmwT/WM94uAlu0='/>
+</presence>
+]]></example>
+<example name='info-request-node' source='Example 3. Disco#info request'><![CDATA[
+<iq from='juliet@capulet.lit/balcony'
+    id='disco1'
+    to='romeo@montague.lit/orchard'
+    type='get'>
+  <query xmlns='http://jabber.org/protocol/disco#info'
+         node='http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0='/>
+</iq>
+]]></example>
+</examples>

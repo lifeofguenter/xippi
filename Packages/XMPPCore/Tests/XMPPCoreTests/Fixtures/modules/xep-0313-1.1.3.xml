@@ -1,0 +1,288 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0313: Message Archive Management, version 1.1.3 (2025-04-09). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0313.html; each 'source' names the XEP's example number. -->
+<examples xep='0313' version='1.1.3'>
+<example name='archived' source='Example 1. Client receives a message that has been archived'><![CDATA[
+<message to='juliet@capulet.lit/balcony'
+         from='romeo@montague.lit/orchard'
+         type='chat'>
+  <body>Call me but love, and I'll be new baptized; Henceforth I never will be Romeo.</body>
+  <stanza-id xmlns='urn:xmpp:sid:0'
+             by='juliet@capulet.lit'
+             id='28482-98726-73623' />
+</message>
+]]></example>
+<example name='query' source='Example 2. A user queries their archive for messages'><![CDATA[
+<iq type='set' id='juliet1'>
+  <query xmlns='urn:xmpp:mam:2' queryid='f27' />
+</iq>
+]]></example>
+<example name='result' source='Example 3. Their server sends the matching messages'><![CDATA[
+<message id='aeb213' to='juliet@capulet.lit/chamber'>
+  <result xmlns='urn:xmpp:mam:2' queryid='f27' id='28482-98726-73623'>
+    <forwarded xmlns='urn:xmpp:forward:0'>
+      <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:08:25Z'/>
+      <message xmlns='jabber:client' from="witch@shakespeare.lit" to="macbeth@shakespeare.lit">
+        <body>Hail to thee</body>
+      </message>
+    </forwarded>
+  </result>
+</message>
+]]></example>
+<example name='fin' source='Example 4. Server returns the result IQ to signal the end'><![CDATA[
+<iq type='result' id='juliet1'>
+  <fin xmlns='urn:xmpp:mam:2'>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <first index='0'>28482-98726-73623</first>
+      <last>09af3-cc343-b409f</last>
+    </set>
+  </fin>
+</iq>
+]]></example>
+<example name='query-service' source='Example 5. A user queries an archive for messages'><![CDATA[
+<iq to='pubsub.shakespeare.lit' type='set' id='juliet1'>
+  <query xmlns='urn:xmpp:mam:2' queryid='f28' />
+</iq>
+]]></example>
+<example name='query-with' source='Example 6. Querying for all messages to/from a particular JID'><![CDATA[
+<iq type='set' id='juliet1'>
+  <query xmlns='urn:xmpp:mam:2'>
+    <x xmlns='jabber:x:data' type='submit'>
+      <field var='FORM_TYPE' type='hidden'>
+        <value>urn:xmpp:mam:2</value>
+      </field>
+      <field var='with'>
+        <value>juliet@capulet.lit</value>
+      </field>
+    </x>
+  </query>
+</iq>
+]]></example>
+<example name='query-after-id' source='Example 9. Querying the archive for all messages after a certain message'><![CDATA[
+<iq type='set' id='juliet1'>
+  <query xmlns='urn:xmpp:mam:2'>
+    <x xmlns='jabber:x:data' type='submit'>
+      <field var='FORM_TYPE' type='hidden'>
+        <value>urn:xmpp:mam:2</value>
+      </field>
+      <field var='after-id'>
+        <value>09af3-cc343-b409f</value>
+      </field>
+    </x>
+  </query>
+</iq>
+]]></example>
+<example name='query-between' source='Example 10. Querying the archive for all messages between two known messages'><![CDATA[
+<iq type='set' id='juliet1'>
+  <query xmlns='urn:xmpp:mam:2'>
+    <x xmlns='jabber:x:data' type='submit'>
+      <field var='FORM_TYPE' type='hidden'>
+        <value>urn:xmpp:mam:2</value>
+      </field>
+      <field var='after-id'>
+        <value>28482-98726-73623</value>
+      </field>
+      <field var='before-id'>
+        <value>09af3-cc343-b409f</value>
+      </field>
+    </x>
+  </query>
+</iq>
+]]></example>
+<example name='query-ids' source='Example 11. Fetching a specific message from the archive'><![CDATA[
+<iq type='set' id='juliet1'>
+  <query xmlns='urn:xmpp:mam:2'>
+    <x xmlns='jabber:x:data' type='submit'>
+      <field var='FORM_TYPE' type='hidden'>
+        <value>urn:xmpp:mam:2</value>
+      </field>
+      <field var='ids'>
+        <value>28482-98726-73623</value>
+      </field>
+    </x>
+  </query>
+</iq>
+]]></example>
+<example name='query-exclude-groupchat' source='Example 13. Querying the archive and excluding groupchat messages from results'><![CDATA[
+<iq type='set' id='juliet1'>
+  <query xmlns='urn:xmpp:mam:2'>
+    <x xmlns='jabber:x:data' type='submit'>
+      <field var='FORM_TYPE' type='hidden'>
+        <value>urn:xmpp:mam:2</value>
+      </field>
+      <field var='include-groupchat'>
+        <value>false</value>
+      </field>
+      ...
+    </x>
+  </query>
+</iq>
+]]></example>
+<example name='two-results' source='Example 17. Server returns two matching messages'><![CDATA[
+<message id='aeb213' to='juliet@capulet.lit/chamber'>
+  <result xmlns='urn:xmpp:mam:2' queryid='f27' id='28482-98726-73623'>
+    <forwarded xmlns='urn:xmpp:forward:0'>
+      <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:08:25Z'/>
+      <message xmlns='jabber:client'
+               to='juliet@capulet.lit/balcony'
+               from='romeo@montague.lit/orchard'
+               type='chat'>
+        <body>Call me but love, and I'll be new baptized; Henceforth I never will be Romeo.</body>
+      </message>
+    </forwarded>
+  </result>
+</message>
+
+<message id='aeb214' to='juliet@capulet.lit/chamber'>
+  <result xmlns='urn:xmpp:mam:2' queryid='f27' id='5d398-28273-f7382'>
+    <forwarded xmlns='urn:xmpp:forward:0'>
+      <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:09:32Z'/>
+      <message xmlns='jabber:client'
+               to='romeo@montague.lit/orchard'
+               from='juliet@capulet.lit/balcony'
+               type='chat' id='8a54s'>
+        <body>What man art thou that thus bescreen'd in night so stumblest on my counsel?</body>
+      </message>
+    </forwarded>
+  </result>
+</message>
+]]></example>
+<example name='query-rsm' source='Example 18. A query using Result Set Management'><![CDATA[
+<iq type='set' id='q29302'>
+  <query xmlns='urn:xmpp:mam:2'>
+    <x xmlns='jabber:x:data' type='submit'>
+      <field var='FORM_TYPE' type='hidden'>
+        <value>urn:xmpp:mam:2</value>
+      </field>
+      <field var='start'>
+        <value>2010-08-07T00:00:00Z</value>
+      </field>
+    </x>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <max>10</max>
+    </set>
+  </query>
+</iq>
+]]></example>
+<example name='fin-rsm' source='Example 19. Server responds to client with limited results using RSM'><![CDATA[
+<!-- result messages -->
+<iq type='result' id='q29302'>
+  <fin xmlns='urn:xmpp:mam:2'>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <first index='0'>28482-98726-73623</first>
+      <last>09af3-cc343-b409f</last>
+      <count>20</count>
+    </set>
+  </fin>
+</iq>
+]]></example>
+<example name='query-page' source='Example 20. A page query using Result Set Management'><![CDATA[
+<iq type='set' id='q29303'>
+  <query xmlns='urn:xmpp:mam:2'>
+    <x xmlns='jabber:x:data' type='submit'>
+      <field var='FORM_TYPE' type='hidden'><value>urn:xmpp:mam:2</value></field>
+      <field var='start'><value>2010-08-07T00:00:00Z</value></field>
+    </x>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <max>10</max>
+      <after>09af3-cc343-b409f</after>
+    </set>
+  </query>
+</iq>
+]]></example>
+<example name='id-not-found' source='Example 21. Message id not found in archive'><![CDATA[
+<iq type='error' id='q29303'>
+  <error type='cancel'>
+    <item-not-found xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+  </error>
+</iq>
+]]></example>
+<example name='fin-complete' source='Example 22. Server completes a result with the last page of messages'><![CDATA[
+<!-- result messages -->
+<iq type='result' id='u29303'>
+  <fin xmlns='urn:xmpp:mam:2' complete='true'>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <first index='0'>23452-4534-1</first>
+      <last>390-2342-22</last>
+      <count>16</count>
+    </set>
+  </fin>
+</iq>
+]]></example>
+<example name='query-last-page' source='Example 23. A request for the last page in an archive'><![CDATA[
+<iq type='set' id='q29303'>
+  <query xmlns='urn:xmpp:mam:2'>
+    <x xmlns='jabber:x:data' type='submit'>
+      <field var='FORM_TYPE' type='hidden'><value>urn:xmpp:mam:2</value></field>
+      <field var='start'><value>2010-08-07T00:00:00Z</value></field>
+    </x>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <max>10</max>
+      <before/>
+    </set>
+  </query>
+</iq>
+]]></example>
+<example name='metadata-request' source='Example 25. Requesting archive metadata'><![CDATA[
+<iq type='get' id='jui8921rr9'>
+  <metadata xmlns='urn:xmpp:mam:2'/>
+</iq>
+]]></example>
+<example name='metadata-result' source='Example 26. Server returns archive metadata'><![CDATA[
+<iq type='result' id='jui8921rr9'>
+  <metadata xmlns='urn:xmpp:mam:2'>
+    <start id='YWxwaGEg' timestamp='2008-08-22T21:09:04Z' />
+    <end id='b21lZ2Eg' timestamp='2020-04-20T14:34:21Z' />
+  </metadata>
+</iq>
+]]></example>
+<example name='muc-results' source='Example 27. Server returns MUC messages'><![CDATA[
+<message id='iasd207' from='coven@chat.shakespeare.lit' to='hag66@shakespeare.lit/pda'>
+  <result xmlns='urn:xmpp:mam:2' queryid='g27' id='78527-06716-51603'>
+    <forwarded xmlns='urn:xmpp:forward:0'>
+      <delay xmlns='urn:xmpp:delay' stamp='2002-10-13T23:58:37Z'/>
+      <message xmlns="jabber:client"
+               from='coven@chat.shakespeare.lit/firstwitch'
+               id='162BEBB1-F6DB-4D9A-9BD8-CFDCC801A0B2'
+               type='groupchat'>
+        <body>Thrice the brinded cat hath mew'd.</body>
+        <x xmlns='http://jabber.org/protocol/muc#user'>
+          <item affiliation='owner'
+                jid='crone1@shakespeare.lit'
+                role='participant' />
+        </x>
+      </message>
+    </forwarded>
+  </result>
+</message>
+
+<message id='iasd207' from='coven@chat.shakespeare.lit' to='hag66@shakespeare.lit/pda'>
+  <result xmlns='urn:xmpp:mam:2' queryid='g27' id='34482-21985-73620'>
+    <forwarded xmlns='urn:xmpp:forward:0'>
+      <delay xmlns='urn:xmpp:delay' stamp='2002-10-13T23:58:43Z'/>
+      <message xmlns="jabber:client"
+               from='coven@chat.shakespeare.lit/secondwitch'
+               id='90057840-30FD-4141-AA44-103EEDF218FC'
+               type='groupchat'>
+        <body>Thrice and once the hedge-pig whined.</body>
+        <x xmlns='http://jabber.org/protocol/muc#user'>
+          <item affiliation='admin'
+                jid='wiccarocks@shakespeare.lit'
+                role='participant' />
+        </x>
+      </message>
+    </forwarded>
+  </result>
+</message>
+]]></example>
+<example name='features' source='Example 29. Server responds with features'><![CDATA[
+<iq type='result' id='disco1' from='juliet@capulet.lit' to='juliet@capulet.lit/balcony'>
+  <query xmlns='http://jabber.org/protocol/disco#info'>
+    ...
+    <feature var='urn:xmpp:mam:2'/>
+    <feature var='urn:xmpp:mam:2#extended'/>
+    ...
+  </query>
+</iq>
+]]></example>
+</examples>

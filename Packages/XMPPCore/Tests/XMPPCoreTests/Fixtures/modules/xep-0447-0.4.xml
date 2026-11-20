@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0447 / XEP-0446: Stateless File Sharing, file metadata. Examples after the XEPs. -->
+<examples xep='0447'>
+<example name='message'><![CDATA[
+<message to='juliet@shakespeare.lit' from='romeo@montague.lit/resource' id='sharing-a-file'>
+  <file-sharing xmlns='urn:xmpp:sfs:0' disposition='inline'>
+    <file xmlns='urn:xmpp:file:metadata:0'>
+      <media-type>image/jpeg</media-type>
+      <name>summit.jpg</name>
+      <date>2015-07-26T21:46:00+01:00</date>
+      <size>3032449</size>
+      <width>4096</width>
+      <height>2160</height>
+      <length>5000</length>
+      <desc>Photo from the summit.</desc>
+      <hash xmlns='urn:xmpp:hashes:2' algo='sha-1'>w0mcJylzCn+AfvuGdqkty2+KP48=</hash>
+      <thumbnail xmlns='urn:xmpp:thumbs:1' uri='https://t.montague.lit/s.jpg' media-type='image/jpeg' width='128' height='68'/>
+    </file>
+    <sources>
+      <url-data xmlns='http://jabber.org/protocol/url-data' target='https://download.montague.lit/4a771ac1/summit.jpg' />
+      <url-data xmlns='http://jabber.org/protocol/url-data' target='javascript:alert(1)' />
+      <url-data xmlns='http://jabber.org/protocol/url-data' target='file:///etc/passwd' />
+    </sources>
+  </file-sharing>
+</message>
+]]></example>
+</examples>

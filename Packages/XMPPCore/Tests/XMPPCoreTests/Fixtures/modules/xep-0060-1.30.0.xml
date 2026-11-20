@@ -1,0 +1,438 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0060: Publish-Subscribe, version 1.30.0 (2025-11-11). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0060.html; each 'source' names the XEP's example number. -->
+<examples xep='0060' version='1.30.0'>
+<example name='items-request' source='Example 74. Subscriber requests all items'><![CDATA[
+<iq type='get'
+    from='francisco@denmark.lit/barracks'
+    to='pubsub.shakespeare.lit'
+    id='items1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <items node='princely_musings'/>
+  </pubsub>
+</iq>
+]]></example>
+<example name='items-result' source='Example 75. Service returns all items'><![CDATA[
+<iq type='result'
+    from='pubsub.shakespeare.lit'
+    to='francisco@denmark.lit/barracks'
+    id='items1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <items node='princely_musings'>
+      <item id='368866411b877c30064a5f62b917cffe'>
+        <entry xmlns='http://www.w3.org/2005/Atom'>
+          <title>The Uses of This World</title>
+          <summary>
+O, that this too too solid flesh would melt
+Thaw and resolve itself into a dew!
+          </summary>
+          <link rel='alternate' type='text/html'
+                href='http://denmark.lit/2003/12/13/atom03'/>
+          <id>tag:denmark.lit,2003:entry-32396</id>
+          <published>2003-12-12T17:47:23Z</published>
+          <updated>2003-12-12T17:47:23Z</updated>
+        </entry>
+      </item>
+      <item id='3300659945416e274474e469a1f0154c'>
+        <entry xmlns='http://www.w3.org/2005/Atom'>
+          <title>Ghostly Encounters</title>
+          <summary>
+O all you host of heaven! O earth! what else?
+And shall I couple hell? O, fie! Hold, hold, my heart;
+And you, my sinews, grow not instant old,
+But bear me stiffly up. Remember thee!
+          </summary>
+          <link rel='alternate' type='text/html'
+                href='http://denmark.lit/2003/12/13/atom03'/>
+          <id>tag:denmark.lit,2003:entry-32396</id>
+          <published>2003-12-12T23:21:34Z</published>
+          <updated>2003-12-12T23:21:34Z</updated>
+        </entry>
+      </item>
+      <item id='4e30f35051b7b8b42abe083742187228'>
+        <entry xmlns='http://www.w3.org/2005/Atom'>
+          <title>Alone</title>
+          <summary>
+Now I am alone.
+O, what a rogue and peasant slave am I!
+          </summary>
+          <link rel='alternate' type='text/html'
+                href='http://denmark.lit/2003/12/13/atom03'/>
+          <id>tag:denmark.lit,2003:entry-32396</id>
+          <published>2003-12-13T11:09:53Z</published>
+          <updated>2003-12-13T11:09:53Z</updated>
+        </entry>
+      </item>
+      <item id='ae890ac52d0df67ed7cfdf51b644e901'>
+        <entry xmlns='http://www.w3.org/2005/Atom'>
+          <title>Soliloquy</title>
+          <summary>
+To be, or not to be: that is the question:
+Whether 'tis nobler in the mind to suffer
+The slings and arrows of outrageous fortune,
+Or to take arms against a sea of troubles,
+And by opposing end them?
+          </summary>
+          <link rel='alternate' type='text/html'
+                href='http://denmark.lit/2003/12/13/atom03'/>
+          <id>tag:denmark.lit,2003:entry-32397</id>
+          <published>2003-12-13T18:30:02Z</published>
+          <updated>2003-12-13T18:30:02Z</updated>
+        </entry>
+      </item>
+    </items>
+  </pubsub>
+</iq>
+]]></example>
+<example name='items-by-id' source='Example 78. Subscriber requests specific items by ItemID'><![CDATA[
+<iq type='get'
+    from='francisco@denmark.lit/barracks'
+    to='pubsub.shakespeare.lit'
+    id='items3'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <items node='princely_musings'>
+      <item id='368866411b877c30064a5f62b917cffe'/>
+      <item id='4e30f35051b7b8b42abe083742187228'/>
+    </items>
+  </pubsub>
+</iq>
+]]></example>
+<example name='items-by-id-result' source='Example 79. Service sends requested item(s)'><![CDATA[
+<iq type='result'
+    from='pubsub.shakespeare.lit'
+    id='items3'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <items node='princely_musings'>
+      <item id='368866411b877c30064a5f62b917cffe'>
+        <entry xmlns='http://www.w3.org/2005/Atom'>
+          <title>The Uses of This World</title>
+          <summary>
+O, that this too too solid flesh would melt
+Thaw and resolve itself into a dew!
+          </summary>
+          <link rel='alternate' type='text/html'
+                href='http://denmark.lit/2003/12/13/atom03'/>
+          <id>tag:denmark.lit,2003:entry-32396</id>
+          <published>2003-12-12T17:47:23Z</published>
+          <updated>2003-12-12T17:47:23Z</updated>
+        </entry>
+      </item>
+      <item id='4e30f35051b7b8b42abe083742187228'>
+        <entry xmlns='http://www.w3.org/2005/Atom'>
+          <title>Alone</title>
+          <summary>
+Now I am alone.
+O, what a rogue and peasant slave am I!
+          </summary>
+          <link rel='alternate' type='text/html'
+                href='http://denmark.lit/2003/12/13/atom03'/>
+          <id>tag:denmark.lit,2003:entry-32396</id>
+          <published>2003-12-13T11:09:53Z</published>
+          <updated>2003-12-13T11:09:53Z</updated>
+        </entry>
+      </item>
+    </items>
+  </pubsub>
+</iq>
+]]></example>
+<example name='items-max' source='Example 80. Subscriber requests two most recent items'><![CDATA[
+<iq type='get'
+    from='francisco@denmark.lit/barracks'
+    to='pubsub.shakespeare.lit'
+    id='items2'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <items node='princely_musings' max_items='2'/>
+  </pubsub>
+</iq>
+]]></example>
+<example name='items-empty' source='Example 82. Service returns no items if it has none'><![CDATA[
+<iq type='result'
+    from='pubsub.shakespeare.lit'
+    to='francisco@denmark.lit/barracks'
+    id='items2'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <items node='princely_musings'/>
+  </pubsub>
+</iq>
+]]></example>
+<example name='items-not-authorized' source='Example 89. Entity is not authorized to retrieve items (presence subscription required)'><![CDATA[
+<iq type='error'
+    from='pubsub.shakespeare.lit'
+    to='francisco@denmark.lit/barracks'
+    id='items1'>
+  <error type='auth'>
+    <not-authorized xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+    <presence-subscription-required xmlns='http://jabber.org/protocol/pubsub#errors'/>
+  </error>
+</iq>
+]]></example>
+<example name='publish' source='Example 96. Publisher publishes an item with an ItemID'><![CDATA[
+<iq type='set'
+    from='hamlet@denmark.lit/blogbot'
+    to='pubsub.shakespeare.lit'
+    id='publish1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='princely_musings'>
+      <item id='bnd81g37d61f49fgn581'>
+        <entry xmlns='http://www.w3.org/2005/Atom'>
+          <title>Soliloquy</title>
+          <summary>
+To be, or not to be: that is the question:
+Whether 'tis nobler in the mind to suffer
+The slings and arrows of outrageous fortune,
+Or to take arms against a sea of troubles,
+And by opposing end them?
+          </summary>
+          <link rel='alternate' type='text/html'
+                href='http://denmark.lit/2003/12/13/atom03'/>
+          <id>tag:denmark.lit,2003:entry-32397</id>
+          <published>2003-12-13T18:30:02Z</published>
+          <updated>2003-12-13T18:30:02Z</updated>
+        </entry>
+      </item>
+    </publish>
+  </pubsub>
+</iq>
+]]></example>
+<example name='publish-result' source='Example 99. Service replies with success and the ID of the new item'><![CDATA[
+<iq type='result'
+    from='pubsub.shakespeare.lit'
+    to='hamlet@denmark.lit/blogbot'
+    id='publish2'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='princely_musings'>
+      <item id='ae890ac52d0df67ed7cfdf51b644e901'/>
+    </publish>
+  </pubsub>
+</iq>
+]]></example>
+<example name='publish-with-options' source='Example 114. Publishing with options'><![CDATA[
+<iq type='set'
+    from='hamlet@denmark.lit/blogbot'
+    to='pubsub.shakespeare.lit'
+    id='pub1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='princely_musings'>
+      <item id='ae890ac52d0df67ed7cfdf51b644e901'>
+        <entry xmlns='http://www.w3.org/2005/Atom'>
+          <title>Soliloquy</title>
+          <summary>
+To be, or not to be: that is the question:
+Whether 'tis nobler in the mind to suffer
+The slings and arrows of outrageous fortune,
+Or to take arms against a sea of troubles,
+And by opposing end them?
+          </summary>
+          <link rel='alternate' type='text/html'
+                href='http://denmark.lit/2003/12/13/atom03'/>
+          <id>tag:denmark.lit,2003:entry-32397</id>
+          <published>2003-12-13T18:30:02Z</published>
+          <updated>2003-12-13T18:30:02Z</updated>
+        </entry>
+      </item>
+    </publish>
+    <publish-options>
+      <x xmlns='jabber:x:data' type='submit'>
+        <field var='FORM_TYPE' type='hidden'>
+          <value>http://jabber.org/protocol/pubsub#publish-options</value>
+        </field>
+        <field var='pubsub#access_model'>
+          <value>presence</value>
+        </field>
+      </x>
+    </publish-options>
+  </pubsub>
+</iq>
+]]></example>
+<example name='publish-forbidden' source='Example 105. Entity does not have sufficient privileges to publish to node'><![CDATA[
+<iq type='error'
+    from='pubsub.shakespeare.lit'
+    id='publish1'>
+  <error type='auth'>
+    <forbidden xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+  </error>
+</iq>
+]]></example>
+<example name='publish-node-missing' source='Example 107. Entity attempts to publish to a non-existent node'><![CDATA[
+<iq type='error'
+    from='pubsub.shakespeare.lit'
+    to='hamlet@denmark.lit/elsinore'
+    id='publish1'>
+  <error type='cancel'>
+    <item-not-found xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+  </error>
+</iq>
+]]></example>
+<example name='retract' source='Example 115. Entity deletes an item from a node'><![CDATA[
+<iq type='set'
+    from='hamlet@denmark.lit/elsinore'
+    to='pubsub.shakespeare.lit'
+    id='retract1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <retract node='princely_musings'>
+      <item id='ae890ac52d0df67ed7cfdf51b644e901'/>
+    </retract>
+  </pubsub>
+</iq>
+]]></example>
+<example name='retract-result' source='Example 116. Service replies with success'><![CDATA[
+<iq type='result'
+    from='pubsub.shakespeare.lit'
+    to='hamlet@denmark.lit/elsinore'
+    id='retract1'/>
+]]></example>
+<example name='retract-missing' source='Example 120. Non-existent node or item'><![CDATA[
+<iq type='error'
+    from='pubsub.shakespeare.lit'
+    to='hamlet@denmark.lit/elsinore'
+    id='retract1'>
+  <error type='cancel'>
+    <item-not-found xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+  </error>
+</iq>
+]]></example>
+<example name='event' source='Example 100. Subscribers receive event notifications with payloads'><![CDATA[
+<message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='princely_musings'>
+      <item id='ae890ac52d0df67ed7cfdf51b644e901'>
+        <entry xmlns='http://www.w3.org/2005/Atom'>
+          <title>Soliloquy</title>
+          <summary>
+To be, or not to be: that is the question:
+Whether 'tis nobler in the mind to suffer
+The slings and arrows of outrageous fortune,
+Or to take arms against a sea of troubles,
+And by opposing end them?
+          </summary>
+          <link rel='alternate' type='text/html'
+                href='http://denmark.lit/2003/12/13/atom03'/>
+          <id>tag:denmark.lit,2003:entry-32397</id>
+          <published>2003-12-13T18:30:02Z</published>
+          <updated>2003-12-13T18:30:02Z</updated>
+        </entry>
+      </item>
+    </items>
+  </event>
+</message>
+
+<message from='pubsub.shakespeare.lit' to='bernardo@denmark.lit' id='bar'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='princely_musings'>
+      <item id='ae890ac52d0df67ed7cfdf51b644e901'>
+        <entry xmlns='http://www.w3.org/2005/Atom'>
+          <title>Soliloquy</title>
+          <summary>
+To be, or not to be: that is the question:
+Whether 'tis nobler in the mind to suffer
+The slings and arrows of outrageous fortune,
+Or to take arms against a sea of troubles,
+And by opposing end them?
+          </summary>
+          <link rel='alternate' type='text/html'
+                href='http://denmark.lit/2003/12/13/atom03'/>
+          <id>tag:denmark.lit,2003:entry-32397</id>
+          <published>2003-12-13T18:30:02Z</published>
+          <updated>2003-12-13T18:30:02Z</updated>
+        </entry>
+      </item>
+    </items>
+  </event>
+</message>
+
+<message from='pubsub.shakespeare.lit' to='horatio@denmark.lit' id='baz'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='princely_musings'>
+      <item id='ae890ac52d0df67ed7cfdf51b644e901'>
+        <entry xmlns='http://www.w3.org/2005/Atom'>
+          <title>Soliloquy</title>
+          <summary>
+To be, or not to be: that is the question:
+Whether 'tis nobler in the mind to suffer
+The slings and arrows of outrageous fortune,
+Or to take arms against a sea of troubles,
+And by opposing end them?
+          </summary>
+          <link rel='alternate' type='text/html'
+                href='http://denmark.lit/2003/12/13/atom03'/>
+          <id>tag:denmark.lit,2003:entry-32397</id>
+          <published>2003-12-13T18:30:02Z</published>
+          <updated>2003-12-13T18:30:02Z</updated>
+        </entry>
+      </item>
+    </items>
+  </event>
+</message>
+
+<message from='pubsub.shakespeare.lit' to='bard@shakespeare.lit' id='fez'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='princely_musings'>
+      <item id='ae890ac52d0df67ed7cfdf51b644e901'>
+        <entry xmlns='http://www.w3.org/2005/Atom'>
+          <title>Soliloquy</title>
+          <summary>
+To be, or not to be: that is the question:
+Whether 'tis nobler in the mind to suffer
+The slings and arrows of outrageous fortune,
+Or to take arms against a sea of troubles,
+And by opposing end them?
+          </summary>
+          <link rel='alternate' type='text/html'
+                href='http://denmark.lit/2003/12/13/atom03'/>
+          <id>tag:denmark.lit,2003:entry-32397</id>
+          <published>2003-12-13T18:30:02Z</published>
+          <updated>2003-12-13T18:30:02Z</updated>
+        </entry>
+      </item>
+    </items>
+  </event>
+</message>
+]]></example>
+<example name='retract-event' source='Example 117. Subscribers are notified of deletion'><![CDATA[
+<message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='princely_musings'>
+      <retract id='ae890ac52d0df67ed7cfdf51b644e901'/>
+    </items>
+  </event>
+</message>
+
+<message from='pubsub.shakespeare.lit' to='bernardo@denmark.lit' id='bar'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='princely_musings'>
+      <retract id='ae890ac52d0df67ed7cfdf51b644e901'/>
+    </items>
+  </event>
+</message>
+]]></example>
+<example name='delete-event' source='Example 160. Subscribers are notified of node deletion'><![CDATA[
+<message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <delete node='princely_musings'>
+      <redirect uri='xmpp:hamlet@denmark.lit?;node=blog'/>
+    </delete>
+  </event>
+</message>
+
+<message from='pubsub.shakespeare.lit' to='bernardo@denmark.lit' id='bar'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <delete node='princely_musings'>
+      <redirect uri='xmpp:hamlet@denmark.lit?;node=blog'/>
+    </delete>
+  </event>
+</message>
+]]></example>
+<example name='purge-event' source='Example 165. Subscribers are notified of node purge'><![CDATA[
+<message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <purge node='princely_musings'/>
+  </event>
+</message>
+
+<message from='pubsub.shakespeare.lit' to='bernardo@denmark.lit' id='bar'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <purge node='princely_musings'/>
+  </event>
+</message>
+]]></example>
+</examples>

@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0377: Blocking Command Reports, version 0.4.1 (2026-02-25). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0377.html; each 'source' names the XEP's example number. -->
+<examples xep='0377' version='0.4.1'>
+<example name='basic-report' source='Example 2. The most basic report payload'><![CDATA[
+<report xmlns="urn:xmpp:reporting:1" reason="urn:xmpp:reporting:spam"/>
+]]></example>
+<example name='report-with-text' source='Example 3. Report with optional reason and text'><![CDATA[
+<report xmlns="urn:xmpp:reporting:1" reason="urn:xmpp:reporting:spam">
+  <text xml:lang="en">
+    Never came trouble to my house like this.
+  </text>
+</report>
+]]></example>
+<example name='report-with-opt-in' source='Example 4. Report with optional processing opt-in'><![CDATA[
+<report xmlns="urn:xmpp:reporting:1" reason="urn:xmpp:reporting:spam">
+  <text xml:lang="en">
+    Never came trouble to my house like this.
+  </text>
+  <report-origin/>
+  <third-party/>
+</report>
+]]></example>
+<example name='block-and-report' source='Example 5. Report sent with blocking command'><![CDATA[
+<iq from='juliet@example.com/chamber' type='set' id='block1'>
+  <block xmlns='urn:xmpp:blocking'>
+    <item jid='romeo@example.net'>
+      <report xmlns="urn:xmpp:reporting:1" reason="urn:xmpp:reporting:abuse"/>
+    </item>
+  </block>
+</iq>
+]]></example>
+<example name='report-with-stanza-ids' source='Example 6. Report sent with stanza IDs'><![CDATA[
+<iq from='juliet@example.com/chamber' type='set' id='block1'>
+  <block xmlns='urn:xmpp:blocking'>
+    <item jid='romeo@example.net'>
+      <report xmlns="urn:xmpp:reporting:1" reason="urn:xmpp:reporting:spam">
+        <stanza-id xmlns='urn:xmpp:sid:0' by='romeo@example.net' id='28482-98726-73623'/>
+        <stanza-id xmlns='urn:xmpp:sid:0' by='romeo@example.net' id='38383-38018-18385'/>
+        <text xml:lang="en">
+          Never came trouble to my house like this.
+        </text>
+      </report>
+    </item>
+  </block>
+</iq>
+]]></example>
+</examples>

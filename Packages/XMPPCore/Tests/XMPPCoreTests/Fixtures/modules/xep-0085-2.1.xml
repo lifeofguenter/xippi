@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0085: Chat State Notifications, version 2.1 (2009-09-23). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0085.html; each 'source' names the XEP's example number. -->
+<examples xep='0085' version='2.1'>
+<example name='active-with-body' source='Example 3. User Sends Initial Content Message With &lt;active/&gt; Notification'><![CDATA[
+<message
+    from='bernardo@shakespeare.lit/pda'
+    to='francisco@shakespeare.lit'
+    type='chat'>
+  <body>Who's there?</body>
+  <active xmlns='http://jabber.org/protocol/chatstates'/>
+</message>
+]]></example>
+<example name='standalone-composing' source='Example 5. User Sends Standalone &lt;composing/&gt; Notification'><![CDATA[
+<message
+    from='bernardo@shakespeare.lit/pda'
+    to='francisco@shakespeare.lit/elsinore'
+    type='chat'>
+  <composing xmlns='http://jabber.org/protocol/chatstates'/>
+</message>
+]]></example>
+</examples>

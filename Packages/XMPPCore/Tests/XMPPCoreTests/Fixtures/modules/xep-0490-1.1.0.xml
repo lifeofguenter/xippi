@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0490: Message Displayed Synchronization, version 1.1.0 (2026-07-19). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0490.html; each 'source' names the XEP's example number. -->
+<examples xep='0490' version='1.1.0'>
+<example name='publish' source='Example 1. Client marks a chat as display'><![CDATA[
+<iq from='juliet@capulet.lit/balcony' type='set' id='flag-as-displayed-1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='urn:xmpp:mds:displayed:0'>
+      <item id='romeo@montegue.lit'>
+        <displayed xmlns='urn:xmpp:mds:displayed:0'>
+          <stanza-id xmlns='urn:xmpp:sid:0'
+                     by='juliet@capulet.lit'
+                     id='0f710f2b-52ed-4d52-b928-784dad74a52b'/>
+        </displayed>
+      </item>
+    </publish>
+    <publish-options>
+      <x xmlns='jabber:x:data' type='submit'>
+        <field var='FORM_TYPE' type='hidden'>
+          <value>http://jabber.org/protocol/pubsub#publish-options</value>
+        </field>
+        <field var='pubsub#persist_items'>
+          <value>true</value>
+        </field>
+        <field var='pubsub#max_items'>
+          <value>max</value>
+        </field>
+        <field var='pubsub#send_last_published_item'>
+          <value>never</value>
+        </field>
+        <field var='pubsub#access_model'>
+          <value>whitelist</value>
+        </field>
+      </x>
+    </publish-options>
+  </pubsub>
+</iq>
+]]></example>
+<example name='catchup-request' source='Example 3. Client retrieves all displayed items'><![CDATA[
+<iq from='juliet@capulet.lit/balcony' type='get' id='catchup-1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <items node='urn:xmpp:mds:displayed:0'/>
+  </pubsub>
+</iq>
+]]></example>
+<example name='catchup-result' source='Example 4. Server returns the displayed states for various chat'><![CDATA[
+<iq type='result'
+    to='juliet@capulet.lit/balcony'
+    id='catchup-1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <items node='urn:xmpp:mds:displayed:0'>
+      <item id='romeo@montegue.lit'>
+        <displayed xmlns='urn:xmpp:mds:displayed:0'>
+          <stanza-id xmlns='urn:xmpp:sid:0'
+                     id='0f710f2b-52ed-4d52-b928-784dad74a52b'
+                     by='juliet@capulet.lit'/>
+        </displayed>
+      </item>
+      <item id='example@conference.shakespeare.lit'>
+        <displayed xmlns='urn:xmpp:mds:displayed:0'>
+          <stanza-id xmlns='urn:xmpp:sid:0'
+                     id='ca21deaf-812c-48f1-8f16-339a674f2864'
+                     by='example@conference.shakespeare.lit'/>
+        </displayed>
+      </item>
+    </items>
+  </pubsub>
+</iq>
+]]></example>
+<example name='assisted-received' source='Example 7. Juliet receives a message from Romeo'><![CDATA[
+<message to='juliet@capulet.lit' from='romeo@montegue.lit/orchard' id='the-msg-1'>
+  <body>Hi. How are you?</body>
+  <markable xmlns='urn:xmpp:chat-markers:0'/>
+  <stanza-id xmlns='urn:xmpp:sid:0' by='juliet@capulet.lit' id='0423e3a9-d516-493d-bb06-bee0e51ab9fb'/>
+</message>
+]]></example>
+<example name='assisted-displayed' source='Example 8. Juliet lets both Romeo and her other devices know she has displayed the message'><![CDATA[
+<message to='romeo@montegue.lit'>
+  <displayed xmlns='urn:xmpp:chat-markers:0' id='the-msg-1'/>
+  <displayed xmlns='urn:xmpp:mds:displayed:0'>
+    <stanza-id xmlns='urn:xmpp:sid:0' by='juliet@capulet.lit' id='0423e3a9-d516-493d-bb06-bee0e51ab9fb'/>
+  </displayed>
+</message>
+]]></example>
+<example name='event' source='Example 10. Server sends out PEP notifications to Juliets connected devices'><![CDATA[
+<message from='juliet@capulet.lit' to='juliet@capulet.lit/balcony' type='headline' id='new-displayed-pep-event'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='urn:xmpp:mds:displayed:0'>
+      <item id='romeo@montegue.lit'>
+        <displayed xmlns='urn:xmpp:mds:displayed:0'>
+          <stanza-id xmlns='urn:xmpp:sid:0' by='juliet@capulet.lit' id='0423e3a9-d516-493d-bb06-bee0e51ab9fb'/>
+        </displayed>
+      </item>
+    </items>
+  </event>
+</message>
+]]></example>
+</examples>

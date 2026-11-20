@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0054: vcard-temp, version 1.3.0 (2024-06-27). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0054.html; each 'source' names the XEP's example number. -->
+<examples xep='0054' version='1.3.0'>
+<example name='request' source='Example 1. vCard Retrieval Request'><![CDATA[
+<iq from='stpeter@jabber.org/roundabout'
+    id='v1'
+    type='get'>
+  <vCard xmlns='vcard-temp'/>
+</iq>
+]]></example>
+<example name='result' source='Example 2. Server Returns vCard'><![CDATA[
+<iq id='v1'
+    to='stpeter@jabber.org/roundabout'
+    type='result'>
+  <vCard xmlns='vcard-temp'>
+    <FN>Peter Saint-Andre</FN>
+    <N>
+      <FAMILY>Saint-Andre</FAMILY>
+      <GIVEN>Peter</GIVEN>
+      <MIDDLE/>
+    </N>
+    <NICKNAME>stpeter</NICKNAME>
+    <URL>http://www.xmpp.org/xsf/people/stpeter.shtml</URL>
+    <BDAY>1966-08-06</BDAY>
+    <ORG>
+      <ORGNAME>XMPP Standards Foundation</ORGNAME>
+      <ORGUNIT/>
+    </ORG>
+    <TITLE>Executive Director</TITLE>
+    <ROLE>Patron Saint</ROLE>
+    <TEL><WORK/><VOICE/><NUMBER>303-308-3282</NUMBER></TEL>
+    <TEL><WORK/><FAX/><NUMBER/></TEL>
+    <TEL><WORK/><MSG/><NUMBER/></TEL>
+    <ADR>
+      <WORK/>
+      <EXTADD>Suite 600</EXTADD>
+      <STREET>1899 Wynkoop Street</STREET>
+      <LOCALITY>Denver</LOCALITY>
+      <REGION>CO</REGION>
+      <PCODE>80202</PCODE>
+      <CTRY>USA</CTRY>
+    </ADR>
+    <TEL><HOME/><VOICE/><NUMBER>303-555-1212</NUMBER></TEL>
+    <TEL><HOME/><FAX/><NUMBER/></TEL>
+    <TEL><HOME/><MSG/><NUMBER/></TEL>
+    <ADR>
+      <HOME/>
+      <EXTADD/>
+      <STREET/>
+      <LOCALITY>Denver</LOCALITY>
+      <REGION>CO</REGION>
+      <PCODE>80209</PCODE>
+      <CTRY>USA</CTRY>
+    </ADR>
+    <EMAIL><INTERNET/><PREF/><USERID>stpeter@jabber.org</USERID></EMAIL>
+    <JABBERID>stpeter@jabber.org</JABBERID>
+    <DESC>
+      More information about me is located on my
+      personal website: http://www.saint-andre.com/
+    </DESC>
+  </vCard>
+</iq>
+]]></example>
+<example name='item-not-found' source='Example 3. No vCard (item-not-found)'><![CDATA[
+<iq id='v1'
+    to='stpeter@jabber.org/roundabout'
+    type='error'>
+  <vCard xmlns='vcard-temp'/>
+  <error type='cancel'>
+    <item-not-found xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+  </error>
+</iq>
+]]></example>
+<example name='empty' source='Example 4. No vCard (empty element)'><![CDATA[
+<iq id='v1'
+    to='stpeter@jabber.org/roundabout'
+    type='result'>
+  <vCard xmlns='vcard-temp'/>
+</iq>
+]]></example>
+<example name='update' source='Example 5. vCard Update Request'><![CDATA[
+<iq id='v2' type='set'>
+  <vCard xmlns='vcard-temp'>
+    <FN>Peter Saint-Andre</FN>
+    <N>
+      <FAMILY>Saint-Andre</FAMILY>
+      <GIVEN>Peter</GIVEN>
+      <MIDDLE/>
+    </N>
+    <NICKNAME>stpeter</NICKNAME>
+    <URL>http://www.xmpp.org/xsf/people/stpeter.shtml</URL>
+    <BDAY>1966-08-06</BDAY>
+    <ORG>
+      <ORGNAME>XMPP Standards Foundation</ORGNAME>
+      <ORGUNIT/>
+    </ORG>
+    <TITLE>Executive Director</TITLE>
+    <ROLE>Patron Saint</ROLE>
+    <TEL><WORK/><VOICE/><NUMBER>303-308-3282</NUMBER></TEL>
+    <TEL><WORK/><FAX/><NUMBER/></TEL>
+    <TEL><WORK/><MSG/><NUMBER/></TEL>
+    <ADR>
+      <WORK/>
+      <EXTADD>Suite 600</EXTADD>
+      <STREET>1899 Wynkoop Street</STREET>
+      <LOCALITY>Denver</LOCALITY>
+      <REGION>CO</REGION>
+      <PCODE>80202</PCODE>
+      <CTRY>USA</CTRY>
+    </ADR>
+    <TEL><HOME/><VOICE/><NUMBER>303-555-1212</NUMBER></TEL>
+    <TEL><HOME/><FAX/><NUMBER/></TEL>
+    <TEL><HOME/><MSG/><NUMBER/></TEL>
+    <ADR>
+      <HOME/>
+      <EXTADD/>
+      <STREET/>
+      <LOCALITY>Denver</LOCALITY>
+      <REGION>CO</REGION>
+      <PCODE>80209</PCODE>
+      <CTRY>USA</CTRY>
+    </ADR>
+    <EMAIL><INTERNET/><PREF/><USERID>stpeter@jabber.org</USERID></EMAIL>
+    <JABBERID>stpeter@jabber.org</JABBERID>
+    <DESC>
+      Check out my blog at https://stpeter.im/
+    </DESC>
+  </vCard>
+</iq>
+]]></example>
+<example name='update-result' source='Example 6. Server Returns Success'><![CDATA[
+<iq id='v2'
+    to='stpeter@jabber.org/roundabout'
+    type='result'/>
+]]></example>
+<example name='request-other' source='Example 8. Requesting Another User&#x27;s vCard'><![CDATA[
+<iq from='stpeter@jabber.org/roundabout'
+    id='v3'
+    to='jer@jabber.org'
+    type='get'>
+  <vCard xmlns='vcard-temp'/>
+</iq>
+]]></example>
+<example name='no-vcard' source='Example 10. No vCard'><![CDATA[
+<iq id='v3'
+    to='stpeter@jabber.org/roundabout'
+    type='error'>
+  <vCard xmlns='vcard-temp'/>
+  <error type='cancel'>
+    <service-unavailable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+  </error>
+</iq>
+]]></example>
+</examples>

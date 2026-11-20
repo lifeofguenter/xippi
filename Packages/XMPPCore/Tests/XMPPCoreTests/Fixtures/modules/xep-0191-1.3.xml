@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0191: Blocking Command, version 1.3 (2015-03-12). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0191.html; each 'source' names the XEP's example number. -->
+<examples xep='0191' version='1.3'>
+<example name='blocklist-request' source='Example 3. Client requests blocklist'><![CDATA[
+<iq type='get' id='blocklist1'>
+  <blocklist xmlns='urn:xmpp:blocking'/>
+</iq>
+]]></example>
+<example name='blocklist-result' source='Example 4. Server returns blocklist with items'><![CDATA[
+<iq type='result' id='blocklist1'>
+  <blocklist xmlns='urn:xmpp:blocking'>
+    <item jid='romeo@montague.net'/>
+    <item jid='iago@shakespeare.lit'/>
+  </blocklist>
+</iq>
+]]></example>
+<example name='blocklist-empty' source='Example 5. Server returns empty blocklist'><![CDATA[
+<iq type='result' id='blocklist1'>
+  <blocklist xmlns='urn:xmpp:blocking'/>
+</iq>
+]]></example>
+<example name='block' source='Example 6. Block command'><![CDATA[
+<iq from='juliet@capulet.com/chamber' type='set' id='block1'>
+  <block xmlns='urn:xmpp:blocking'>
+    <item jid='romeo@montague.net'/>
+  </block>
+</iq>
+]]></example>
+<example name='block-push' source='Example 8. Block &quot;push&quot;'><![CDATA[
+<iq to='juliet@capulet.com/chamber' type='set' id='push1'>
+  <block xmlns='urn:xmpp:blocking'>
+    <item jid='romeo@montague.net'/>
+  </block>
+</iq>
+
+<iq to='juliet@capulet.com/balcony' type='set' id='push2'>
+  <block xmlns='urn:xmpp:blocking'>
+    <item jid='romeo@montague.net'/>
+  </block>
+</iq>
+]]></example>
+<example name='unblock' source='Example 10. Unblock JID command'><![CDATA[
+<iq type='set' id='unblock1'>
+  <unblock xmlns='urn:xmpp:blocking'>
+    <item jid='romeo@montague.net'/>
+  </unblock>
+</iq>
+]]></example>
+<example name='unblock-push' source='Example 12. Unblock &quot;push&quot;'><![CDATA[
+<iq to='juliet@capulet.com/chamber' type='set' id='push3'>
+  <unblock xmlns='urn:xmpp:blocking'>
+    <item jid='romeo@montague.net'/>
+  </unblock>
+</iq>
+
+<iq to='juliet@capulet.com/balcony' type='set' id='push4'>
+  <unblock xmlns='urn:xmpp:blocking'>
+    <item jid='romeo@montague.net'/>
+  </unblock>
+</iq>
+]]></example>
+<example name='unblock-all' source='Example 13. Unblock all command'><![CDATA[
+<iq type='set' id='unblock2'>
+  <unblock xmlns='urn:xmpp:blocking'/>
+</iq>
+]]></example>
+<example name='unblock-all-push' source='Example 15. Unblock all &quot;push&quot;'><![CDATA[
+<iq to='juliet@capulet.com/chamber' type='set' id='push5'>
+  <unblock xmlns='urn:xmpp:blocking'/>
+</iq>
+
+<iq to='juliet@capulet.com/balcony' type='set' id='push6'>
+  <unblock xmlns='urn:xmpp:blocking'/>
+</iq>
+]]></example>
+</examples>

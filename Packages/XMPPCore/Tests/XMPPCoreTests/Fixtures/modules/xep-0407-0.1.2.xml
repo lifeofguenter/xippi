@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0407 MIX-MISC invitations. Examples 1 to 3 as published, with the markup typos of the result fixed. -->
+<examples xep='0407'>
+<example name='invite'><![CDATA[
+<iq from='hag66@shakespeare.example/UUID-h5z/0253' id='kl2fax27' to='coven@mix.shakespeare.example' type='get'>
+  <invite xmlns='urn:xmpp:mix:misc:0'>
+    <invitee>cat@shakespeare.example</invitee>
+  </invite>
+</iq>
+]]></example>
+<example name='invite-result'><![CDATA[
+<iq from='coven@mix.shakespeare.example' id='kl2fax27' to='hag66@shakespeare.example/UUID-h5z/0253' type='result'>
+  <invite xmlns='urn:xmpp:mix:misc:0'>
+    <invitation>
+      <inviter>hag66@shakespeare.example</inviter>
+      <invitee>cat@shakespeare.example</invitee>
+      <channel>coven@mix.shakespeare.example</channel>
+      <token>ABCDEF</token>
+    </invitation>
+  </invite>
+</iq>
+]]></example>
+<example name='message'><![CDATA[
+<message from='hag66@shakespeare.example/UUID-h5z/0253' id='f5pp2toz' to='cat@shakespeare.example'>
+  <body>Would you like to join the coven?</body>
+  <invitation xmlns='urn:xmpp:mix:misc:0'>
+    <inviter>hag66@shakespeare.example</inviter>
+    <invitee>cat@shakespeare.example</invitee>
+    <channel>coven@mix.shakespeare.example</channel>
+    <token>ABCDEF</token>
+  </invitation>
+</message>
+]]></example>
+<example name='message-spoofed'><![CDATA[
+<message from='mallory@evil.example/x' to='cat@shakespeare.example'>
+  <invitation xmlns='urn:xmpp:mix:misc:0'>
+    <inviter>hag66@shakespeare.example</inviter>
+    <invitee>cat@shakespeare.example</invitee>
+    <channel>coven@mix.shakespeare.example</channel>
+    <token>ABCDEF</token>
+  </invitation>
+</message>
+]]></example>
+<example name='join'><![CDATA[
+<iq type='set' from='cat@shakespeare.example' to='coven@mix.shakespeare.example' id='E6E10350-76CF-40C6-B91B-1EA08C332FC7'>
+  <join xmlns='urn:xmpp:mix:misc:0'>
+    <subscribe node='urn:xmpp:mix:nodes:messages'/>
+    <invitation>
+      <inviter>hag66@shakespeare.example</inviter>
+      <invitee>cat@shakespeare.example</invitee>
+      <channel>coven@mix.shakespeare.example</channel>
+      <token>ABCDEF</token>
+    </invitation>
+  </join>
+</iq>
+]]></example>
+</examples>

@@ -1,0 +1,119 @@
+### ejabberd test server for Xippi integration tests. Local use only:
+### the passwords are public.
+###
+### Accounts (created on first start through CTL_ON_CREATE in compose.yaml):
+###   alice, bob, carol @ejabberd.test, password xippi-test
+### In-band registration is open for names starting with "reg-".
+
+hosts:
+  - ejabberd.test
+
+loglevel: info
+
+ca_file: /opt/ejabberd/certs/test-ca.pem
+certfiles:
+  - /opt/ejabberd/certs/server.pem
+  - /opt/ejabberd/certs/server.key
+
+acme:
+  auto: false
+
+listen:
+  -
+    port: 5222
+    ip: "::"
+    module: ejabberd_c2s
+    max_stanza_size: 262144
+    access: c2s
+    starttls_required: true
+  -
+    port: 5223
+    ip: "::"
+    module: ejabberd_c2s
+    max_stanza_size: 262144
+    access: c2s
+    tls: true
+  -
+    port: 5443
+    ip: "::"
+    module: ejabberd_http
+    tls: true
+    request_handlers:
+      /upload: mod_http_upload
+
+acl:
+  local:
+    user_regexp: ""
+  registrable:
+    user_regexp: "^reg-"
+
+access_rules:
+  local:
+    allow: local
+  c2s:
+    deny: blocked
+    allow: all
+  register:
+    allow: registrable
+  muc_create:
+    allow: local
+  pubsub_createnode:
+    allow: local
+
+shaper_rules:
+  max_user_sessions: 10
+
+modules:
+  mod_adhoc: {}
+  mod_admin_extra: {}
+  mod_auth_fast: {}
+  mod_avatar: {}
+  mod_blocking: {}
+  mod_caps: {}
+  mod_carboncopy: {}
+  mod_client_state: {}
+  mod_disco: {}
+  mod_http_upload:
+    # The client reaches the upload service through the published port.
+    put_url: https://localhost:15443/upload
+  mod_last: {}
+  mod_mam:
+    assume_mam_usage: true
+    default: always
+  mod_mix:
+    host: mix.ejabberd.test
+  mod_mix_pam: {}
+  mod_muc:
+    host: conference.ejabberd.test
+    access:
+      - allow
+    access_create: muc_create
+    access_persistent: muc_create
+    access_mam:
+      - allow
+    default_room_options:
+      mam: true
+  mod_muc_admin: {}
+  mod_offline: {}
+  mod_ping: {}
+  mod_privacy: {}
+  mod_private: {}
+  mod_pubsub:
+    access_createnode: pubsub_createnode
+    plugins:
+      - flat
+      - pep
+    force_node_config:
+      storage:bookmarks:
+        access_model: whitelist
+  mod_register:
+    access: register
+    ip_access: all
+  mod_roster:
+    versioning: true
+  mod_stream_mgmt:
+    resend_on_timeout: if_offline
+  mod_vcard: {}
+  mod_vcard_xupdate: {}
+  mod_version:
+    show_os: false

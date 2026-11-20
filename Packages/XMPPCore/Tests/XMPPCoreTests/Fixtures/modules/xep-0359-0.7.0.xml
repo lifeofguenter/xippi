@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0359: Unique and Stable Stanza IDs, version 0.7.0 (2023-02-20). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0359.html; each 'source' names the XEP's example number. -->
+<examples xep='0359' version='0.7.0'>
+<example name='origin-id' source='Example 2. A message stanza with the origin ID extension.'><![CDATA[
+<message xmlns='jabber:client'
+         to='room@muc.example.com'
+         type='groupchat'>
+  <body>Typical body text</body>
+  <origin-id xmlns='urn:xmpp:sid:0' id='de305d54-75b4-431b-adb2-eb6b9e546013'/>
+</message>
+]]></example>
+<example name='stanza-id' source='Example 3. A message stanza with the stanza ID extension.'><![CDATA[
+<message xmlns='jabber:client'
+         to='room@muc.example.com'
+         type='groupchat'>
+  <body>Typical body text</body>
+  <stanza-id xmlns='urn:xmpp:sid:0'
+             id='5f3dbc5e-e1d3-4077-a492-693f3769c7ad'
+             by='room@muc.example.com'/>
+  <origin-id xmlns='urn:xmpp:sid:0' id='de305d54-75b4-431b-adb2-eb6b9e546013'/>
+</message>
+]]></example>
+</examples>

@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0334: Message Processing Hints, version 1.0.0 (2024-04-17). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0334.html; each 'source' names the XEP's example number. -->
+<examples xep='0334' version='1.0.0'>
+<example name='no-copy-no-store' source='Example 1. Sending a message with no-copy and no-store hints'><![CDATA[
+<message
+    from='romeo@montague.lit/laptop'
+    to='juliet@capulet.lit/laptop'>
+  <body>V unir avtug'f pybnx gb uvqr zr sebz gurve fvtug</body>
+  <no-copy xmlns="urn:xmpp:hints"/>
+  <no-store xmlns="urn:xmpp:hints"/>
+</message>
+]]></example>
+</examples>

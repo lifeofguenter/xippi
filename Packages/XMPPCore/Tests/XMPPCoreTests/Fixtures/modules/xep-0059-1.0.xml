@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0059: Result Set Management, version 1.0 (2006-09-20). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0059.html; each 'source' names the XEP's example number. -->
+<examples xep='0059' version='1.0'>
+<example name='first-page' source='Example 3. Requesting the First Page of a Result Set'><![CDATA[
+<iq type='set' from='stpeter@jabber.org/roundabout' to='users.jabber.org' id='page1'>
+  <query xmlns='jabber:iq:search'>
+    <nick>Pete</nick>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <max>10</max>
+    </set>
+  </query>
+</iq>
+]]></example>
+<example name='first-page-result' source='Example 4. Returning the First Page of a Result Set'><![CDATA[
+<iq type='result' from='users.jabber.org' to='stpeter@jabber.org/roundabout' id='page1'>
+  <query xmlns='jabber:iq:search'>
+    <item jid='stpeter@jabber.org'>
+      <first>Peter</first>
+      <last>Saint-Andre</last>
+      <nick>Pete</nick>
+    </item>
+    .
+    [8 more items]
+    .
+    <item jid='peterpan@neverland.lit'>
+      <first>Peter</first>
+      <last>Pan</last>
+      <nick>Pete</nick>
+    </item>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <first index='0'>stpeter@jabber.org</first>
+      <last>peterpan@neverland.lit</last>
+      <count>800</count>
+    </set>
+  </query>
+</iq>
+]]></example>
+<example name='second-page' source='Example 5. Requesting the Second Page of a Result Set'><![CDATA[
+<iq type='set' from='stpeter@jabber.org/roundabout' to='users.jabber.org' id='page2'>
+  <query xmlns='jabber:iq:search'>
+    <nick>Pete</nick>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <max>10</max>
+      <after>peterpan@neverland.lit</after>
+    </set>
+  </query>
+</iq>
+]]></example>
+<example name='empty-page' source='Example 7. Returning an Empty Page'><![CDATA[
+<iq type='result' from='users.jabber.org' to='stpeter@jabber.org/roundabout' id='page80'>
+  <query xmlns='jabber:iq:search'>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <count>790</count>
+    </set>
+  </query>
+</iq>
+]]></example>
+<example name='previous-page' source='Example 8. Requesting the Previous Page of a Result Set'><![CDATA[
+<iq type='set' from='stpeter@jabber.org/roundabout' to='users.jabber.org' id='back1'>
+  <query xmlns='jabber:iq:search'>
+    <nick>Pete</nick>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <max>10</max>
+      <before>peter@pixyland.org</before>
+    </set>
+  </query>
+</iq>
+]]></example>
+<example name='last-page' source='Example 11. Requesting the Last Page of a Result Set'><![CDATA[
+<iq type='set' from='stpeter@jabber.org/roundabout' to='users.jabber.org' id='page1'>
+  <query xmlns='jabber:iq:search'>
+    <nick>Pete</nick>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <max>10</max>
+      <before/>
+    </set>
+  </query>
+</iq>
+]]></example>
+<example name='page-by-index' source='Example 12. Requesting a Result Page by Index'><![CDATA[
+<iq type='set' from='stpeter@jabber.org/roundabout' to='users.jabber.org' id='index10'>
+  <query xmlns='jabber:iq:search'>
+    <nick>Pete</nick>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <max>10</max>
+      <index>371</index>
+    </set>
+  </query>
+</iq>
+]]></example>
+<example name='page-at-index' source='Example 13. Returning a Result Page at an Index'><![CDATA[
+<iq type='result' from='users.jabber.org' to='stpeter@jabber.org/roundabout' id='index10'>
+  <query xmlns='jabber:iq:search'>
+    <item jid='peter@pixyland.org'>
+      <first>Peter</first>
+      <last>Pan</last>
+      <nick>Pete</nick>
+    </item>
+    .
+    [8 more items]
+    .
+    <item jid='peter@rabbit.lit'>
+      <first>Peter</first>
+      <last>Rabbit</last>
+      <nick>Pete</nick>
+    </item>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <first index='371'>peter@pixyland.org</first>
+      <last>peter@rabbit.lit</last>
+      <count>800</count>
+    </set>
+  </query>
+</iq>
+]]></example>
+<example name='count-request' source='Example 15. Requesting the Item Count'><![CDATA[
+<iq type='set' from='stpeter@jabber.org/roundabout' to='users.jabber.org' id='count1'>
+  <query xmlns='jabber:iq:search'>
+    <nick>Pete</nick>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <max>0</max>
+    </set>
+  </query>
+</iq>
+]]></example>
+<example name='count-result' source='Example 16. Returning the Item Count'><![CDATA[
+<iq type='result' from='users.jabber.org' to='stpeter@jabber.org/roundabout' id='count1'>
+  <query xmlns='jabber:iq:search'>
+    <set xmlns='http://jabber.org/protocol/rsm'>
+      <count>800</count>
+    </set>
+  </query>
+</iq>
+]]></example>
+</examples>

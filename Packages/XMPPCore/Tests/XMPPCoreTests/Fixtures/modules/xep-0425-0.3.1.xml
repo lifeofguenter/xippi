@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0425: Moderated Message Retraction, version 0.3.1 (2026-10-22). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0425.html; each 'source' names the XEP's example number. -->
+<examples xep='0425' version='0.3.1'>
+<example name='moderated-message' source='Example 3. The user&#x27;s client sends a message and the MUC adds a stanza id.'><![CDATA[
+  <message type="groupchat" from="room@muc.example.com/oldhag" to='room@muc.example.com/macbeth' id='inappropriate-1'>
+  <body>DM me for free magic potions!</body>
+  <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='room@muc.example.com'/>
+</message>
+]]></example>
+<example name='moderate-request' source='Example 4. The moderator&#x27;s client sends an IQ stanza to the MUC service'><![CDATA[
+<iq type='set' to='room@muc.example.com' id='retract-request-1'>
+  <moderate id="stanza-id-1" xmlns='urn:xmpp:message-moderate:1'>
+    <retract xmlns='urn:xmpp:message-retract:1'/>
+    <reason>This message contains inappropriate content for this forum</reason>
+  </moderate>
+</iq>
+]]></example>
+<example name='moderation' source='Example 5. The MUC sends a moderation message to all participants'><![CDATA[
+<message type="groupchat" id='retraction-id-1' from='room@muc.example.com' to="room@muc.example.com/macbeth">
+  <retract id="stanza-id-1" xmlns='urn:xmpp:message-retract:1'>
+    <moderated by='room@muc.example.com/macbeth' xmlns='urn:xmpp:message-moderate:1'>
+      <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
+    </moderated>
+    <reason>This message contains inappropriate content for this forum</reason>
+  </retract>
+</message>
+]]></example>
+<example name='tombstone' source='Example 8. Retracted groupchat message tombstone in a MAM result'><![CDATA[
+<message id='aeb213' to='room@muc.example.com/macbeth'>
+  <result xmlns='urn:xmpp:mam:2' queryid='f28' id='stanza-id-1'>
+    <forwarded xmlns='urn:xmpp:forward:0'>
+      <delay xmlns='urn:xmpp:delay' stamp='2019-09-20T23:18:41Z'/>
+      <message type="groupchat" from="room@muc.example.com/oldhag" to="room@muc.example.com/macbeth" id="message-id-1">
+        <occupant-id xmlns="urn:xmpp:occupant-id:0" id="ef73b09de9c90a38ba552f7c68cbeef1dca24429" />
+        <retracted stamp='2019-09-20T23:19:12Z' xmlns='urn:xmpp:message-retract:1'>
+          <moderated by="witch@shakespeare.example" xmlns="urn:xmpp:message-moderate:1">
+            <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
+          </moderated>
+          <reason>This message contains inappropriate content for this forum</reason>
+        </retracted>
+      </message>
+    </forwarded>
+  </result>
+</message>
+]]></example>
+<example name='correction-tombstone' source='Example 9. Tombstone of a retracted correction in a MAM result'><![CDATA[
+<message id='aeb214' to='room@muc.example.com/macbeth'>
+  <result xmlns='urn:xmpp:mam:2' queryid='f28' id='stanza-id-2'>
+    <forwarded xmlns='urn:xmpp:forward:0'>
+      <delay xmlns='urn:xmpp:delay' stamp='2019-09-20T23:18:55Z'/>
+      <message type="groupchat" from="room@muc.example.com/oldhag" to="room@muc.example.com/macbeth" id="message-id-2">
+        <occupant-id xmlns="urn:xmpp:occupant-id:0" id="ef73b09de9c90a38ba552f7c68cbeef1dca24429" />
+        <replace id="message-id-1" xmlns="urn:xmpp:message-correct:0"/>
+        <retracted stamp='2019-09-20T23:19:12Z' xmlns='urn:xmpp:message-retract:1'>
+          <moderated by="witch@shakespeare.example" xmlns="urn:xmpp:message-moderate:1">
+            <occupant-id xmlns="urn:xmpp:occupant-id:0" id="dd72603deec90a38ba552f7c68cbcc61bca202cd" />
+          </moderated>
+          <reason>This message contains inappropriate content for this forum</reason>
+        </retracted>
+      </message>
+    </forwarded>
+  </result>
+</message>
+]]></example>
+</examples>

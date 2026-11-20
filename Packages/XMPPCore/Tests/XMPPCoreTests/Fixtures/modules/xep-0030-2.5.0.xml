@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0030: Service Discovery, version 2.5.0 (2024-04-30). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0030.html; each 'source' names the XEP's example number. -->
+<examples xep='0030' version='2.5.0'>
+<example name='info-request' source='Example 1. Querying for information'><![CDATA[
+<iq type='get'
+    from='romeo@montague.net/orchard'
+    to='plays.shakespeare.lit'
+    id='info1'>
+  <query xmlns='http://jabber.org/protocol/disco#info'/>
+</iq>
+]]></example>
+<example name='info-result' source='Example 2. Result-set for information request'><![CDATA[
+<iq type='result'
+    from='plays.shakespeare.lit'
+    to='romeo@montague.net/orchard'
+    id='info1'>
+  <query xmlns='http://jabber.org/protocol/disco#info'>
+    <identity
+        category='conference'
+        type='text'
+        name='Play-Specific Chatrooms'/>
+    <identity
+        category='directory'
+        type='chatroom'
+        name='Play-Specific Chatrooms'/>
+    <feature var='http://jabber.org/protocol/disco#info'/>
+    <feature var='http://jabber.org/protocol/disco#items'/>
+    <feature var='http://jabber.org/protocol/muc'/>
+    <feature var='jabber:iq:register'/>
+    <feature var='jabber:iq:search'/>
+    <feature var='jabber:iq:time'/>
+    <feature var='jabber:iq:version'/>
+  </query>
+</iq>
+]]></example>
+<example name='node-info-request' source='Example 9. Querying a specific JID and node combination'><![CDATA[
+<iq type='get'
+    from='romeo@montague.net/orchard'
+    to='mim.shakespeare.lit'
+    id='info3'>
+  <query xmlns='http://jabber.org/protocol/disco#info'
+         node='http://jabber.org/protocol/commands'/>
+</iq>
+]]></example>
+<example name='node-info-result' source='Example 10. JID+node result'><![CDATA[
+<iq type='result'
+    from='mim.shakespeare.lit'
+    to='romeo@montague.net/orchard'
+    id='info3'>
+  <query xmlns='http://jabber.org/protocol/disco#info'
+         node='http://jabber.org/protocol/commands'>
+    <identity
+        category='automation'
+        type='command-list'/>
+    <feature var='http://jabber.org/protocol/disco#info'/>
+  </query>
+</iq>
+]]></example>
+<example name='items-request' source='Example 11. Requesting all items'><![CDATA[
+<iq type='get'
+    from='romeo@montague.net/orchard'
+    to='shakespeare.lit'
+    id='items1'>
+  <query xmlns='http://jabber.org/protocol/disco#items'/>
+</iq>
+]]></example>
+<example name='items-result' source='Example 12. Result-set for all items'><![CDATA[
+<iq type='result'
+    from='shakespeare.lit'
+    to='romeo@montague.net/orchard'
+    id='items1'>
+  <query xmlns='http://jabber.org/protocol/disco#items'>
+    <item jid='people.shakespeare.lit'
+          name='Directory of Characters'/>
+    <item jid='plays.shakespeare.lit'
+          name='Play-Specific Chatrooms'/>
+    <item jid='mim.shakespeare.lit'
+          name='Gateway to Marlowe IM'/>
+    <item jid='words.shakespeare.lit'
+          name='Shakespearean Lexicon'/>
+    <item jid='globe.shakespeare.lit'
+          name='Calendar of Performances'/>
+    <item jid='headlines.shakespeare.lit'
+          name='Latest Shakespearean News'/>
+    <item jid='catalog.shakespeare.lit'
+          name='Buy Shakespeare Stuff!'/>
+    <item jid='en2fr.shakespeare.lit'
+          name='French Translation Service'/>
+  </query>
+</iq>
+]]></example>
+<example name='node-error' source='Example 24. JID+node error'><![CDATA[
+<iq type='error'
+    from='mim.shakespeare.lit'
+    to='romeo@montague.net/orchard'
+    id='info3'>
+  <query xmlns='http://jabber.org/protocol/disco#info'
+         node='http://jabber.org/protocol/commands'/>
+  <error type='cancel'>
+    <not-allowed xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+  </error>
+</iq>
+]]></example>
+</examples>

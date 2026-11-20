@@ -1,0 +1,61 @@
+<iq from='juliet@capulet.example/dino.4e1b0c2f' id='3c8e5f1a-7b2d-4e9c-a0f6-1d3b5c7e9a2f' to='romeo@montague.example/Xippi.9fQ2' type='set'>
+  <jingle xmlns='urn:xmpp:jingle:1' action='session-initiate' initiator='juliet@capulet.example/dino.4e1b0c2f' sid='b7a0e3c2-5d4f-4a8e-9c1b-2f6d8e0a4c3b'>
+    <content creator='initiator' name='audio' senders='both'>
+      <description xmlns='urn:xmpp:jingle:apps:rtp:1' media='audio'>
+        <payload-type channels='2' clockrate='48000' id='111' name='opus'>
+          <parameter name='useinbandfec' value='1'/>
+        </payload-type>
+        <payload-type clockrate='32000' id='112' name='speex'/>
+        <payload-type clockrate='16000' id='113' name='speex'/>
+        <payload-type clockrate='8000' id='114' name='speex'/>
+        <payload-type clockrate='8000' id='9' name='G722'/>
+        <payload-type clockrate='8000' id='0' name='PCMU'/>
+        <payload-type clockrate='8000' id='8' name='PCMA'/>
+        <encryption required='0'>
+          <crypto crypto-suite='AES_CM_128_HMAC_SHA1_80' key-params='inline:Rz3sT9pL0mQ2vXw8bN4cY6uE1hJ5kF7aG0dS3qW9' tag='1'/>
+        </encryption>
+        <rtcp-mux/>
+      </description>
+      <transport xmlns='urn:xmpp:jingle:transports:ice-udp:1' pwd='p9X2mK7qL4vN8sR1tY6wZ3bC' ufrag='a7Fk'>
+        <fingerprint xmlns='urn:xmpp:jingle:apps:dtls:0' hash='sha-256' setup='actpass'>A1:5E:3C:92:0B:D7:64:F8:2E:19:C5:70:8A:4D:B3:E6:57:0F:A2:9C:31:D8:6B:E4:7F:05:C9:42:1A:B8:63:DD</fingerprint>
+        <candidate component='1' foundation='1' generation='0' id='q7v2x9k4m1' ip='192.168.1.42' network='0' port='35619' priority='2015363327' protocol='udp' type='host'/>
+        <candidate component='2' foundation='1' generation='0' id='h3n8c5w0p6' ip='192.168.1.42' network='0' port='53877' priority='2015363326' protocol='udp' type='host'/>
+        <candidate component='1' foundation='2' generation='0' id='t6b1r4j9y2' ip='fd00::5c3' network='0' port='47120' priority='2015363583' protocol='udp' type='host'/>
+        <candidate component='1' foundation='3' generation='0' id='z0f5d8s3g7' ip='198.51.100.77' network='0' port='35619' priority='1679819263' protocol='udp' rel-addr='192.168.1.42' rel-port='35619' type='srflx'/>
+      </transport>
+    </content>
+    <content creator='initiator' name='video' senders='both'>
+      <description xmlns='urn:xmpp:jingle:apps:rtp:1' media='video'>
+        <payload-type clockrate='90000' id='96' name='H264'>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='goog-remb'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='fir' type='ccm'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='nack'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='pli' type='nack'/>
+        </payload-type>
+        <payload-type clockrate='90000' id='97' name='VP9'>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='goog-remb'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='fir' type='ccm'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='nack'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='pli' type='nack'/>
+        </payload-type>
+        <payload-type clockrate='90000' id='98' name='VP8'>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='goog-remb'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='fir' type='ccm'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='nack'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='pli' type='nack'/>
+        </payload-type>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='1' uri='urn:3gpp:video-orientation'/>
+        <encryption required='0'>
+          <crypto crypto-suite='AES_CM_128_HMAC_SHA1_80' key-params='inline:Wm8xQ2nV5bT1cL7kJ3hF9dS0aP4oI6uY2eR8tZ5g' tag='1'/>
+        </encryption>
+        <rtcp-mux/>
+      </description>
+      <transport xmlns='urn:xmpp:jingle:transports:ice-udp:1' pwd='Lq4Zr8Tw2Vy6Xn0Bm3Ck7Dj1' ufrag='Hs9e'>
+        <fingerprint xmlns='urn:xmpp:jingle:apps:dtls:0' hash='sha-256' setup='actpass'>A1:5E:3C:92:0B:D7:64:F8:2E:19:C5:70:8A:4D:B3:E6:57:0F:A2:9C:31:D8:6B:E4:7F:05:C9:42:1A:B8:63:DD</fingerprint>
+        <candidate component='1' foundation='1' generation='0' id='m2k7p0x5c8' ip='192.168.1.42' network='0' port='41203' priority='2015363327' protocol='udp' type='host'/>
+        <candidate component='2' foundation='1' generation='0' id='w9d4g1v6n3' ip='192.168.1.42' network='0' port='58312' priority='2015363326' protocol='udp' type='host'/>
+        <candidate component='1' foundation='3' generation='0' id='r5y0b7f2j4' ip='198.51.100.77' network='0' port='41203' priority='1679819263' protocol='udp' rel-addr='192.168.1.42' rel-port='41203' type='srflx'/>
+      </transport>
+    </content>
+  </jingle>
+</iq>

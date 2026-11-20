@@ -1,0 +1,131 @@
+{
+  "generator": "scripts/omemo-vectors/generate.py",
+  "versions": {
+    "omemo": "2.1.0",
+    "oldmemo": "2.1.0",
+    "twomemo": "2.1.0",
+    "xeddsa": "1.2.0"
+  },
+  "curve25519Forms": [
+    {
+      "ed25519": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+      "curve25519": "d85e07ec22b0ad881537c2f44d662d1a143cf830c57aca4305d85c7a90f6b62e"
+    },
+    {
+      "ed25519": "3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c",
+      "curve25519": "25c704c594b88afc00a76b69d1ed2b984d7e22550f3ed0802d04fbcd07d38d47"
+    },
+    {
+      "ed25519": "fc51cd8e6218a1a38da47ed00230f0580816ed13ba3303ac5deb911548908025",
+      "curve25519": "cbb22fc9f790bd3eba9b84680c157ca4950a9894362601701f89c3c4d9fda23a"
+    },
+    {
+      "ed25519": "278117fc144c72340f67d0f2316e8386ceffbf2b2428c9c51fef7c597f1d426e",
+      "curve25519": "a4ef005363c92681e98912fcef98cc6f873922c31ac1e084569389bb4601b763"
+    }
+  ],
+  "v03": {
+    "alice": {
+      "jid": "alice@example.org",
+      "deviceID": 31415,
+      "identityKey": "05307d43be94e8d439b04254ea4d1982cbc2262e4532e41b8dbc6739093151c43f",
+      "deviceList": "<list xmlns=\"eu.siacs.conversations.axolotl\"><device id=\"31415\" /><device id=\"424242\" /></list>",
+      "deviceListIDs": [
+        31415,
+        424242
+      ],
+      "bundle": "<bundle xmlns=\"eu.siacs.conversations.axolotl\"><signedPreKeyPublic signedPreKeyId=\"7\">Bd3s/LALkBtf6INEo4i+9QqeeEFEdBUCI+Diy7uvqLE3</signedPreKeyPublic><signedPreKeySignature>sgnm+fInP4ClBjl9dTs2HRWyYJZr+J1WgGNCwEB0sRxVw1CQb8DhyftDP1wDfbPjf+eY7+O6ACpH+OYRcXiMDg==</signedPreKeySignature><identityKey>BTB9Q76U6NQ5sEJU6k0ZgsvCJi5FMuQbjbxnOQkxUcQ/</identityKey><prekeys><preKeyPublic preKeyId=\"77\">BXYUMh01d4IZjTymHHbXVhLY4YjsD5vq0oYte50yt9N3</preKeyPublic></prekeys></bundle>"
+    },
+    "bob": {
+      "jid": "bob@example.org",
+      "deviceID": 27182,
+      "identity": {
+        "privateKey": "28f505432c94c52d7ebca190862f013973034359635b7ea130fd9242e5078e71",
+        "publicKey": "53c35027c74cd37797ef82f171b986ee9da59d340ec43d6eab256e3842b82116"
+      },
+      "signedPreKey": {
+        "id": 9,
+        "privateKey": "94db263272c719d427d66ee4ffb9c8b9873b2a7a84daf0966dbc331d36b6eebb",
+        "publicKey": "724f00bb3ec0ad2e247fb2dd15061fc3a2d380d3644276ce35de03efc124212e",
+        "signature": "aead1aab38e57f941ca54d6915d93281145637139f81f8dcf91fc179957fcfa9a90802c9f469328b8aa4c3bbea85a6ce7995c99aec4f76f2d9b98041bd9c840c"
+      },
+      "preKeys": [
+        {
+          "id": 901,
+          "privateKey": "3738938950902283f41d35d422d098a34572a684a7a27243cfac1e4fb41e8b4c",
+          "publicKey": "540793d97e2a00466be9c549ebbd0d22a42e01d9e6295afbd4f2d7394bbfa941"
+        }
+      ],
+      "bundle": "<bundle xmlns=\"eu.siacs.conversations.axolotl\"><signedPreKeyPublic signedPreKeyId=\"9\">BXJPALs+wK0uJH+y3RUGH8Oi04DTZEJ2zjXeA+/BJCEu</signedPreKeyPublic><signedPreKeySignature>rq0aqzjlf5QcpU1pFdkygRRWNxOfgfjc+R/BeZV/z6mpCALJ9Gkyi4qkw7vqhabOeZXJmuxPdvLZuYBBvZyEDA==</signedPreKeySignature><identityKey>BVPDUCfHTNN3l++C8XG5hu6dpZ00DsQ9bqslbjhCuCEW</identityKey><prekeys><preKeyPublic preKeyId=\"901\">BVQHk9l+KgBGa+nFSeu9DSKkLgHZ5ila+9Ty1zlLv6lB</preKeyPublic></prekeys></bundle>"
+    },
+    "messages": [
+      {
+        "stanza": "<message xmlns='jabber:client' from='alice@example.org/python' to='bob@example.org' type='chat' id='py-v03-0'><body>I sent you an OMEMO encrypted message but your client doesn&apos;t seem to support that.</body><encrypted xmlns=\"eu.siacs.conversations.axolotl\"><header sid=\"31415\"><key rid=\"27182\" prekey=\"true\">MwiFBxIhBSfv5vpxwA4koqHXjdMwPhND4JKDnK53SYJsWrI8998dGiEFMH1DvpTo1DmwQlTqTRmCy8ImLkUy5BuNvGc5CTFRxD8iYjMKIQXVgCN3y85RCMZB6Ql9nVX+bPwSpJ9T0iUSvvVXBbKAMxAAGAAiMF9rRih6UCq9+2P1C72nnO4uo/cnXLKI25VJuRcnJMIow3HCfRN2dgPB/jTLWAbh+QMhT3+f+7qsMAk=</key><iv>1akZZXz3m35oOzOs</iv></header><payload>Cz8MS38laOe67Fs5yfSovPI0/Vyammg=</payload></encrypted><store xmlns='urn:xmpp:hints'/></message>",
+        "body": "Hello from python-omemo",
+        "envelope": null
+      },
+      {
+        "stanza": "<message xmlns='jabber:client' from='alice@example.org/python' to='bob@example.org' type='chat' id='py-v03-1'><body>I sent you an OMEMO encrypted message but your client doesn&apos;t seem to support that.</body><encrypted xmlns=\"eu.siacs.conversations.axolotl\"><header sid=\"31415\"><key rid=\"27182\" prekey=\"true\">MwiFBxIhBSfv5vpxwA4koqHXjdMwPhND4JKDnK53SYJsWrI8998dGiEFMH1DvpTo1DmwQlTqTRmCy8ImLkUy5BuNvGc5CTFRxD8iYjMKIQXVgCN3y85RCMZB6Ql9nVX+bPwSpJ9T0iUSvvVXBbKAMxABGAAiMPitjXqzrNJSxJBBdDCdEBWTz1xu+PKSI6pu4WzlEFYxVDAAYd0GAxAfoYnvY6ZtBrwUumWdY7TbMAk=</key><iv>PNWacqWqOY90HHyy</iv></header><payload>8paSXDKjPDjjiVThrx0PGxlKY0wdXY4=</payload></encrypted><store xmlns='urn:xmpp:hints'/></message>",
+        "body": "Gr\u00fc\u00dfe, second message",
+        "envelope": null
+      },
+      {
+        "stanza": "<message xmlns='jabber:client' from='alice@example.org/python' to='bob@example.org' type='chat' id='py-v03-2'><encrypted xmlns=\"eu.siacs.conversations.axolotl\"><header sid=\"31415\"><key rid=\"27182\" prekey=\"true\">MwiFBxIhBSfv5vpxwA4koqHXjdMwPhND4JKDnK53SYJsWrI8998dGiEFMH1DvpTo1DmwQlTqTRmCy8ImLkUy5BuNvGc5CTFRxD8iUjMKIQXVgCN3y85RCMZB6Ql9nVX+bPwSpJ9T0iUSvvVXBbKAMxACGAAiIMvH0ysPED0Nnt6fsv/p01aurEon9onJ/ygUmYd/thtIJih65iniu50wCQ==</key><iv>9zj0rb8Jl6Kx9qnl</iv></header></encrypted><store xmlns='urn:xmpp:hints'/></message>",
+        "body": null,
+        "envelope": null
+      }
+    ]
+  },
+  "v2": {
+    "alice": {
+      "jid": "alice@example.org",
+      "deviceID": 31415,
+      "identityKey": "4bacbea292d1926cc0b789e252998113e5baae504ee5856878beb4592a19f755",
+      "deviceList": "<devices xmlns=\"urn:xmpp:omemo:2\"><device id=\"31415\" label=\"python-omemo\" labelsig=\"uGD/PapfS/RgDAf93sQm72y0rphPVk08nb83xbwx/R82uPOXQ1G7CphKinD1t4EDMetX9AH40W9casT/sEL/Dg==\" /><device id=\"424242\" /></devices>",
+      "deviceListIDs": [
+        31415,
+        424242
+      ],
+      "bundle": "<bundle xmlns=\"urn:xmpp:omemo:2\"><spk id=\"7\">8JXbbg9K4k03Od17+Vq/m7e4AdM4PIbipXydBwydgnE=</spk><spks>Px6u7Alt0qNNbEdnNiPaeXUB3PJ90UagMibu0XgLplMb/wixYlHMZ3lKQ5iS9F/yHdATW20+Q5I8aj97KW9TBg==</spks><ik>S6y+opLRkmzAt4niUpmBE+W6rlBO5YVoeL60WSoZ91U=</ik><prekeys><pk id=\"77\">TjqC3oW774JsUCHrpUlhi34rz6YX+4aIfdDcqU3hcVU=</pk></prekeys></bundle>"
+    },
+    "bob": {
+      "jid": "bob@example.org",
+      "deviceID": 27182,
+      "identity": {
+        "privateKey": "c9fce80cf41a9c78770284d250e12eddff0accc1a601b4908e6214fb53e33a3c",
+        "publicKey": "a03368d43e05d53435172b468c7126159fe6f3977875cab8f27ba2cdd1bd5a67"
+      },
+      "signedPreKey": {
+        "id": 9,
+        "privateKey": "448ae19dd6f984049cdf636733fa6d395ef27e0b02dc15e671ca9dd419ee117f",
+        "publicKey": "64ddb17570bf366cf9d629ad7c3f257ed21e989d1432a4ed6c8059ce1dc46562",
+        "signature": "92757fb37eda5d04d69b62401db5f179f2e9197e35f5c73ea18a7434fc1348c22e31b3208e949889936af209af1a30194b18123331eda9b9093085d9f6aa7d02"
+      },
+      "preKeys": [
+        {
+          "id": 901,
+          "privateKey": "37d4f666d4119c55ef6d9b42a30863c874be269bf12b694e8992894525d8c805",
+          "publicKey": "6136eb07b7e6943b59951531d35179418bbaf11407437250f3670daa215cd334"
+        }
+      ],
+      "bundle": "<bundle xmlns=\"urn:xmpp:omemo:2\"><spk id=\"9\">ZN2xdXC/Nmz51imtfD8lftIemJ0UMqTtbIBZzh3EZWI=</spk><spks>knV/s37aXQTWm2JAHbXxefLpGX419cc+oYp0NPwTSMIuMbMgjpSYiZNq8gmvGjAZSxgSMzHtqbkJMIXZ9qp9Ag==</spks><ik>oDNo1D4F1TQ1FytGjHEmFZ/m85d4dcq48nuizdG9Wmc=</ik><prekeys><pk id=\"901\">YTbrB7fmlDtZlRUx01F5QYu68RQHQ3JQ82cNqiFc0zQ=</pk></prekeys></bundle>"
+    },
+    "messages": [
+      {
+        "stanza": "<message xmlns='jabber:client' from='alice@example.org/python' to='bob@example.org' type='chat' id='py-v2-0'><encrypted xmlns=\"urn:xmpp:omemo:2\"><header sid=\"31415\"><keys jid=\"bob@example.org\"><key rid=\"27182\" kex=\"true\">CIUHEAkaIEusvqKS0ZJswLeJ4lKZgRPluq5QTuWFaHi+tFkqGfdVIiB1QxdSCaroCXNCny3+j/5hPB4vHBF6r0dvsbmRLvDYPSp8ChAKf+3ZVcNNO61oAisykKVxEmgIABAAGiDD3cN7AwdEQZmYn+1AHFkpvQ+yj8eAb47UPuX0ZnM4FSJAak/H4JtNrxYQwzH6zjt8vqciJEez5jQkNRdONsiKf9qplm9sAsU1ZkDN7uakw/2UmQ/Uum6Bewdan/XPJROLZg==</key></keys></header><payload>J3TX1H6XiJmsz/K/MlDfFOTa9GBcFzzBKjfqHoZSErgWo7FdPwI/2dpN6zwvIeIF8V2zyO8f9c3ZBcwJ1Jrrsf0keoCrWb5UkSK19AHFcFbwnN8Gj3kFgKAprdMXHt6XDINtY2HfXllreCfYKPzkc0v0qY6Yy4W/9TZU20FZKIKsD4QcFLjY+rlG5WTtBeqUhcLC1H2QTDZIcsFPcGi32xPCkyTZvTSuz9BSMAluvcQ7wl5I3i4DYygHdEBHFntSd75OHHQPGQx5quXo+odeDkLF6irkdrZGrpl8kScOdqbPExZ7IevRX+DbvDIBrCjsvVY8nOqrX7unX/LwUUfG9d8bAcc36MAuLiRwoyjKzhpLWWADwaWsk9rSTyNCNOPEuKA+0PYIEL4xKAjInyrQeXStsLH4VPGsZR9bmIpSvquHFaYdK+DzFmPqhg2/8lJCbCt/YzCfX15zcOnXoBq936ylVntbK4uceVOVjOo71lXgY6swHzcY8LloD4fvD0e7</payload></encrypted><store xmlns='urn:xmpp:hints'/></message>",
+        "body": "Hello from python-omemo",
+        "envelope": "<envelope xmlns='urn:xmpp:sce:1'><content><body xmlns='jabber:client'>Hello from python-omemo</body></content><rpad>T3w7Udobl1SzTW/PL+K0Wgtz7DYJAWXMEobHUpGi13RToy7//r6RmJ2tWibdWoiNsRlkXDat6mE+3TvOpstDlYmTy5WS95qQgFIvC8gEeRiFyma3c9SSaHRihKOlSsaA+h1fsGgSehXlzT/2EMNlUIe6IA</rpad><time stamp='2026-11-19T10:00:00Z'/><to jid='bob@example.org'/><from jid='alice@example.org'/></envelope>"
+      },
+      {
+        "stanza": "<message xmlns='jabber:client' from='alice@example.org/python' to='bob@example.org' type='chat' id='py-v2-1'><encrypted xmlns=\"urn:xmpp:omemo:2\"><header sid=\"31415\"><keys jid=\"bob@example.org\"><key rid=\"27182\" kex=\"true\">CIUHEAkaIEusvqKS0ZJswLeJ4lKZgRPluq5QTuWFaHi+tFkqGfdVIiB1QxdSCaroCXNCny3+j/5hPB4vHBF6r0dvsbmRLvDYPSp8ChDqiLK0PongSmrowXqsPG3TEmgIARAAGiDD3cN7AwdEQZmYn+1AHFkpvQ+yj8eAb47UPuX0ZnM4FSJAUJRf0+fcJ7i+Wair9BV5QsNHxd+3mZkZYHSzc+aAtB+UPkEGxJwlGCnLCp1u4iONUaTSSifbdfomEUXa36MwvQ==</key></keys></header><payload>5MJS3SRWPKjXSf0oX6bluTcu60vSF+wuF3FXSxSYLHxM8xDZFKZ9PD/ElKAqtRHhKxFHnnrARKPPG5U/GZQnzVkdeDs3WM2fBT8awOJEiK/Izt/SodgyL0pM1dQFVt9cMiGoLmsvzASNcnKldHiVG38NJQgKSOJhyGghhBPAcqb9Hu4+f6yLS2bgXVqWZmC6BopC+647ZKQnt8pyjgIkwvdiLowgC+EkWI9ZAOqLLUe0NS6ldWRJXcXrjgAi7UV+ZNPWOg72dmi6de+GhowUWCU9AwRvK2w7ZHnac4ClEY1DdcKgJcf0OGc0n/2K7qTwBbsXxHwH8cVpefWJ//+TkqFu88nL6m/g7NJJ+vG+YlCDeH7LgmpVK3QaAUk6yJYk</payload></encrypted><store xmlns='urn:xmpp:hints'/></message>",
+        "body": "Gr\u00fc\u00dfe, second message",
+        "envelope": "<envelope xmlns='urn:xmpp:sce:1'><content><body xmlns='jabber:client'>Gr\u00fc\u00dfe, second message</body></content><rpad>qru+bsp2aZwguwjEUkz0+yxeCcn8feuTX2YV7oWFF4GgTRw</rpad><time stamp='2026-11-19T10:01:00Z'/><to jid='bob@example.org'/><from jid='alice@example.org'/></envelope>"
+      },
+      {
+        "stanza": "<message xmlns='jabber:client' from='alice@example.org/python' to='bob@example.org' type='chat' id='py-v2-2'><encrypted xmlns=\"urn:xmpp:omemo:2\"><header sid=\"31415\"><keys jid=\"bob@example.org\"><key rid=\"27182\" kex=\"true\">CIUHEAkaIEusvqKS0ZJswLeJ4lKZgRPluq5QTuWFaHi+tFkqGfdVIiB1QxdSCaroCXNCny3+j/5hPB4vHBF6r0dvsbmRLvDYPSpsChDsHfpvW4TSlqTxJeA0K/K+ElgIAhAAGiDD3cN7AwdEQZmYn+1AHFkpvQ+yj8eAb47UPuX0ZnM4FSIwl1SxhUsYLv8B2jN31aGAU6Y48lITuFfaKIVXqblibvwz5qPdFNPJ9M56p023L3Bb</key></keys></header></encrypted><store xmlns='urn:xmpp:hints'/></message>",
+        "body": null,
+        "envelope": null
+      }
+    ]
+  }
+}

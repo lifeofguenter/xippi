@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0424: Message Retraction, version 0.5.0 (2026-07-03). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0424.html; each 'source' names the XEP's example number. -->
+<examples xep='0424' version='0.5.0'>
+<example name='original' source='Example 4. The user&#x27;s client sends a message to the wrong recipient'><![CDATA[
+<message type='chat' to='lord@capulet.example' id='wrong-recipient-1'>
+  <body>Have not saints lips, and holy palmers too?</body>
+</message>
+]]></example>
+<example name='retraction' source='Example 5. The client sends out a retraction'><![CDATA[
+<message type='chat' to='lord@capulet.example' id='retract-message-1'>
+  <retract id="wrong-recipient-1" xmlns='urn:xmpp:message-retract:1'/>
+  <fallback xmlns="urn:xmpp:fallback:0" for='urn:xmpp:message-retract:1'/>
+  <body>/me retracted a previous message, but it's unsupported by your client.</body>
+  <store xmlns="urn:xmpp:hints"/>
+</message>
+]]></example>
+<example name='tombstone' source='Example 8. Retracted message tombstone in a MAM result'><![CDATA[
+<message id='aeb213' to='lord@capulet.example/chamber'>
+  <result xmlns='urn:xmpp:mam:2' queryid='f27' id='stanza-id-1'>
+    <forwarded xmlns='urn:xmpp:forward:0'>
+      <delay xmlns='urn:xmpp:delay' stamp='2019-09-20T23:08:25Z'/>
+      <message type='groupchat' from='romeo@montague.example' to='lord@capulet.example' id='wrong-recipient-1'>
+        <retracted stamp='2019-09-20T23:09:32Z' xmlns='urn:xmpp:message-retract:1' id='retract-message-1'/>
+      </message>
+  </forwarded>
+</result>
+</message>
+]]></example>
+</examples>

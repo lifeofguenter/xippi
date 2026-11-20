@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0333: Displayed Markers, version 1.0.0 (2024-04-17). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0333.html; each 'source' names the XEP's example number. -->
+<examples xep='0333' version='1.0.0'>
+<example name='markable' source='Example 3. Romeo sends a message to Juliet'><![CDATA[
+<message to='juliet@capulet.lit' from='romeo@montegue.lit/orchard' id='the-msg-1'>
+  <body>Hi. How are you?</body>
+  <markable xmlns='urn:xmpp:chat-markers:0'/>
+  <request xmlns='urn:xmpp:receipts'/>
+</message>
+]]></example>
+<example name='displayed' source='Example 4. Juliet lets both Romeo she has displayed the message'><![CDATA[
+<message to='romeo@montegue.lit' from='juliet@capulet.let/balcony'>
+   <displayed xmlns='urn:xmpp:chat-markers:0' id='the-msg-1'/>
+</message>
+]]></example>
+<example name='muc-markable' source='Example 5. Example MUC message with a markable Displayed Marker'><![CDATA[
+<message
+    from='coven@chat.shakespeare.lit/firstwitch'
+    to='coven@chat.shakespeare.lit'
+    id='message-1'
+    type='groupchat'>
+  <thread>Act IV, Scene I</thread>
+  <body>Thrice the brinded cat hath mew'd.</body>
+  <markable xmlns='urn:xmpp:chat-markers:0' />
+  <stanza-id xmlns='urn:xmpp:sid:0' by='coven@chat.shakespeare.lit' id='39K7ZYIp' />
+</message>
+]]></example>
+<example name='muc-displayed' source='Example 6. Example marker response to a markable MUC message'><![CDATA[
+<message
+    from='coven@chat.shakespeare.lit/secondwitch'
+    to='coven@chat.shakespeare.lit'
+    id='message-2'
+    type='groupchat'>
+  <thread>Act IV, Scene I</thread>
+  <displayed xmlns='urn:xmpp:chat-markers:0'
+            id='39K7ZYIp'/>
+</message>
+]]></example>
+</examples>

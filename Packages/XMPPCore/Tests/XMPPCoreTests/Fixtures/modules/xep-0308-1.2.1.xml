@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0308: Last Message Correction, version 1.2.1 (2022-05-17). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0308.html; each 'source' names the XEP's example number. -->
+<examples xep='0308' version='1.2.1'>
+<example name='original' source='Example 3. User sends a message with a mistake in'><![CDATA[
+<message to='juliet@capulet.net/balcony' id='bad1'>
+  <body>But soft, what light through yonder airlock breaks?</body>
+</message>
+]]></example>
+<example name='correction' source='Example 4. User corrects the message and sends'><![CDATA[
+<message to='juliet@capulet.net/balcony' id='good1'>
+  <body>But soft, what light through yonder window breaks?</body>
+  <replace id='bad1' xmlns='urn:xmpp:message-correct:0'/>
+</message>
+]]></example>
+</examples>

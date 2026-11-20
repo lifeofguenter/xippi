@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0077 In-Band Registration, XEP-0445 pre-authentication, XEP-0158 CAPTCHA media. -->
+<examples xep='0077'>
+<example name='fields'><![CDATA[
+<iq type='result' id='reg1' from='shakespeare.lit'>
+  <query xmlns='jabber:iq:register'>
+    <instructions>Choose a username and password for use with this service.</instructions>
+    <username/>
+    <password/>
+    <email/>
+  </query>
+</iq>
+]]></example>
+<example name='form'><![CDATA[
+<iq type='result' id='reg1' from='shakespeare.lit'>
+  <query xmlns='jabber:iq:register'>
+    <x xmlns='jabber:x:data' type='form'>
+      <title>Contest</title>
+      <field type='hidden' var='FORM_TYPE'><value>jabber:iq:register</value></field>
+      <field type='text-single' label='Given Name' var='first'><required/></field>
+      <field type='text-single' label='Answer' var='ocr'>
+        <required/>
+        <media xmlns='urn:xmpp:media-element' height='80' width='290'>
+          <uri type='image/png'>cid:sha1+8f35fef110ffc5df08d579a50083ff9308fb6242@bob.xmpp.org</uri>
+        </media>
+      </field>
+    </x>
+    <data xmlns='urn:xmpp:bob' cid='sha1+8f35fef110ffc5df08d579a50083ff9308fb6242@bob.xmpp.org' type='image/png' max-age='0'>iVBORw0KGgo=</data>
+  </query>
+</iq>
+]]></example>
+<example name='registered'><![CDATA[
+<iq type='result' id='reg1' from='shakespeare.lit'>
+  <query xmlns='jabber:iq:register'><registered/><username>juliet</username><password/></query>
+</iq>
+]]></example>
+<example name='submit'><![CDATA[
+<iq type='set' to='shakespeare.lit' id='reg2'>
+  <query xmlns='jabber:iq:register'>
+    <username>bill</username>
+    <password>Calliope</password>
+  </query>
+</iq>
+]]></example>
+<example name='change-password'><![CDATA[
+<iq type='set' id='change1'>
+  <query xmlns='jabber:iq:register'>
+    <username>bill</username>
+    <password>newpass</password>
+  </query>
+</iq>
+]]></example>
+<example name='cancel'><![CDATA[
+<iq type='set' id='unreg1'>
+  <query xmlns='jabber:iq:register'><remove/></query>
+</iq>
+]]></example>
+<example name='preauth'><![CDATA[
+<iq type='set' to='example.com' id='pa1'>
+  <preauth xmlns='urn:xmpp:pars:0' token='TOKEN'/>
+</iq>
+]]></example>
+</examples>

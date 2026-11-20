@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0441: Message Archive Management Preferences, version 0.2.0 (2020-08-25). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0441.html; each 'source' names the XEP's example number. -->
+<examples xep='0441' version='0.2.0'>
+<example name='request' source='Example 1. Retrieving archiving preferences'><![CDATA[
+<iq type='get' id='juliet2'>
+  <prefs xmlns='urn:xmpp:mam:2'/>
+</iq>
+]]></example>
+<example name='result' source='Example 2. Server responds with current preferences'><![CDATA[
+<iq type='result' id='juliet2'>
+  <prefs xmlns='urn:xmpp:mam:2' default='roster'>
+    <always/>
+    <never/>
+  </prefs>
+</iq>
+]]></example>
+<example name='not-supported' source='Example 3. Server does not support archive configuration'><![CDATA[
+<iq type='error' id='juliet2'>
+  <error type='cancel'>
+    <feature-not-implemented xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+  </error>
+</iq>
+]]></example>
+<example name='update' source='Example 4. Updating archiving preferences'><![CDATA[
+<iq type='set' id='juliet3'>
+  <prefs xmlns='urn:xmpp:mam:2' default='roster'>
+    <always>
+      <jid>romeo@montague.lit</jid>
+    </always>
+    <never>
+      <jid>montague@montague.lit</jid>
+    </never>
+  </prefs>
+</iq>
+]]></example>
+<example name='update-result' source='Example 5. Server responds with updated preferences'><![CDATA[
+<iq type='result' id='juliet3'>
+  <prefs xmlns='urn:xmpp:mam:2' default='roster'>
+    <always>
+      <jid>romeo@montague.lit</jid>
+    </always>
+    <never>
+      <jid>montague@montague.lit</jid>
+    </never>
+  </prefs>
+</iq>
+]]></example>
+</examples>

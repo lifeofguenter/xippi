@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0249: Direct MUC Invitations, version 1.2 (2011-09-22). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0249.html; each 'source' names the XEP's example number. -->
+<examples xep='0249' version='1.2'>
+<example name='invite' source='Example 1. A direct invitation'><![CDATA[
+<message
+    from='crone1@shakespeare.lit/desktop'
+    to='hecate@shakespeare.lit'>
+  <x xmlns='jabber:x:conference'
+     jid='darkcave@macbeth.shakespeare.lit'
+     password='cauldronburn'
+     reason='Hey Hecate, this is the place for all good witches!'/>
+</message>
+]]></example>
+<example name='invite-continue' source='Example 2. A direct invitation that continues a one-to-one chat'><![CDATA[
+<message
+    from='crone1@shakespeare.lit/desktop'
+    to='hecate@shakespeare.lit'>
+  <x xmlns='jabber:x:conference'
+     continue='true'
+     jid='darkcave@macbeth.shakespeare.lit'
+     password='cauldronburn'
+     reason='Hey Hecate, this is the place for all good witches!'
+     thread='e0ffe42b28561960c6b12b944a092794b9683a38'/>
+</message>
+]]></example>
+</examples>

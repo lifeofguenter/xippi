@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0261 Jingle In-Band Bytestreams Transport Method. -->
+<examples xep='0261'>
+<example name='initiate'><![CDATA[
+<transport xmlns='urn:xmpp:jingle:transports:ibb:1' block-size='4096' sid='ch3d9s71'/>
+]]></example>
+<example name='accept'><![CDATA[
+<transport xmlns='urn:xmpp:jingle:transports:ibb:1' block-size='2048' sid='ch3d9s71'/>
+]]></example>
+<example name='messages'><![CDATA[
+<transport xmlns='urn:xmpp:jingle:transports:ibb:1' block-size='2048' sid='s' stanza='message'/>
+]]></example>
+<example name='bad-stanza'><![CDATA[
+<transport xmlns='urn:xmpp:jingle:transports:ibb:1' block-size='2048' sid='s' stanza='presence'/>
+]]></example>
+</examples>
