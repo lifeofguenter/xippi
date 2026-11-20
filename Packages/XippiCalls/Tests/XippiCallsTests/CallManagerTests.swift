@@ -287,7 +287,11 @@ import XMPPTestSupport
         #expect(await eventually { h.clock.sleeperCount == 0 })
         call.engine.emit(.disconnected)
         #expect(await eventually { await h.manager.call(call.id)?.state == .connecting })
-        #expect(h.events.all.filter { if case .connecting = $0 { true } else { false } }.count == 2)
+        // The log collects events in a task of its own, so it can be a moment behind the call.
+        #expect(
+            await eventually {
+                h.events.all.filter { if case .connecting = $0 { true } else { false } }.count == 2
+            })
         #expect(await eventually { h.clock.sleeperCount == 1 })
         call.engine.emit(.connected)
         #expect(await eventually { h.clock.sleeperCount == 0 })

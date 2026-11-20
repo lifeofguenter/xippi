@@ -7,7 +7,8 @@
 #   test-results/<Package>*.xml   xUnit results    (scripts/test-summary.py)
 #   test-results/<Package>.log    console output   (names the tests that did not finish)
 #   coverage/coverage.json        llvm-cov export  (scripts/coverage-summary.mjs)
-# The coverage report holds each package's own sources only: a package's profile also
+#   coverage/lcov.info            LCOV             (Coveralls)
+# Both coverage reports hold each package's own sources only: a package's profile also
 # covers the local packages it depends on and its tests, which would count those twice.
 set -eo pipefail
 cd "$(dirname "$0")/.."
@@ -90,6 +91,14 @@ for p in "$@"; do
         jq --arg keep "/Packages/$p/Sources/" \
             '.data[].files |= map(select(.filename | contains($keep)))' > "coverage/$p.json"
     reports+=("coverage/$p.json")
+    # Paths from the repository's root, which is how Coveralls finds the files.
+    xcrun llvm-cov export -format=lcov -instr-profile="coverage/$p.profdata" "${objects[@]}" |
+        awk -v keep="$PWD/Packages/$p/Sources/" -v root="$PWD/" '
+            /^SF:/ {
+                own = index($0, "SF:" keep) == 1
+                if (own) $0 = "SF:" substr($0, length("SF:" root) + 1)
+            }
+            own' >> coverage/lcov.info
 done
 
 if [ ${#reports[@]} -gt 0 ]; then
