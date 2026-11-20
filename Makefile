@@ -75,29 +75,14 @@ lint: ## swift format in strict mode
 	swift format lint --strict -r Packages App AppUITests
 
 .PHONY: cover
-cover: ## Package tests with code coverage: coverage/coverage.json (llvm-cov) and coverage/coverage.xml (Cobertura)
-	@set -e; mkdir -p coverage; for p in $(or $(PKG),$(PACKAGES)); do \
-		echo "==> $$p"; \
-		swift test --package-path "Packages/$$p" --enable-code-coverage $(if $(FILTER),--filter '$(FILTER)'); \
-		json="$$(swift test --package-path "Packages/$$p" --show-codecov-path)"; \
-		cp "$$json" "coverage/$$p.json"; \
-		bin="$$(swift build --package-path "Packages/$$p" --show-bin-path)"; \
-		objects=(); for bundle in "$$bin"/*.xctest; do \
-			objects+=(-object "$$bundle/Contents/MacOS/$$(basename "$$bundle" .xctest)"); \
-		done; \
-		xcrun llvm-cov export -format=lcov -instr-profile="$$(dirname "$$json")/default.profdata" \
-			"$${objects[@]}" > "coverage/$$p.lcov"; \
-	done
-	@python3 scripts/lcov-to-cobertura.py . \
-		$(foreach p,$(or $(PKG),$(PACKAGES)),$(p)=coverage/$(p).lcov) > coverage/coverage.xml
-	@# One export with each package's own sources only: a package's report also covers the
-	@# local packages it depends on and its tests, which would count those files twice.
-	@jq -s '{type: .[0].type, version: .[0].version, data: [.[] | .data[] | {files: .files}]}' \
-		$(foreach p,$(or $(PKG),$(PACKAGES)),<(jq --arg p "/Packages/$(p)/Sources/" \
-			'.data[].files |= map(select(.filename | contains($$p)))' coverage/$(p).json)) \
-		> coverage/coverage.json
+cover: ## Package tests with coverage and results: coverage/ and test-results/
+	FILTER='$(FILTER)' scripts/cover.sh $(or $(PKG),$(PACKAGES))
+
+.PHONY: test-summary
+test-summary: ## Markdown summary of the last cover run's test results
+	@python3 scripts/test-summary.py test-results $(or $(PKG),$(PACKAGES))
 
 .PHONY: clean
 clean: ## Remove build and test output
-	rm -rf Packages/*/.build Packages/*/.swiftpm coverage DerivedData
+	rm -rf Packages/*/.build Packages/*/.swiftpm coverage test-results DerivedData
 	$(XCODEBUILD) -quiet clean

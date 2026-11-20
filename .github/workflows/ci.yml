@@ -40,24 +40,32 @@ jobs:
       - name: Lint
         run: make lint
 
-      # Unit tests of every package with coverage. The integration tests need the Docker test
-      # servers, which macOS runners do not have; they skip themselves without XIPPI_INTEGRATION.
+      # Unit tests of every package with coverage, run even when lint failed so one run shows
+      # both. Every package runs even after one fails. The integration tests need the Docker
+      # test servers, which macOS runners do not have; they skip themselves without
+      # XIPPI_INTEGRATION.
       - name: Test + coverage
+        if: ${{ !cancelled() }}
         run: make cover
 
+      - name: Test summary
+        if: ${{ !cancelled() }}
+        run: make -s test-summary >> "$GITHUB_STEP_SUMMARY"
+
       - name: Coverage summary
-        if: always()
+        if: ${{ !cancelled() && hashFiles('coverage/coverage.json') != '' }}
         run: node scripts/coverage-summary.mjs coverage/coverage.json >> "$GITHUB_STEP_SUMMARY"
 
       # GitHub's own coverage: the pull request comment and the per-file view compare against
-      # the last upload from main, so both pull requests and pushes to main upload. Not from
-      # forks (no write token) and not for tags. Needs GitHub Code Quality enabled for the
-      # repository; until it is, the upload fails without failing the run.
+      # the last upload from main, so both pull requests and pushes to main upload, and only
+      # from a green run, so a package that failed to build does not show as lost coverage.
+      # Not from forks (no write token) and not for tags. Needs GitHub Code Quality enabled
+      # for the repository; until it is, the upload fails without failing the run.
       - name: Upload coverage to GitHub
         if: >-
-          always() && !startsWith(github.ref, 'refs/tags/') &&
+          ${{ !startsWith(github.ref, 'refs/tags/') &&
           (github.event_name != 'pull_request' ||
-          github.event.pull_request.head.repo.full_name == github.repository)
+          github.event.pull_request.head.repo.full_name == github.repository) }}
         continue-on-error: true
         uses: actions/upload-code-coverage@v1
         with:
