@@ -7,8 +7,7 @@
 #   test-results/<Package>*.xml   xUnit results    (scripts/test-summary.py)
 #   test-results/<Package>.log    console output   (names the tests that did not finish)
 #   coverage/coverage.json        llvm-cov export  (scripts/coverage-summary.mjs)
-#   coverage/coverage.xml         Cobertura        (GitHub code coverage)
-# Both coverage reports hold each package's own sources only: a package's profile also
+# The coverage report holds each package's own sources only: a package's profile also
 # covers the local packages it depends on and its tests, which would count those twice.
 set -eo pipefail
 cd "$(dirname "$0")/.."
@@ -58,7 +57,6 @@ rm -rf coverage test-results
 mkdir -p coverage test-results
 failed=()
 reports=()
-lcov=()
 for p in "$@"; do
     echo "==> $p"
     codecov="$(dirname "$(swift test --package-path "Packages/$p" --show-codecov-path)")"
@@ -91,16 +89,12 @@ for p in "$@"; do
     xcrun llvm-cov export -format=text -instr-profile="coverage/$p.profdata" "${objects[@]}" |
         jq --arg keep "/Packages/$p/Sources/" \
             '.data[].files |= map(select(.filename | contains($keep)))' > "coverage/$p.json"
-    xcrun llvm-cov export -format=lcov -instr-profile="coverage/$p.profdata" "${objects[@]}" \
-        > "coverage/$p.lcov"
     reports+=("coverage/$p.json")
-    lcov+=("$p=coverage/$p.lcov")
 done
 
 if [ ${#reports[@]} -gt 0 ]; then
     jq -s '{type: .[0].type, version: .[0].version, data: [.[].data[] | {files: .files}]}' \
         "${reports[@]}" > coverage/coverage.json
-    python3 scripts/lcov-to-cobertura.py . "${lcov[@]}" > coverage/coverage.xml
 fi
 
 if [ ${#failed[@]} -gt 0 ]; then

@@ -29,15 +29,8 @@ jobs:
       SWT_EXPERIMENTAL_MAXIMUM_PARALLELIZATION_WIDTH: "4"
       # A package's tests are stopped after 5 minutes (scripts/cover.sh), well inside the job's.
       TEST_TIME_LIMIT: "300"
-    permissions:
-      contents: read
-      # Upload to GitHub's code coverage (part of GitHub Code Quality).
-      code-quality: write
     steps:
       - uses: actions/checkout@v7
-        with:
-          # Coverage belongs to the pull request's head commit, not the merge commit.
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - uses: actions/cache@v6
         with:
@@ -71,23 +64,6 @@ jobs:
       - name: Coverage summary
         if: ${{ !cancelled() && hashFiles('coverage/coverage.json') != '' }}
         run: node scripts/coverage-summary.mjs coverage/coverage.json >> "$GITHUB_STEP_SUMMARY"
-
-      # GitHub's own coverage: the pull request comment and the per-file view compare against
-      # the last upload from main, so both pull requests and pushes to main upload, and only
-      # from a green run, so a package that failed to build does not show as lost coverage.
-      # Not from forks (no write token) and not for tags. Needs GitHub Code Quality enabled
-      # for the repository; until it is, the upload fails without failing the run.
-      - name: Upload coverage to GitHub
-        if: >-
-          ${{ !startsWith(github.ref, 'refs/tags/') &&
-          (github.event_name != 'pull_request' ||
-          github.event.pull_request.head.repo.full_name == github.repository) }}
-        continue-on-error: true
-        uses: actions/upload-code-coverage@v1
-        with:
-          file: coverage/coverage.xml
-          language: Swift
-          label: code-coverage/swift-test
 
   build:
     name: build app (Debug, Release, UI tests)
