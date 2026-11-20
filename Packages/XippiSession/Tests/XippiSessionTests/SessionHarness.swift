@@ -447,9 +447,11 @@ struct WaitTimedOut: Error, CustomStringConvertible {
 }
 
 /// Polls `condition` until it holds, for at most `timeout` of real time. Only a failing test
-/// waits that long.
+/// waits that long; in a full parallel run on a slow machine, starting a session alone can
+/// take seconds. After a few yields it sleeps between checks, so the waiting tests do not
+/// take the CPU from the work they wait for.
 func waitUntil(
-    _ description: String, timeout: Duration = .seconds(5),
+    _ description: String, timeout: Duration = .seconds(30),
     sourceLocation: SourceLocation = #_sourceLocation,
     _ condition: () async throws -> Bool
 ) async throws {
@@ -461,10 +463,10 @@ func waitUntil(
             throw WaitTimedOut(description: description)
         }
         rounds += 1
-        if rounds % 64 == 0 {
-            try? await Task.sleep(for: .microseconds(200))
-        } else {
+        if rounds < 16 {
             await Task.yield()
+        } else {
+            try? await Task.sleep(for: .milliseconds(1))
         }
     }
 }

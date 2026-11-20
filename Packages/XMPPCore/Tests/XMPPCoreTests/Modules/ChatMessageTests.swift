@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+import XMPPTestSupport
 
 @testable import XMPPCore
 
@@ -480,9 +481,12 @@ import Testing
         }
         let message = try #require(
             ChatMessage(element: Element.message(body: body, children: [fallback])))
-        let start = ContinuousClock.now
-        #expect(message.bodyWithoutFallback(for: ChatMessage.replyNamespace) == "kept")
-        #expect(ContinuousClock.now - start < .seconds(2))
+        var kept: String?
+        let elapsed = measureCPU {
+            kept = message.bodyWithoutFallback(for: ChatMessage.replyNamespace)
+        }
+        #expect(kept == "kept")
+        #expect(elapsed < .seconds(2))
     }
 
     @Test func overlappingRangesAndAWholeBody() throws {

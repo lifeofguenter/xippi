@@ -119,19 +119,17 @@ extension AccountSession {
         }
     }
 
-    /// Follows changes made outside the session (Settings) while it runs.
+    /// Follows changes made outside the session (Settings) while it runs. Each change reads
+    /// the list again rather than taking the value seen: a value seen before the session's own
+    /// write (a block, then an unblock) can arrive after it and would bring the old list back.
     func followIgnoreList() {
         guard ignoreFollower == nil else { return }
         let updates = database.ignoreListUpdates(accountID: accountID)
         ignoreFollower = Task { [weak self] in
-            for await list in updates {
-                await self?.setIgnoreCache(list)
+            for await _ in updates {
+                await self?.reloadIgnoreList()
             }
         }
-    }
-
-    private func setIgnoreCache(_ list: IgnoreList) {
-        ignoreCache = list
     }
 
     /// Whether a room or channel message comes from someone the account ignores (R72). With

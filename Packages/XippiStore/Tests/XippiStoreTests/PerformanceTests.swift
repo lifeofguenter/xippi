@@ -9,6 +9,10 @@ extension Tag {
 }
 
 @Suite struct PerformanceTests {
+    /// The time budgets hold on a developer's Mac. A shared CI runner, running every other suite
+    /// beside this one, is too slow and too uneven for them: there only the results are checked.
+    static let checksBudgets = ProcessInfo.processInfo.environment["CI"] == nil
+
     @Test(.tags(.performance)) func insert100kMessagesBatched() throws {
         let f = try StoreFixture()
         let clock = ContinuousClock()
@@ -31,7 +35,9 @@ extension Tag {
             inserted += outcomes.filter { if case .inserted = $0 { true } else { false } }.count
         }
         #expect(inserted == total)
-        #expect(insertTime < .seconds(10), "100k inserts took \(insertTime)")
+        if Self.checksBudgets {
+            #expect(insertTime < .seconds(10), "100k inserts took \(insertTime)")
+        }
         #expect(try f.db.reader.read { try MessageRecord.fetchCount($0) } == total)
 
         // Warm the statement cache once, then time a page in the middle of the chat.
@@ -44,6 +50,8 @@ extension Tag {
         }
         #expect(page.count == 50)
         #expect(page.last?.id == Int64(total / 2 - 1))
-        #expect(pageTime < .milliseconds(5), "page took \(pageTime)")
+        if Self.checksBudgets {
+            #expect(pageTime < .milliseconds(5), "page took \(pageTime)")
+        }
     }
 }

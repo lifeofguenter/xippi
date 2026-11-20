@@ -39,7 +39,11 @@ struct SessionManagerRaceTests {
         // The server stops answering: the clean close waits for its 2 s, on the test clock, so
         // the removal is still stopping the session when the reconnect comes.
         try #require(fixture.transports.value.last).setResponder { _ in [] }
-        let removal = Task { try await fixture.manager.remove(accountID: id) }
+        let removed = Locked(false)
+        let removal = Task {
+            try await fixture.manager.remove(accountID: id)
+            removed.set(true)
+        }
         try await waitUntil("removal stopping the session") {
             await fixture.manager.session(for: id) == nil && fixture.clock.sleeperCount > 0
         }
@@ -48,7 +52,12 @@ struct SessionManagerRaceTests {
         let restart = Task { try await manager.restart(accountID: id) }
         let enable = Task { try await manager.setEnabled(true, accountID: id) }
         try await Task.sleep(for: .milliseconds(100))
-        await fixture.clock.advance(by: .seconds(3))
+        // Until the stop is through: on a loaded machine the close's timer can be armed only
+        // after a first advance, and one advance would then leave it waiting for good.
+        try await waitUntil("removal done") {
+            await fixture.clock.advance(by: .seconds(3))
+            return removed.value
+        }
         try await removal.value
         try await restart.value
         try await enable.value

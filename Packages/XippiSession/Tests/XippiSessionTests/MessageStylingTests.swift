@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+import XMPPTestSupport
 
 @testable import XippiSession
 
@@ -234,15 +235,13 @@ struct MessageStylingTests {
     @Test(arguments: ["*", "~", "_", "`", ">", "*_", "*~_`"])
     func hostileRunsAreLinear(unit: String) {
         let text = String(repeating: unit, count: 100_000 / unit.count)
-        let clock = ContinuousClock()
-        let elapsed = clock.measure { _ = MessageStylingParser.parse(text) }
+        let elapsed = measureCPU { _ = MessageStylingParser.parse(text) }
         #expect(elapsed < .milliseconds(500), "\(unit): \(elapsed)")
     }
 
     @Test func manyUnclosedOpenersAreLinear() {
         let text = String(repeating: "*a ", count: 40_000)
-        let clock = ContinuousClock()
-        let elapsed = clock.measure { _ = MessageStylingParser.parse(text) }
+        let elapsed = measureCPU { _ = MessageStylingParser.parse(text) }
         #expect(elapsed < .milliseconds(500), "\(elapsed)")
     }
 
@@ -271,7 +270,7 @@ struct MessageStylingTests {
         let oneToken = String(repeating: "a", count: 100_000)
         let manyTokens = String(repeating: "a.b ", count: 25_000)
         for text in [repeated, oneToken, manyTokens] {
-            let elapsed = ContinuousClock().measure { _ = MessageStylingParser.parse(text) }
+            let elapsed = measureCPU { _ = MessageStylingParser.parse(text) }
             #expect(elapsed < .milliseconds(500), "\(elapsed)")
         }
     }

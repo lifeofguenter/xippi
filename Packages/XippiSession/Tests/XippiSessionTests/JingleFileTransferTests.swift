@@ -697,7 +697,8 @@ extension JingleFileTransferTests {
         await rig.bob.cancel(offer.id)
 
         try await waitUntil("cancelled") { TransferRig.failure(rig.bobEvents.value) == "Cancelled" }
-        #expect(Self.partials(rig.bobLibrary).isEmpty)
+        // The failure is reported first; the partial file goes once the session is ended.
+        try await waitUntil("partial removed") { Self.partials(rig.bobLibrary).isEmpty }
         #expect(
             try await alice.ibb(IBB.data(sid: "t1", sequence: 1, bytes: blocks[1].bytes))?.type
                 == "error")
@@ -787,7 +788,7 @@ extension JingleFileTransferTests {
         await rig.bob.decline(try #require(rig.offer).id)
 
         try await waitUntil("declined") { TransferRig.failure(rig.aliceEvents.value) == "Declined" }
-        #expect(Self.partials(rig.media.library).isEmpty)
+        try await waitUntil("partial removed") { Self.partials(rig.media.library).isEmpty }
         #expect(network.openListeners == 0)
         #expect(FileManager.default.fileExists(atPath: file.path))
     }
@@ -809,7 +810,8 @@ extension JingleFileTransferTests {
 
         try await waitUntil("failed") { TransferRig.failure(rig.bobEvents.value) != nil }
         #expect(TransferRig.failure(rig.bobEvents.value) == "Not verified")
-        #expect(Self.partials(rig.bobLibrary).isEmpty)
+        // The failure is reported first; the partial file goes once the session is ended.
+        try await waitUntil("partial removed") { Self.partials(rig.bobLibrary).isEmpty }
     }
 
     /// I6: a checksum that follows the bytes completes the file.
@@ -858,7 +860,7 @@ extension JingleFileTransferTests {
         #expect(reply?.type == "error")
         try await waitUntil("failed") { TransferRig.failure(rig.bobEvents.value) != nil }
         #expect(TransferRig.failure(rig.bobEvents.value) == "More data than offered")
-        #expect(Self.partials(rig.bobLibrary).isEmpty)
+        try await waitUntil("partial removed") { Self.partials(rig.bobLibrary).isEmpty }
     }
 
     /// M7: only IP literals that can be someone else's host are dialled.

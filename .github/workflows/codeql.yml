@@ -1,0 +1,46 @@
+name: codeql
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    name: analyze (${{ matrix.language }})
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # CodeQL's autobuild builds the packages with swift build (Packages/XippiSession
+          # pulls in the others). Under CodeQL's build tracing, xcodebuild could not resolve the
+          # packages: the tracer broke the sandbox it reads their manifests in.
+          - language: swift
+            runs-on: macos-latest
+            build-mode: autobuild
+          - language: python
+            runs-on: ubuntu-latest
+            build-mode: none
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          config-file: ./.github/codeql/codeql-config.yml
+
+      - uses: github/codeql-action/autobuild@v4
+        if: matrix.build-mode == 'autobuild'
+
+      - uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:${{ matrix.language }}

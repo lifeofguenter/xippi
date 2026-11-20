@@ -53,16 +53,22 @@ import Testing
         let chatID = f.bobChatID
         // The session sets the default while the draft is being written: it lands after the
         // draft's transaction, never between its read and its write.
+        let landed = DispatchSemaphore(value: 0)
+        var landedDuringDraft = false
         try f.db.updateChat(id: chatID) { chat in
-            let landed = DispatchSemaphore(value: 0)
             DispatchQueue.global().async {
                 _ = try? db.setEncryptionDefault(chatID: chatID, omemo: true)
                 landed.signal()
             }
-            _ = landed.wait(timeout: .now() + .milliseconds(300))
+            landedDuringDraft = landed.wait(timeout: .now() + .milliseconds(300)) == .success
             chat.draft = "half a thought"
         }
-        try waitFor { try db.awaitsEncryptionDefault(chatID: chatID) == false }
+        #expect(!landedDuringDraft)
+        // Wait for that write itself, not for a time: on a loaded machine it lands late.
+        if !landedDuringDraft {
+            #expect(landed.wait(timeout: .now() + .seconds(60)) == .success)
+        }
+        #expect(try db.awaitsEncryptionDefault(chatID: chatID) == false)
         let chat = try #require(try f.db.chat(id: f.bobChatID))
         #expect(chat.draft == "half a thought")
         #expect(chat.encryption == .omemo)
@@ -160,18 +166,6 @@ import Testing
         #expect(try db.search("aesgcm").isEmpty)
         #expect(try db.message(id: 2)?.replyQuote == nil)
         #expect(try db.message(id: 3)?.replyQuote == "see aesgcm")
-    }
-}
-
-/// Polls `condition` for up to 2 s of real time.
-func waitFor(_ condition: () throws -> Bool) throws {
-    let start = Date()
-    while try !condition() {
-        guard Date().timeIntervalSince(start) < 2 else {
-            Issue.record("Timed out")
-            return
-        }
-        Thread.sleep(forTimeInterval: 0.01)
     }
 }
 

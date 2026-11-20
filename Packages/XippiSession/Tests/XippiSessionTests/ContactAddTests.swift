@@ -180,11 +180,16 @@ import XippiStore
         let chat = try #require(try harness.chat("bob@example.test"))
         #expect(chat.id == chatID)
         #expect(chat.kind == .direct)
+        // The session's own setup (its first presence) can still be going out under load: what
+        // must not go out is a roster change or a subscription request.
         let sent = harness.server.stanzas.dropFirst(before)
         #expect(
-            !sent.contains { $0.child("query", namespace: "jabber:iq:roster") != nil },
+            !sent.contains {
+                $0.type == "set" && $0.child("query", namespace: "jabber:iq:roster") != nil
+            },
             "no roster request")
-        #expect(!sent.contains { $0.name == "presence" }, "no subscription")
+        #expect(
+            !sent.contains { $0.name == "presence" && $0.type == "subscribe" }, "no subscription")
         await harness.stop()
     }
 

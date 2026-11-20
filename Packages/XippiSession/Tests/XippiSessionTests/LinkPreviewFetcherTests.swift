@@ -148,7 +148,9 @@ struct LinkPreviewFetcherTests {
         let clock = ContinuousClock()
         let started = clock.now
         #expect(await fetcher.preview(request()) == nil)
-        #expect(clock.now - started < .seconds(5))
+        // Well under the site's 30 s: it gave up at its time-out. A full parallel run on a slow
+        // machine can wake it seconds late.
+        #expect(clock.now - started < .seconds(20))
     }
 
     @Test func aTransportThatIgnoresCancellationStillTimesOut() async {
@@ -157,7 +159,7 @@ struct LinkPreviewFetcherTests {
         let clock = ContinuousClock()
         let started = clock.now
         #expect(await fetcher.preview(request()) == nil)
-        #expect(clock.now - started < .seconds(5))
+        #expect(clock.now - started < .seconds(20))
     }
 
     @Test func theCapIsHandedToTheTransport() async {

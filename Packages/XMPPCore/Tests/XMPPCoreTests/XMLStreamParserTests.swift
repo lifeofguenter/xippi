@@ -1,5 +1,6 @@
 import Testing
 import XMPPCore
+import XMPPTestSupport
 
 let streamsNamespace = "http://etherx.jabber.org/streams"
 let streamHeader =
@@ -655,10 +656,9 @@ func afterHeader(_ body: String, limits: XMLLimits = .default) -> ParseResult {
         let count = (262_144 - open.utf8.count - 4) / child.utf8.count
         let stanza = open + String(repeating: child, count: count) + "</x>"
         #expect(stanza.utf8.count <= 262_144)
-        let clock = ContinuousClock()
-        let started = clock.now
-        let parsed = try #require(afterHeader(stanza).stanzas.first)
-        let elapsed = clock.now - started
+        var stanzas: [Element] = []
+        let elapsed = measureCPU { stanzas = afterHeader(stanza).stanzas }
+        let parsed = try #require(stanzas.first)
         #expect(parsed.elements.count == count)
         #expect(elapsed < .milliseconds(200), "took \(elapsed)")
     }

@@ -115,6 +115,12 @@ import XMPPTestSupport
         try await Self.migrate(h)
         let migrated = try #require(await h.manager.call(call.id))
         #expect(migrated.state == .connecting)
+        // The log collects events in a task of its own: the migration's (connecting again) is
+        // in it before the count is taken.
+        #expect(
+            await eventually {
+                h.events.all.filter { if case .connecting = $0 { true } else { false } }.count == 2
+            })
         let eventCount = h.events.all.count
 
         await h.manager.mediaStateChanged(old, .connected)

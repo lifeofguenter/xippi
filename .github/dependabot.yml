@@ -1,0 +1,41 @@
+version: 2
+updates:
+  # Swift packages with remote dependencies (GRDB in XippiStore, WebRTC in XippiCalls).
+  # All bumps arrive as a single grouped weekly PR.
+  - package-ecosystem: swift
+    directories:
+      - /Packages/XippiStore
+      - /Packages/XippiCalls
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      swift:
+        patterns: ["*"]
+
+  # All GitHub Actions bumps arrive as a single grouped weekly PR.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  # The integration test servers in compose.yaml (Prosody, ejabberd, toxiproxy).
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      docker-compose:
+        patterns: ["*"]
+
+  # The OMEMO test-vector generator (scripts/omemo-vectors).
+  - package-ecosystem: pip
+    directory: /scripts/omemo-vectors
+    schedule:
+      interval: weekly
+    groups:
+      pip:
+        patterns: ["*"]
