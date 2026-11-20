@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0215 External Service Discovery. -->
+<examples xep='0215'>
+<example name='services'><![CDATA[
+<iq from='shakespeare.lit' id='ul2bc7y6' to='bard@shakespeare.lit/globe' type='result'>
+  <services xmlns='urn:xmpp:extdisco:2'>
+    <service host='stun.shakespeare.lit' port='9998' transport='udp' type='stun'/>
+    <service host='relay.shakespeare.lit' password='jj929jkj5sadjfj93v3n' port='9999' transport='udp' type='turn' username='nb78932lkjlskjfdb7g8' expires='2026-11-19T12:00:00Z'/>
+    <service host='' type='turn'/>
+  </services>
+</iq>
+]]></example>
+<example name='credentials'><![CDATA[
+<iq from='shakespeare.lit' id='x' type='result'>
+  <credentials xmlns='urn:xmpp:extdisco:2'>
+    <service host='relay.shakespeare.lit' type='turn' username='u1' password='p1' expires='2026-11-19T12:00:00Z'/>
+  </credentials>
+</iq>
+]]></example>
+</examples>

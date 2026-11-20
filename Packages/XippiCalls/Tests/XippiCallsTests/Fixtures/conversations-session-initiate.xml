@@ -1,0 +1,140 @@
+<iq from='juliet@capulet.example/Conversations.Xk3m' id='Vt1cQx3Hn9bS' to='romeo@montague.example/Xippi.9fQ2' type='set'>
+  <jingle xmlns='urn:xmpp:jingle:1' action='session-initiate' initiator='juliet@capulet.example/Conversations.Xk3m' sid='Qbg5D9w6RZ2xU0kTYsvP3A'>
+    <content creator='initiator' name='0'>
+      <description xmlns='urn:xmpp:jingle:apps:rtp:1' media='audio'>
+        <payload-type channels='2' clockrate='48000' id='111' name='opus'>
+          <parameter name='minptime' value='10'/>
+          <parameter name='useinbandfec' value='1'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='transport-cc'/>
+        </payload-type>
+        <payload-type channels='2' clockrate='48000' id='63' name='red'/>
+        <payload-type clockrate='8000' id='9' name='G722'/>
+        <payload-type clockrate='8000' id='0' name='PCMU'/>
+        <payload-type clockrate='8000' id='8' name='PCMA'/>
+        <payload-type clockrate='8000' id='13' name='CN'/>
+        <payload-type clockrate='48000' id='110' name='telephone-event'/>
+        <payload-type clockrate='8000' id='126' name='telephone-event'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='1' uri='urn:ietf:params:rtp-hdrext:ssrc-audio-level'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='2' uri='http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='3' uri='http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='4' uri='urn:ietf:params:rtp-hdrext:sdes:mid'/>
+        <extmap-allow-mixed xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0'/>
+        <source xmlns='urn:xmpp:jingle:apps:rtp:ssma:0' ssrc='2364108716'>
+          <parameter name='cname' value='5RgMZQAyKHnbJ1v8'/>
+          <parameter name='msid' value='my-media-stream my-audio-track'/>
+        </source>
+        <rtcp-mux/>
+      </description>
+      <transport xmlns='urn:xmpp:jingle:transports:ice-udp:1' pwd='3hxp9bPMFp+B7JcRb3Yw1ZTv' ufrag='Ri5b'>
+        <fingerprint xmlns='urn:xmpp:jingle:apps:dtls:0' hash='sha-256' setup='actpass'>4F:21:9C:0E:7A:D3:58:B1:66:2C:E0:9F:13:A4:7B:C8:05:DE:91:3F:48:B2:6A:E7:10:5C:FD:83:29:B6:C4:7E</fingerprint>
+        <trickle xmlns='http://gultsch.de/xmpp/drafts/jingle/transports/ice-udp/option'/>
+        <renomination xmlns='http://gultsch.de/xmpp/drafts/jingle/transports/ice-udp/option'/>
+        <candidate component='1' foundation='2390234178' generation='0' id='1d6a0f7c-3d1b-4f0a-9a64-1b9c0e2f5a31' ip='192.168.178.31' port='41625' priority='2122260223' protocol='udp' type='host'/>
+        <candidate component='1' foundation='3613862070' generation='0' id='8b4f2e91-0c7d-4b3a-a5e6-7d2c1f0b9e84' ip='2001:db8:4f2a:1c00::31' port='54012' priority='2122194687' protocol='udp' type='host'/>
+        <candidate component='1' foundation='842163049' generation='0' id='c9e1d3a7-2f5b-4e8c-b6a0-3d9f7e1c5b26' ip='198.51.100.23' port='41625' priority='1686052607' protocol='udp' rel-addr='192.168.178.31' rel-port='41625' type='srflx'/>
+        <candidate component='1' foundation='1430467380' generation='0' id='5f0b8d2e-9a4c-4d1f-8e7b-6c3a2d0f1e95' ip='203.0.113.40' port='61988' priority='41885439' protocol='udp' rel-addr='198.51.100.23' rel-port='41625' type='relay'/>
+      </transport>
+    </content>
+    <content creator='initiator' name='1'>
+      <description xmlns='urn:xmpp:jingle:apps:rtp:1' media='video'>
+        <payload-type clockrate='90000' id='96' name='VP8'>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='goog-remb'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='transport-cc'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='fir' type='ccm'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='nack'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='pli' type='nack'/>
+        </payload-type>
+        <payload-type clockrate='90000' id='97' name='rtx'>
+          <parameter name='apt' value='96'/>
+        </payload-type>
+        <payload-type clockrate='90000' id='98' name='VP9'>
+          <parameter name='profile-id' value='0'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='goog-remb'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='transport-cc'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='fir' type='ccm'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='nack'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='pli' type='nack'/>
+        </payload-type>
+        <payload-type clockrate='90000' id='99' name='rtx'>
+          <parameter name='apt' value='98'/>
+        </payload-type>
+        <payload-type clockrate='90000' id='100' name='VP9'>
+          <parameter name='profile-id' value='2'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='goog-remb'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='transport-cc'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='fir' type='ccm'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='nack'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='pli' type='nack'/>
+        </payload-type>
+        <payload-type clockrate='90000' id='101' name='rtx'>
+          <parameter name='apt' value='100'/>
+        </payload-type>
+        <payload-type clockrate='90000' id='102' name='H264'>
+          <parameter name='level-asymmetry-allowed' value='1'/>
+          <parameter name='packetization-mode' value='1'/>
+          <parameter name='profile-level-id' value='42e01f'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='goog-remb'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='transport-cc'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='fir' type='ccm'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='nack'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='pli' type='nack'/>
+        </payload-type>
+        <payload-type clockrate='90000' id='103' name='rtx'>
+          <parameter name='apt' value='102'/>
+        </payload-type>
+        <payload-type clockrate='90000' id='35' name='AV1'>
+          <parameter name='level-idx' value='5'/>
+          <parameter name='profile' value='0'/>
+          <parameter name='tier' value='0'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='goog-remb'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='transport-cc'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='fir' type='ccm'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='nack'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' subtype='pli' type='nack'/>
+        </payload-type>
+        <payload-type clockrate='90000' id='36' name='rtx'>
+          <parameter name='apt' value='35'/>
+        </payload-type>
+        <payload-type clockrate='90000' id='114' name='red'/>
+        <payload-type clockrate='90000' id='115' name='rtx'>
+          <parameter name='apt' value='114'/>
+        </payload-type>
+        <payload-type clockrate='90000' id='116' name='ulpfec'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='14' uri='urn:ietf:params:rtp-hdrext:toffset'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='2' uri='http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='13' uri='urn:3gpp:video-orientation'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='3' uri='http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='5' uri='http://www.webrtc.org/experiments/rtp-hdrext/playout-delay'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='6' uri='http://www.webrtc.org/experiments/rtp-hdrext/video-content-type'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='7' uri='http://www.webrtc.org/experiments/rtp-hdrext/video-timing'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='8' uri='http://www.webrtc.org/experiments/rtp-hdrext/color-space'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='4' uri='urn:ietf:params:rtp-hdrext:sdes:mid'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='10' uri='urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='11' uri='urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id'/>
+        <extmap-allow-mixed xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0'/>
+        <ssrc-group xmlns='urn:xmpp:jingle:apps:rtp:ssma:0' semantics='FID'>
+          <source ssrc='1846272135'/>
+          <source ssrc='3005519812'/>
+        </ssrc-group>
+        <source xmlns='urn:xmpp:jingle:apps:rtp:ssma:0' ssrc='1846272135'>
+          <parameter name='cname' value='5RgMZQAyKHnbJ1v8'/>
+          <parameter name='msid' value='my-media-stream my-video-track'/>
+        </source>
+        <source xmlns='urn:xmpp:jingle:apps:rtp:ssma:0' ssrc='3005519812'>
+          <parameter name='cname' value='5RgMZQAyKHnbJ1v8'/>
+          <parameter name='msid' value='my-media-stream my-video-track'/>
+        </source>
+        <rtcp-mux/>
+      </description>
+      <transport xmlns='urn:xmpp:jingle:transports:ice-udp:1' pwd='3hxp9bPMFp+B7JcRb3Yw1ZTv' ufrag='Ri5b'>
+        <fingerprint xmlns='urn:xmpp:jingle:apps:dtls:0' hash='sha-256' setup='actpass'>4F:21:9C:0E:7A:D3:58:B1:66:2C:E0:9F:13:A4:7B:C8:05:DE:91:3F:48:B2:6A:E7:10:5C:FD:83:29:B6:C4:7E</fingerprint>
+        <trickle xmlns='http://gultsch.de/xmpp/drafts/jingle/transports/ice-udp/option'/>
+        <renomination xmlns='http://gultsch.de/xmpp/drafts/jingle/transports/ice-udp/option'/>
+      </transport>
+    </content>
+    <group xmlns='urn:xmpp:jingle:apps:grouping:0' semantics='BUNDLE'>
+      <content name='0'/>
+      <content name='1'/>
+    </group>
+  </jingle>
+</iq>

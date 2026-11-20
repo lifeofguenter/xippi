@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0398: User Avatar to vCard-Based Avatars Conversion, version 1.0.0 (2024-05-06). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0398.html; each 'source' names the XEP's example number. -->
+<examples xep='0398' version='1.0.0'>
+<example name='presence-hash' source='Example 4. Server forwards presence to other entities that have presence subscription'><![CDATA[
+<presence to='juliet@capulet.tld' from='romeo@montague.tld/garden'>
+  <x xmlns='vcard-temp:x:update'>
+    <photo>sha1-hash-of-image</photo>
+  </x>
+</presence>
+]]></example>
+<example name='presence-empty-photo' source='Example 6. The server redirects the presence but doesn’t touch the photo element'><![CDATA[
+<presence to='juliet@capulet.tld' from='romeo@montague.tld/garden'>
+  <x xmlns='vcard-temp:x:update'>
+    <photo/>
+  </x>
+</presence>
+]]></example>
+</examples>

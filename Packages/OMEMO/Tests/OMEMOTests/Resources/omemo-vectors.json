@@ -1,0 +1,2018 @@
+{
+  "generator": "scripts/omemo-vectors/generate.py",
+  "versions": {
+    "x3dh": "1.3.0",
+    "doubleratchet": "1.3.0",
+    "omemo": "2.1.0",
+    "oldmemo": "2.1.0",
+    "twomemo": "2.1.0",
+    "xeddsa": "1.2.0"
+  },
+  "protobuf": [
+    {
+      "type": "OMEMOMessage",
+      "n": 0,
+      "pn": 0,
+      "dhPub": "54d484717e44bd95eb1ce684b446f7621c452d4bb86904b8d64d8236a56b1eb6",
+      "ciphertext": null,
+      "encoded": "080010001a2054d484717e44bd95eb1ce684b446f7621c452d4bb86904b8d64d8236a56b1eb6"
+    },
+    {
+      "type": "OMEMOMessage",
+      "n": 1,
+      "pn": 127,
+      "dhPub": "9dd29923972ce16a6ba02b1badc87aec719fb1f5a9a1a46c70cd482290fc36dc",
+      "ciphertext": "2be552203c4c0f4f0703b037dfbd00e5",
+      "encoded": "0801107f1a209dd29923972ce16a6ba02b1badc87aec719fb1f5a9a1a46c70cd482290fc36dc22102be552203c4c0f4f0703b037dfbd00e5"
+    },
+    {
+      "type": "OMEMOMessage",
+      "n": 128,
+      "pn": 16384,
+      "dhPub": "76618e77ca140e5e03c02eda4c05a554f5a61f2854513a95f96745a8a7700a8c",
+      "ciphertext": "3bcf834cbf739a16a3df8e4cd917b30d272ec01d8ad71eb7cefb8e5832e29a9362c744e8d29059c8e764c166aa1e575e",
+      "encoded": "088001108080011a2076618e77ca140e5e03c02eda4c05a554f5a61f2854513a95f96745a8a7700a8c22303bcf834cbf739a16a3df8e4cd917b30d272ec01d8ad71eb7cefb8e5832e29a9362c744e8d29059c8e764c166aa1e575e"
+    },
+    {
+      "type": "OMEMOMessage",
+      "n": 300,
+      "pn": 2097152,
+      "dhPub": "40c09750b26dec60cf2b99b017f8f65d76415c5e484cf803d342a9c66c843f8c",
+      "ciphertext": "",
+      "encoded": "08ac0210808080011a2040c09750b26dec60cf2b99b017f8f65d76415c5e484cf803d342a9c66c843f8c2200"
+    },
+    {
+      "type": "OMEMOMessage",
+      "n": 4294967295,
+      "pn": 2147483648,
+      "dhPub": "f58fd396c0d8a93d7714665a0cf3f93a2e1fd96e22c9c07ebb97ed0d9c91a2ba",
+      "ciphertext": "f294e96b90c9055ed202470b5faae49c7c3827de1eec1b85db732a868707d050",
+      "encoded": "08ffffffff0f1080808080081a20f58fd396c0d8a93d7714665a0cf3f93a2e1fd96e22c9c07ebb97ed0d9c91a2ba2220f294e96b90c9055ed202470b5faae49c7c3827de1eec1b85db732a868707d050"
+    },
+    {
+      "type": "OMEMOAuthenticatedMessage",
+      "mac": "511538d4d326c57a9f328275cd9c8d7a",
+      "message": "6ffa80fce0020662068cd24591580c67",
+      "encoded": "0a10511538d4d326c57a9f328275cd9c8d7a12106ffa80fce0020662068cd24591580c67"
+    },
+    {
+      "type": "OMEMOAuthenticatedMessage",
+      "mac": "a7c486a3467eda5ed787e20034cbe1bc",
+      "message": "c27a6b9348bbeeba8ad610f99fb892750c7fff099cd93484616daf4ef72fcca98412aef0a610241bc5a21834d7824794673da32b44a674c0675dabd2c779131075138027cfde",
+      "encoded": "0a10a7c486a3467eda5ed787e20034cbe1bc1246c27a6b9348bbeeba8ad610f99fb892750c7fff099cd93484616daf4ef72fcca98412aef0a610241bc5a21834d7824794673da32b44a674c0675dabd2c779131075138027cfde"
+    },
+    {
+      "type": "OMEMOKeyExchange",
+      "pkID": 1,
+      "spkID": 2147483647,
+      "ik": "8a8af2c9bbcf3b54eed36548a79359b8e94b365679cc846dcf19412179ed0b06",
+      "ek": "d3b5dc0b72bd2ffe73a1fdc7b759f97f55eb334282869404d2f9b146fdf4e9b1",
+      "mac": "59cefc12715fcd2ca4ec38b9f31b7b03",
+      "message": "3bdb32ec3acd04146be3060f8dfc10e9995a6346dae53a60cb8fde3d2339a0bd68eb68fbf56aaed4b2266d9f5d67ba4fc192970d6416395baf1c308d",
+      "encoded": "080110ffffffff071a208a8af2c9bbcf3b54eed36548a79359b8e94b365679cc846dcf19412179ed0b062220d3b5dc0b72bd2ffe73a1fdc7b759f97f55eb334282869404d2f9b146fdf4e9b12a500a1059cefc12715fcd2ca4ec38b9f31b7b03123c3bdb32ec3acd04146be3060f8dfc10e9995a6346dae53a60cb8fde3d2339a0bd68eb68fbf56aaed4b2266d9f5d67ba4fc192970d6416395baf1c308d"
+    },
+    {
+      "type": "OMEMOKeyExchange",
+      "pkID": 2147483647,
+      "spkID": 1,
+      "ik": "54eb5f0dfeb6aa22c38d94e862dbe61e39d7eeede7e82208e091095d488d2202",
+      "ek": "4cdec3372988842a85ea218b06ce4603dbcdc07ac14a628aa9c099c139df8adf",
+      "mac": "9f237d62f152eba824c3a84c873cd0ed",
+      "message": "0e35b688c4aaf6eee818fbd9ea85f48043bc956853de188fd82d57f75f293eb9533b6253a98b6052754681952667887695f4990966d3af1a81a8e5dd",
+      "encoded": "08ffffffff0710011a2054eb5f0dfeb6aa22c38d94e862dbe61e39d7eeede7e82208e091095d488d220222204cdec3372988842a85ea218b06ce4603dbcdc07ac14a628aa9c099c139df8adf2a500a109f237d62f152eba824c3a84c873cd0ed123c0e35b688c4aaf6eee818fbd9ea85f48043bc956853de188fd82d57f75f293eb9533b6253a98b6052754681952667887695f4990966d3af1a81a8e5dd"
+    },
+    {
+      "type": "OMEMOKeyExchange",
+      "pkID": 0,
+      "spkID": 0,
+      "ik": "7af5018abb43b319b8eaa8f910e907105901205e2b181865f6674a721a92d3e4",
+      "ek": "1db3213e7d5a22a95464e6541abe36294dffe5c600605c0eef6257d747196a9e",
+      "mac": "c2725be1d06b80c414e376bf38dca854",
+      "message": "02132d7e2d8f5ca4e756916b5e9a464940b2e5e5590f03fe0d9fece45f519bcb0460c4a56744eb8e6bcf74592ed09d4714678c764bd7fe0df160a08b",
+      "encoded": "080010001a207af5018abb43b319b8eaa8f910e907105901205e2b181865f6674a721a92d3e422201db3213e7d5a22a95464e6541abe36294dffe5c600605c0eef6257d747196a9e2a500a10c2725be1d06b80c414e376bf38dca854123c02132d7e2d8f5ca4e756916b5e9a464940b2e5e5590f03fe0d9fece45f519bcb0460c4a56744eb8e6bcf74592ed09d4714678c764bd7fe0df160a08b"
+    },
+    {
+      "type": "WhisperMessage",
+      "counter": 0,
+      "previousCounter": 0,
+      "ratchetKey": "5bfc5fa3135cb36f613c2d6e8c83ca4cbb58c8ca49da01f2a5f361c8b6c759ac",
+      "ciphertext": "f1b165e410f835ffaf4d2ad42ae69f6939f49c2da168e43c498dee4f484c6fb3",
+      "encoded": "330a21055bfc5fa3135cb36f613c2d6e8c83ca4cbb58c8ca49da01f2a5f361c8b6c759ac100018002220f1b165e410f835ffaf4d2ad42ae69f6939f49c2da168e43c498dee4f484c6fb3"
+    },
+    {
+      "type": "WhisperMessage",
+      "counter": 53,
+      "previousCounter": 2,
+      "ratchetKey": "fe1bd008e750f3ce63b1f58e3f41b858c8095fa1b822152b4b5fe3a673b7f1d3",
+      "ciphertext": "d3a7a00493d66f0ad9b7ecf2ee135980f121546cc67752372325ce3e892f7d803a8fb545658af12e490651f09ce0529c",
+      "encoded": "330a2105fe1bd008e750f3ce63b1f58e3f41b858c8095fa1b822152b4b5fe3a673b7f1d3103518022230d3a7a00493d66f0ad9b7ecf2ee135980f121546cc67752372325ce3e892f7d803a8fb545658af12e490651f09ce0529c"
+    },
+    {
+      "type": "WhisperMessage",
+      "counter": 4294967295,
+      "previousCounter": 4294967295,
+      "ratchetKey": "d5e8846af489810601e17ab44d4b6bd6ff13ad7e8218eab8efa1a82fe23a53a9",
+      "ciphertext": "1efb64cd5fcd633bb09ca069016fe1af",
+      "encoded": "330a2105d5e8846af489810601e17ab44d4b6bd6ff13ad7e8218eab8efa1a82fe23a53a910ffffffff0f18ffffffff0f22101efb64cd5fcd633bb09ca069016fe1af"
+    },
+    {
+      "type": "PreKeyWhisperMessage",
+      "preKeyID": 1,
+      "signedPreKeyID": 2,
+      "registrationID": null,
+      "identityKey": "b3325f6509e24e1f593f7415a16f348c71beedc07698795100851ba6a6f950bf",
+      "baseKey": "3c67f6e398a7577d8ea6641febb4ae483d233aaf35a55f987f957f19cd3aceab",
+      "message": "6d069e2e3dd3dd0703cb302d3232dc45d67f97f17737d2d987a40c4e17db84a14a43407e4d387c21d33733687dbbc43bd77bb995a62e849352",
+      "encoded": "3308011221053c67f6e398a7577d8ea6641febb4ae483d233aaf35a55f987f957f19cd3aceab1a2105b3325f6509e24e1f593f7415a16f348c71beedc07698795100851ba6a6f950bf22396d069e2e3dd3dd0703cb302d3232dc45d67f97f17737d2d987a40c4e17db84a14a43407e4d387c21d33733687dbbc43bd77bb995a62e8493523002"
+    },
+    {
+      "type": "PreKeyWhisperMessage",
+      "preKeyID": 16777215,
+      "signedPreKeyID": 1,
+      "registrationID": 12345,
+      "identityKey": "0293c2a5563e75a7b0d51f61d83ad4a89b83cad6c0d8ca47da06728bebb1d887",
+      "baseKey": "66c4da9dcf4c78f8e0f6e8a2f293f2278f3ddf82a5a185256393b3f429882dfc",
+      "message": "bc2f282c913da110c578eed2696256f995046d25a0b602f5fae184371b516fc6b2907ecdc33498d7f0d3e3924cf0621c27b37d7f589eeb147a",
+      "encoded": "3308ffffff0712210566c4da9dcf4c78f8e0f6e8a2f293f2278f3ddf82a5a185256393b3f429882dfc1a21050293c2a5563e75a7b0d51f61d83ad4a89b83cad6c0d8ca47da06728bebb1d8872239bc2f282c913da110c578eed2696256f995046d25a0b602f5fae184371b516fc6b2907ecdc33498d7f0d3e3924cf0621c27b37d7f589eeb147a28b9603001"
+    },
+    {
+      "type": "PreKeyWhisperMessage",
+      "preKeyID": 2147483647,
+      "signedPreKeyID": 2147483647,
+      "registrationID": 0,
+      "identityKey": "2492bf0fbee191af2ed95d2a1eb4daa52bfbc5913c60ce75cc1ee9566423476e",
+      "baseKey": "31ad8872b43c32f3b1c288b746ec5015a596c77a1e010e99b86df3565889d110",
+      "message": "87e96c4c635d82ea65845109b7f32a838a2f7ffaebdada3238770b0d98173365699c528faf96899cea99749f7b6f4fb32546c89b806eebfa7d",
+      "encoded": "3308ffffffff0712210531ad8872b43c32f3b1c288b746ec5015a596c77a1e010e99b86df3565889d1101a21052492bf0fbee191af2ed95d2a1eb4daa52bfbc5913c60ce75cc1ee9566423476e223987e96c4c635d82ea65845109b7f32a838a2f7ffaebdada3238770b0d98173365699c528faf96899cea99749f7b6f4fb32546c89b806eebfa7d280030ffffffff07"
+    }
+  ],
+  "v03": {
+    "x3dh": [
+      {
+        "aliceIdentity": {
+          "privateKey": "98b23091a2708e55b322406acfbe8e67cf3046148cb255140664ce630130e44a",
+          "publicKey": "b0bcba5b3572c6a1c5f834eb620eb8619b50a1764a77604a4b593a2396da1245"
+        },
+        "bobIdentity": {
+          "privateKey": "30a6718753e42bdf24e0942e32648c20c4c5ffba90d97f999b45aa6494852279",
+          "publicKey": "ae11862cc6ece3d34056cea8c1061e795f95464407741afb97dddaa389a94663"
+        },
+        "signedPreKey": {
+          "id": 4,
+          "privateKey": "f045acc86069a42838dbabceb7964792bdf56445b1e0ae3335143fb29128aa20",
+          "publicKey": "5db2d6310931d5332e4845fd10f556ecfb59a6fe4ab52ad51605cc557753757f",
+          "signature": "fc6db3da80b9c9876bafb8295e8ee5991e819616bcc34fedaedcffdad4a2e81c1ef2ede17fb97e2de0946829bdaf6d890219fb4c5094fe4ab6d90627499ac904"
+        },
+        "preKeys": [
+          {
+            "id": 31,
+            "privateKey": "f93f0f74de2007db8ac25e6bb2cad37f734c42f9854f740c1be9e8573b656ea8",
+            "publicKey": "9c65e3e6df3764955da02aa64b05a2b1a29c98712716c7cf35e754b590783f02"
+          },
+          {
+            "id": 38,
+            "privateKey": "f11ade7c4cee952dacb840b447be4b8a450f96a4cd71117cf26aca1731328db2",
+            "publicKey": "e1fd36d5c1f14016995723b7ddd318b91bfb5af5e3666f90db2def760ad2ff38"
+          },
+          {
+            "id": 45,
+            "privateKey": "7dda8cb2b7984b47b15b9bb383d2790960cf35426554eb1a9e25d3f614482dd8",
+            "publicKey": "e306789f73185d5ca65172bf8d1cbb16d27d7641dc703933f7a89957facc8176"
+          }
+        ],
+        "usedPreKeyID": 38,
+        "ephemeral": {
+          "privateKey": "b633e8a532ac617a870ae9772bbc42b45f44265ed9e03a57b633f9bcc1715a90",
+          "publicKey": "9b6fb22d7ed24b699d70a3966e38eae2b68976d84845e96f69a2fee1cd7d1a5c"
+        },
+        "sharedSecret": "71e5a559fc029a9ab4b853c907c4079cc0b2ce2e58b154d95b6e831d262ef17c",
+        "associatedData": "05b0bcba5b3572c6a1c5f834eb620eb8619b50a1764a77604a4b593a2396da124505ae11862cc6ece3d34056cea8c1061e795f95464407741afb97dddaa389a94663"
+      },
+      {
+        "aliceIdentity": {
+          "privateKey": "b884ecf05ac117a3ee8214b8606b72e463504d6476271f71483d46f06621a251",
+          "publicKey": "3861bde76995409482d177e7390b46368de0008cbaab704e08036225a282e171"
+        },
+        "bobIdentity": {
+          "privateKey": "58b7ce9e50e58191088a204401905183ba2121ff9f5be07a1c1a1295a53de864",
+          "publicKey": "9095be561511080ce238bab2cf3cc8a7f15b9b4685448b0a62ced0b18e192458"
+        },
+        "signedPreKey": {
+          "id": 4,
+          "privateKey": "389dea6f56e34e668f482d19264c9ac01755d9d00335d45140a88b6c076630bc",
+          "publicKey": "0d94650a5aa73233ebb41cc892d7bc6fb065c64feeb9101d2f4e824a4fa15322",
+          "signature": "590596128e3209baf8a647f611b5ea72952959cb2d960e665bce8023f2b4221f812c544c6bdcc3ff267d7b885b8c25fb4f2b7fd8c02f427c504ebbd9e90d6206"
+        },
+        "preKeys": [
+          {
+            "id": 31,
+            "privateKey": "ac73ffafb5e21b239ded45ce877e005066662ef07cb90cc336e1b03e1d55e8b0",
+            "publicKey": "0df37126bcbae97cbf946765d1604a8fcf812f594bd0e2f63282acf6252c243c"
+          },
+          {
+            "id": 38,
+            "privateKey": "27f3ec842e2345d3ff866e669c8f9cf4e2e7bca01e46e84ac162724166d697ed",
+            "publicKey": "30c007656069c8edc06d4d1b3c0d821a41cb76ba53b9915a8e09483f490dfe4e"
+          },
+          {
+            "id": 45,
+            "privateKey": "a07b29ab07373f3f6ac2960a3544e83ac715faa1675ee23f33a8b5246a557e14",
+            "publicKey": "805773846ab7e083b9ed793c2442fdb07f972be8296fc501abab8aa1c6bdcf54"
+          }
+        ],
+        "usedPreKeyID": 45,
+        "ephemeral": {
+          "privateKey": "aef6b7151fbf3470b798f0b820963372d1fcaa4d5769dc44325d3722674b6253",
+          "publicKey": "515061ad58a7202b88d94dfa5ea8dda76c9f41859a5bcb341d72491348aa3f1a"
+        },
+        "sharedSecret": "b5e37b59acb40426de05f7d314f8bd06b74c0d0a785fcdb1824281abfe4e30a6",
+        "associatedData": "053861bde76995409482d177e7390b46368de0008cbaab704e08036225a282e171059095be561511080ce238bab2cf3cc8a7f15b9b4685448b0a62ced0b18e192458"
+      },
+      {
+        "aliceIdentity": {
+          "privateKey": "802d64d966ad2466d947277621b6d51dc24a6c48aa0fe2eaaf6b4dfe01a88251",
+          "publicKey": "7ca5712d1292e1ec261bbd014e9b335a04542ea29c01b4ac7d0203fc8e1d9340"
+        },
+        "bobIdentity": {
+          "privateKey": "d82a8cf0e4010a5c17e38008a6eef2993e1277684f4b73802809baf9c54d527e",
+          "publicKey": "4f83194f6d679be679322f7c0f02ebf7b41d7f20a91e47a22d08a2f71336c813"
+        },
+        "signedPreKey": {
+          "id": 4,
+          "privateKey": "604086ce78db2f1ba7103cbf509937476f0575a35073bb1df9d39ee818177e92",
+          "publicKey": "3e5354a9fa2fff7e9c7e0389b7c6f52556036a9e52069e3b8d3b26bdee8c5931",
+          "signature": "1d8f232e2aeb6d10e317b77279478661bee20472f23382929c8e52144260d98c119557cdcff1e02845b1b0699a98670dcda314aa55925893b2eb9e01c1844e08"
+        },
+        "preKeys": [
+          {
+            "id": 31,
+            "privateKey": "fc20cab2a55824d06e265c281922acea9c56d451f1fe0968c2c6d60c500c6e95",
+            "publicKey": "04088b9c93b623e6a43a6cca265f2ffdbb05f34bd1b71bc367e21cd924bbd177"
+          },
+          {
+            "id": 38,
+            "privateKey": "7f35e4a5f824f2c2d48e7f2976b3183552e7f2ab74d501a9fc7781170f9aa005",
+            "publicKey": "6ecf0d7e9b450a3dad8d729f6fd3154c049ee5b7fb955a1d9bab60d10d137305"
+          },
+          {
+            "id": 45,
+            "privateKey": "4428853b3cdd578479d9e83e8b87ebfa5b67da289750e4e858fb1080b4191ea3",
+            "publicKey": "81909f3beb02db0edd719078ed707c1051b1c7654a7f2513605d31b1fb0ce50e"
+          }
+        ],
+        "usedPreKeyID": 45,
+        "ephemeral": {
+          "privateKey": "4bb0b581d4ba4c199b8cb6dfa102471eb92edddc83d3227b06ad64f166e874f1",
+          "publicKey": "f58ee3e509fe58542a55add607bf7bb7ce788bab18c99b99b196cc5f86befd42"
+        },
+        "sharedSecret": "3804bc16d9d858cbd02c75913728b0e2c253da2532db45e70b36bd226a6a2049",
+        "associatedData": "057ca5712d1292e1ec261bbd014e9b335a04542ea29c01b4ac7d0203fc8e1d9340054f83194f6d679be679322f7c0f02ebf7b41d7f20a91e47a22d08a2f71336c813"
+      },
+      {
+        "aliceIdentity": {
+          "privateKey": "b09d6ef33618bb3b5935ded2a25855b33a3c92d9819d4bccc4f1c1374466835a",
+          "publicKey": "5c9a8f027bfbdb84a971aff2318e6235089432cde3deea8d2491c7957b996d18"
+        },
+        "bobIdentity": {
+          "privateKey": "a0f33cce6017313923a530f269821e06f3a36030be709797da68d49eb7cf7e62",
+          "publicKey": "ca2ab4de3c54f4ab0345e6fbb421ed8e77b542cd5fa15c33b125203d7fbf6f7c"
+        },
+        "signedPreKey": {
+          "id": 4,
+          "privateKey": "c604a2736b40c5275a6a3249f1924b6c65a5a729625cc8e1041b4699e82dc735",
+          "publicKey": "0e2e3fee63736c8dfd92f03293ef1a749a015580cb3e15e1a0990210228c8c37",
+          "signature": "49629fbf9bf2ba2098f9e6001647a4ef1fa514463e1f380a2d4cc9d8d09880b12ec99feb5661ac9fbc9e0a443d90580032ff2399489f87b262f3e8ac39d17f0b"
+        },
+        "preKeys": [
+          {
+            "id": 31,
+            "privateKey": "4bc1d8c11791c3c091b1e7014c57773cf7a82ed0fc69fa1823cb44de95634643",
+            "publicKey": "532874b53ffe76c096ee93493d16f5931b22efebc8fbeb134e581eb8dc135044"
+          },
+          {
+            "id": 38,
+            "privateKey": "37eb4fb3329316a0c718645ceaafb0c8e4538ca9bd2c9f53a7589f9de97fc42a",
+            "publicKey": "7c7bd33aba5ff0676a40e53b5151d0f80c4610e7ff85bd036b5a811fd63b3807"
+          },
+          {
+            "id": 45,
+            "privateKey": "5d1d79db1c45f3c0b836fa6e3080b9df7eac85ab9fe20546dd2071c78eb70892",
+            "publicKey": "8e556b2413fabf1047d1d6f91b83730a9bc2915b04c2cd72ad1dda5c7ca2a262"
+          }
+        ],
+        "usedPreKeyID": 45,
+        "ephemeral": {
+          "privateKey": "9619842e50b06a69122ac1ce4fb5582bae94cb90c6755cdba0b872bdf5fc0bdf",
+          "publicKey": "5c36a4176f976233fad84217f304f1ed8778532b39ee3e2276624490a9b59954"
+        },
+        "sharedSecret": "0bd8e62e5198968e6a071f7d0b1be553c2bc4ba16d46ea11ca0529373a3e1b8e",
+        "associatedData": "055c9a8f027bfbdb84a971aff2318e6235089432cde3deea8d2491c7957b996d1805ca2ab4de3c54f4ab0345e6fbb421ed8e77b542cd5fa15c33b125203d7fbf6f7c"
+      },
+      {
+        "aliceIdentity": {
+          "privateKey": "98f939593bf1afd1e810a4d3177a248680b6ee5f60016793364a0031a76a3b4a",
+          "publicKey": "9c84d8d88abfd8751887c392a02abf372a53eddeafc4cbc9cf10ad25cb08ef70"
+        },
+        "bobIdentity": {
+          "privateKey": "305d6037a672323fc89ba22c786e636c331f8197fb6a7797a15cb542fbdd4c4e",
+          "publicKey": "695ab0cf79751beafcd7d76aa0a3d1db715b100bc849f8100444af3741a7cc29"
+        },
+        "signedPreKey": {
+          "id": 4,
+          "privateKey": "4e26840ff616a96290a07e19bf256bf55e0bff60079500d9c2fbb7f0a53019bc",
+          "publicKey": "306702d753a2b599cae15034a4b3576155988744708896bc7f1ea6b0ba20b655",
+          "signature": "abe2e06c34233bf2aa1d9f6f02a6c8dbca89ec412d36538d0d4f6dce1365a73dd61cde00fe5e5b8997fc23df56d5912948d9664deaf923ba2fe8cde01fb5c986"
+        },
+        "preKeys": [
+          {
+            "id": 31,
+            "privateKey": "5a08dc13be67b4e2cf30382b5d59451de360da5bfbe448382247b3b02ed300e0",
+            "publicKey": "2e455c267365390c40600ce4bfbc499f3578d61694e9b8b5760ea75b0cc3ce3b"
+          },
+          {
+            "id": 38,
+            "privateKey": "cc7f66f932c3bd524362a1207183516ac35354217fae06bc1ea5357e7b90a3a4",
+            "publicKey": "8126f1150817b24123631ac3d5704ea0cb01e79290bab043c2a079dd3aa32c2f"
+          },
+          {
+            "id": 45,
+            "privateKey": "b516114cb168260eba37fe7bc47ed042153c200c6ffa124a288447ec624f885c",
+            "publicKey": "ad896359ffb1d88b36f625e8854766b3dbfdbe411660b24d46a0156e72b66162"
+          }
+        ],
+        "usedPreKeyID": 38,
+        "ephemeral": {
+          "privateKey": "b961b26081e3eba8b8ffc941ba586520071bdaa6bc6a22283d1516fd77453518",
+          "publicKey": "9448d1c1d8565a79df5b653dc9246173cfd3183dd7ea4259c88ecbd5e845c611"
+        },
+        "sharedSecret": "08ce0c0c3a447d96b417ccddfc10acef79c5b821c78e1aede6b7f01e16d498f5",
+        "associatedData": "059c84d8d88abfd8751887c392a02abf372a53eddeafc4cbc9cf10ad25cb08ef7005695ab0cf79751beafcd7d76aa0a3d1db715b100bc849f8100444af3741a7cc29"
+      },
+      {
+        "aliceIdentity": {
+          "privateKey": "78c96279c74a8ad35b23ed106a881fb5289850114e561d394233e4138f48826a",
+          "publicKey": "cdf8d95c7badcf798bf35766a4298acf2a75641f6833d7fea320013f98e9f14d"
+        },
+        "bobIdentity": {
+          "privateKey": "d8ad6c094e042188d5625dcf090b7b2c41e45e093c390a8f2e54f2684122fa5e",
+          "publicKey": "1e10f8a88098bf69e5ead24abe3698c14c9f874e00252ad9e55503e2106bb94f"
+        },
+        "signedPreKey": {
+          "id": 4,
+          "privateKey": "44809be04df253a4f719e5191cdbef9c43015925bfe7805e7f856a3d4225c0c0",
+          "publicKey": "527dd95aa964633be379b51a837c6cc3843e287ffa4c12b5b651cd5d807ab43a",
+          "signature": "a90f8febce73d811ae65b0d3798e03cfdb9c95b39b6587a76ffd8dbfb95645eb7b18a3d571b2abf36912b8ae78776b0a27a7b8099d4c1d9a7adb5c0ad4cff88c"
+        },
+        "preKeys": [
+          {
+            "id": 31,
+            "privateKey": "f715dc754135fe10229f1327ea73335ecc443ebcfbd3271738b62632bd3a2750",
+            "publicKey": "7bf236423ee91a814a3ddf8d959a3d983717f82c625a802d9139fc4ca1b6d543"
+          },
+          {
+            "id": 38,
+            "privateKey": "73af1846468d52e7c685739eeb988babcd217c087c6ee35c26989de43dd8c9dd",
+            "publicKey": "cd721289c05f2d2f0ab6b7578659ec04c325d5f60703664a3526807977c77865"
+          },
+          {
+            "id": 45,
+            "privateKey": "94b61f6641303372127676b3a21b35886eaf06e324c36809aa81148765449329",
+            "publicKey": "e69f85ea1117bdd7402a37a9294f8a44e6f19b4e113f79db878b42bb33b8e618"
+          }
+        ],
+        "usedPreKeyID": 45,
+        "ephemeral": {
+          "privateKey": "477e2410513bdca7f31f7be8ddb395ea19cbd332de0c7d3be3c4335c5a343910",
+          "publicKey": "c6e0a1b76ebe59a41418355b13a70095d6e5dd5c993e22522363e65b80619a29"
+        },
+        "sharedSecret": "dc5b91d2c1e7a098a9d87c1a13db7b04333e515cddffdea749a499a8388c6310",
+        "associatedData": "05cdf8d95c7badcf798bf35766a4298acf2a75641f6833d7fea320013f98e9f14d051e10f8a88098bf69e5ead24abe3698c14c9f874e00252ad9e55503e2106bb94f"
+      }
+    ],
+    "kdf": [
+      {
+        "rootKey": "d3b8ebb7550d899810eac5e0233ffa791c39daf95ac28c071d57a05fbfd65bdb",
+        "dhOutput": "9d7ce70cfed2ecff940fdb190ef714c0dbb0c283d57099e39fa2c2a6b96a3b86",
+        "nextRootKey": "c6d30aca1e1fc740cea4fc8d722f11d881b29fdd929cb02f82d58bfebd9cea23",
+        "newChainKey": "9b6cfe8357e5835c9ba117424522571c99ed122fc8d55b4d0758ddeb6da53342",
+        "chainKey": "126c5470debcc307a8a1f2318f4edd568b80f8b107833eb7277cc9ccaff6a4e3",
+        "nextChainKey": "6019cd374fc3ab81a5ab73fb61d7c6d7f6a0030ebc235104e114b891ab626fe6",
+        "chainMessageKey": "333434ac33c8faf0d4625f1d22815462caf55d97962590e584d56133d6f2ed8a",
+        "messageKey": "8560cb877a842a6d1df7dbf86de15d5e5174ff29cc5b691a182e9ccdcb1a2bae",
+        "encryptionKey": "53f59ffb6da59415eb42799fad03db11c64045ec6588ea9de594db82cb9ba411",
+        "authenticationKey": "6f738aee14228524b3800af530c1d78c381e4a45c91cfe5ff0d20c5e436decf9",
+        "iv": "1dc32327ef0884a78b9000831edcf1fa"
+      },
+      {
+        "rootKey": "d464257643a92db59b4f0b0859cdeaf21b6a86500dd2a88bedc72fdd8b8db971",
+        "dhOutput": "59bfde43d9cccc23358f4520f7f3d1906e74a2bacbde425bb7372fb3e383a06b",
+        "nextRootKey": "85bb23f6c646de1c633f99e55447f76121e312090c59f358b58e7d262ebc1424",
+        "newChainKey": "e51459644c169a06fffd080ee392f51630c59192276a2b1606354a4795082adb",
+        "chainKey": "403069ea0d468987d169e9916554e6584e2f4eba6fac449b254d62642c283c4c",
+        "nextChainKey": "899fc101eeee0547fec4ebb81082ee2841cf37ae76bb073587e823753a0b6e1c",
+        "chainMessageKey": "9b8e69be012f5a516ac7db784eda00f0843991a145852a93e5e94b732b0b0a7f",
+        "messageKey": "e4a76ebb8ca02d9578424cde113bde1feaf174235ca321bbe85725cb8a07a490",
+        "encryptionKey": "bf2c79f6b1ba92b94177a0dbb79a6df27c97f357f9fbb485e406312d92d777f5",
+        "authenticationKey": "147ba70f95c8d05f49c9ed2be060f09ae024d64175632a4800bcd531c4c73ea3",
+        "iv": "c0720b0dc7d946641fbcb6c8be493a94"
+      },
+      {
+        "rootKey": "d4048cbe9068f0e3816478850457ce284b9e54c17e51aa63803b05090a69e0cb",
+        "dhOutput": "df649551f90586f7d997256c1663c2bfec5ef44bbb34eb839d1f265e2b6bfc8f",
+        "nextRootKey": "68775c17520e7208165cf3f2e9f0a06d1031182a0c1fedbd86f9881b1ace7e99",
+        "newChainKey": "c77316a4bde8916e5083da454226f0e67ef6d2321b134e92a129032ca4dca3b6",
+        "chainKey": "006f3b7e3a2b8d4404e388b947ea1883f9d69d447e846cb6bb155116712a4abd",
+        "nextChainKey": "6804860e77d2390d3a67e8632b26c7a1dcaf7c67b602d55bbdbf42b89172df50",
+        "chainMessageKey": "c020ca10abb3ca667a704aa0b8674512da80bf888474aab2c5ec73ba9ec461c4",
+        "messageKey": "5ff70b9ad0a7b58a09f14ae423e556afdf1e5d5af7d7ffc44f2394d80a3d9cb1",
+        "encryptionKey": "78c6f11416b6ec2a4cc11dde08c292538c579c6712b91ce9e7b1bdb766964ea5",
+        "authenticationKey": "433d9c47c5b5dd7fc98970183eafc93b4ee21ac3bbe93743826bee7804352c72",
+        "iv": "c59d02f4c540f764832ac71b03847740"
+      },
+      {
+        "rootKey": "58397b36c5c5bb501dd3ff95640972b1c76be8735876168e8c6b5a490d524d07",
+        "dhOutput": "64081e8dcc3513efa1eb886fc1aa036e338c9a7b8530f965e2f071181b0c0575",
+        "nextRootKey": "e3c6f4153cb1d06f80434840b9013b29d3fb3b3530b348fd087544d5908c84fb",
+        "newChainKey": "9589a6251784eecbffa1d856147c26097fdfbf766f4ecd953fd80ef3da0ec571",
+        "chainKey": "ba023f81c3795577f9592377e5110e0e0526db6f0212c537867aeb5339d1e283",
+        "nextChainKey": "e559c5910029a6d2ac042e1ccf61d47df5a4b926e66f850e56d7ab3d19040409",
+        "chainMessageKey": "d196002c2fff11b26f30532a2457ed7372b30dc9c744fc6c36b737fc317a0596",
+        "messageKey": "03ae64f6f4c3d381bbfc25240ab66c4773c2a0f15d95ee4b0e733c9e05198758",
+        "encryptionKey": "e0e7740eb49118fcfc6a995cf4a68f2a9dbf2f0125678de962ee82a89e481105",
+        "authenticationKey": "320bca75268872d66e72df120da6a577671294d6ff3fa671ba09a6558ede7d36",
+        "iv": "da3fadd8d6cd2598445b7807ca00936c"
+      },
+      {
+        "rootKey": "be3395364ea46d3880c4c6251fe2198498eb8c3814e60a25bcb8b4c4ae1b4635",
+        "dhOutput": "52676070a04b3b97ded38ba2ccc6eb0093acdb99c8e78d8c4925da6a11464c7e",
+        "nextRootKey": "b80afb2cbfc34f9f06daa16c907c79a54594c286b69d946fb01ba4a377edce6f",
+        "newChainKey": "db5917a09cec4be05adbb418acab8b6218ecb893b67dbc3359ef772ee93de478",
+        "chainKey": "bfccb15078ddbe94b32b3aac200f7da641fe7fe7434604fe3529377f2192cd0e",
+        "nextChainKey": "6778b8c2884a89606179a371456d6bc7028c8e059124876b869bb389454aea00",
+        "chainMessageKey": "c3478380213f6af481c79b8e0e577ada85c5f6fbc59dda557906a01785803182",
+        "messageKey": "7130a50288b12286bb294802a05130163304759bf281c9855be02c9594ef0e57",
+        "encryptionKey": "44d4edc910171e11317a6dcc2ab36e4b5ef8a470abf5e6f0031c2c0305322c62",
+        "authenticationKey": "75ddc2b49a3e5bffa75a7444b4a552d06e3d1731b968774e6f616296750b6dff",
+        "iv": "520d5d96762ba1918f5144f08ddb3fbf"
+      },
+      {
+        "rootKey": "16c436765f4a0716a5d737b75ff5be2169fb0b1b60fcfc5929d7df4d797046ec",
+        "dhOutput": "e048f74a55cec46228c29c95f570b7b970754b51ec70e7647a51c4ab3cb17492",
+        "nextRootKey": "099f2c4a31953fbcf387b5622090907669e01b1fb26801e97bbb2f8d13828bc1",
+        "newChainKey": "564bc755e8b826c471ed96f24bc5d9413aaa96fe7ebd3853362a72ce93462a9b",
+        "chainKey": "cc71501eea69e53d1b797e2afd6d65743fe257b5e4f340f0d957942363f8a7cb",
+        "nextChainKey": "9cf076287aa82b43c88d89f55cbc4627f3a4d28c8bef39b54f14c974d99fb25a",
+        "chainMessageKey": "fe19f3c8a9afa95b4b3a7f773693f12b8445e7687af4485cd644c59cd4cd5166",
+        "messageKey": "e3d2b02551cb8c4ddc6d96c961d24ff75598410b81684b8219ae3fbfa1e803f9",
+        "encryptionKey": "f2f80b1f442f611293f185017c524f2a681ad596b2a5b5ce4ed25b41561106ad",
+        "authenticationKey": "ecf7027be4a6c91b2cea3a7fccd022c96b41398c0c8eef5e30f3c17a2069f8e6",
+        "iv": "e26e7ff1cd1f05f8435776971746c39d"
+      }
+    ],
+    "payload": [
+      {
+        "plaintext": "a0",
+        "key": "fd4eb673492668c4cf7d5efd4791987e",
+        "ciphertext": "a1",
+        "keyMaterial": "fd4eb673492668c4cf7d5efd4791987e73ab5011c613c88de4c2f64292db3c95",
+        "iv": "fe3223b3e2276b6c7268a488"
+      },
+      {
+        "plaintext": "7303bdc674ac6f3af56e7c20e72296",
+        "key": "23809aec3106a1af2f48580fac857e5c",
+        "ciphertext": "b1e3729b0f5042009c9763784db1ce",
+        "keyMaterial": "23809aec3106a1af2f48580fac857e5cd69c5803d3d67d69a921a17519711da4",
+        "iv": "d802b48a95e34f53d5088c0c"
+      },
+      {
+        "plaintext": "96306a5d3dd2194571a0e19f4b7b6b4f",
+        "key": "5a1abc94f133077c3bf1ebbe3031f8a1",
+        "ciphertext": "f879c9d9fa9eff02b4ed3378e6c90fd6",
+        "keyMaterial": "5a1abc94f133077c3bf1ebbe3031f8a167749cb2c142522aa52aae8cb6f7cec1",
+        "iv": "843db6d9171cdba8794320d0"
+      },
+      {
+        "plaintext": "bf0f06fa1971ec8e4a18c73c7d6b271dbd",
+        "key": "05a895a0f28826b5a43d4f0fd2ed6e8b",
+        "ciphertext": "ab09129993398fdd05cbba81bbef4f1c00",
+        "keyMaterial": "05a895a0f28826b5a43d4f0fd2ed6e8b72a6c2748f2c1eeb6d1d55ea4d0f7748",
+        "iv": "3305a699bc396a74d123ee04"
+      },
+      {
+        "plaintext": "26c13e65095fc19ed5828007ab90a2ebf5ed42a2db941acff16792cc5d3fe9",
+        "key": "8a04c77b9320e6deb6231e14b9664e05",
+        "ciphertext": "ef260ac8fe718b49abe3c6535eb30ec51202cdb438f410168a871d2a776ea9",
+        "keyMaterial": "8a04c77b9320e6deb6231e14b9664e05bd57b0c03ee4fae7eab2f6f37f2a9966",
+        "iv": "ef12647dbf59a31989601c17"
+      },
+      {
+        "plaintext": "e676ec5d8ed8cf2cb4b1dfcb6ae5cfab4048ff9320f06d0f98773a9541d1819a36fcfae822adf1bbf3fb673da3abd74bee4abd498e01c21766476cef4ea85156536cbcaf82a2bdd9ae797a442b7a2de59db90510a7f14607d7dbd7616310f403211273d5",
+        "key": "7dfb5b2fe552bfbd70f58a01366f6adb",
+        "ciphertext": "a710e02c9d8b8308a48aa1ad1465f1c02dcc3732a66f69081e7c4cd96c876d53fe512d00fb1754c3f3536c7c2acc9d3e444c0d8fd460bba42af59ef8442913493b6fba1cf8c3b724c333dd9f1b12ff1e75779cefb086ff3f2e2d2ffa3f285d5533e605da",
+        "keyMaterial": "7dfb5b2fe552bfbd70f58a01366f6adb44b413b68587ee1d881996f9a173dfc7",
+        "iv": "a35abddf13bd462d62a9cc8a"
+      },
+      {
+        "plaintext": "fdc62b7e185d34e8e02f4451a328b9ac76f713db8c30268dbec0ea6873ffc364a39898065c49e31944ea8b72e615dffa2fcbd7c4cbd09bc51bb7f9e024c7f051307d682aa0d2034d854a8be47d85354edfcd799237fbbbb51383721af6d843851c8ce2d4656c5acc9a680a1d66cb2a3997eaa01c2b255d0fd405cdb2446e4db74ba6a35dde35fbfd6f18641f268a5d62177c77c95608fb72445d7dcb4c6e2ad2d63d3f73d617cc60d6488c0d3a2408d1a58d1291fcc0d9c21860d033364394bbb74d2188514e82830c70c877f1823f3ff99e96d6e5c3bd63eac531b5ae0962f2c37f316a6a196923675afc066307f14265bb21f0033130f11544c722560b579951b9fbd7d76111504d167e5125039514135545c56b0a4209c2dd9e4df4da726d146533c74aa9eb6e514de2d6fba7ef392ddbd81e8e8ee34872a5175986b80dd97f91d20063c069d8067ccd0b3f6fc5aa914a203308a09d856ca3ed5db177447d7908d557b619c1a8aec07b94451c33d3312821f614d2a4618b4590787504e3f9edca507d283c664c807b7528dee834edd9cfb499d25890488f5fe62546e70306f8b7cf117696d74814feac7e95d7592c5bf1a318ab5a93f7708136cf1a0f337eba15ae92de157d8df811dd91ae4de206cefd68ab27e96542d14d404e2ec9c522bb39527f457511bcd1e9b1915e8d33fb5d73009cd128db3c9e9049938a14c77709edeb38c9340f5a6cc0954dffed4d802bd206d38d4a2c177cce63679d37c333731d373acd5df03232614298c6feff1a79fde06edf0209577cbe15069a26818c52ca932f920f0600c6099137350305a6e45433265fbe6ccd0250d9a44f45a37ef1860de46f2196bf5484b16886be22b6ab3dac024d187760bc7175474e3aeabac646049443ba10442efec09e69f32f0e49973d54964dbf8cfd558418d19bc38498d190cc5ff4d6f52a3d78fd11b2ea04d643ea46a19755d6375b7f44cf6cfb176e4b14781b62d22dfa80ead5eb27c7430d1d881827e2c3baf72db99006b95d419e153a1082c1cce73fbfdd06fa945644f560648607672add62b9f720ccef5074e4c08bf20ca1c52f1eee9ec54071150ab67863109593220a18ba94ced505f31872290182cfcfa59213ec90bfd032cc40facb846ee029baef0bec42457eacee9f2f557324c0505f0bd270a34b0f54fea99148914b7ff568c4fed7d690b88b7374e891416d78549bb8364af6f038c9b21cda77cadebbcffc72017898038eec418335d1ef8595bca05fd0b207d77d538c893f60f120ee645850c2323f301c4aa2961e2746aa87aedc64b8e9d6bac67d74368ad592095b7ffa955184741c0d82eea8e69b4e3e1f5faf41bf27d3f321b0fa6f8e334d3d6c9e40be650cbf3315789c20e88408a7238cb0e7",
+        "key": "84006ecda20749782b4b31f786a4c89d",
+        "ciphertext": "f12a927c80ceb0ad8cb0faea7ef9703eac0a85d373aa4abd5e4ac8edbd9c016de213cbd63e491b0a32c1bbf1d2302e1a4116c91cf512e2e6ec0b25557b7e7f53908adfaf48d6ff0fabf12fa5d3d0f8da1432d251dffe67a12b19e0273278a88272d999e7314f259dd076862b7f00055b1d0c6fdb0c48a353b6c8c397c43d524927d88889e348363142b38719667c9ee0a2378cf2e986a0b8efda4b6a6806d1a9784d024c720751e15a04e5058731956e830547ea80d5711dd2ba048320ac9e94be8686122b0c16d0003a7bcd6128e55be27bdf428a1fb53a7c745cb5e692d6c2818ce7696b0e39508685920887559212ba52f7ccbdeeecc3ec22d6edc990435bbe2412e4e5b7d94fd5c859be05ac11bb599db5cf8d446aa97d38c4e05cf0131ada2e5ad26e29f4404021ad07d416df711080f1fc4161c7ee679e976775e01370378cc791ef89f1d4418b12ff70466b957268f6721a0b787d4e27fc7247c24bef492e721b8198d74cb88355035acd73f78dde7ab54fc6e96094f436c43c0b546aca146d57c0161a5fde5e2f4193c05ab3b21cac0d09170ca4534a9784b9422d52c34ba8a05b9fbf015a7d60978e65eaa7551bd5a36bf8e674657855e0fff53b9e2074279fd25881c4b08b393962900a01919214e53b781e27631d3cb794772079f5f8048813e90e46f09e292c1a16df63bf6a30b87f60819d47ed5dc047d587ac8af43b6b1d3d4f4078e583c5c6db1af127e94e97c5c7c8ee912c2276e6851edfe6072b82932202d9ffffac05d82d3f230c893cc13507320b00066a28ea8d778ae48e07ce3d6646dee1c7a14ef9cd2dadd74b4d772be129e7f2ec9fd420e00056a7d66f4751566665d412bcb31b899f1e083065149b42aee902bdfc4316b8f01a8fa8175352d3bef45112a0f29f23710ea4175c1bf3f9e155cb7545da5e709afa43b90a44c1a838d3e14a4d8c5d247d7139b42a934009c12964663b23eec994e75e5d6e7e70c1e3eab2420fe6d8e5ca0834f2fe69d4c7e1b2577031170c2d2071bec933bca07a63e2d5b20ec55306ce2e02c60a1b650b2f67a6adf38e5323bfef873d54b94c3a854c31ec9c00682f5c657bc5bb898e624bf2ad3b6bcdaf7fb0495a188ba3dfc5754455dd9b79bb9384467282297cb2dede11bb9fe99bb3be4fc5f8d024e6c12df4b613b4a7876213fd44b9bec02a460a06ae66cbbeb7526361a23ba3b2ca88d59f5c50bd376958507c0976e3a33ce28ac5f13d51a99a52972f29527fae1f6266d705ab7e0d5344c4ebdee7b8ecf8b373ec307bdeae257c10ff6cadb7a61c4e775313ae2149c4573550a294d5c59bfef375a1f718f1e57ec1b5684349be37249b718e2b8c66a42d3111ea7e84f3f7a4f9c6278617ff961679b9855b854b7f19112625",
+        "keyMaterial": "84006ecda20749782b4b31f786a4c89da8c33421f892737914702830d7b8804b",
+        "iv": "7d420b8a73725054b7995a4f"
+      }
+    ],
+    "sessions": [
+      {
+        "name": "conversation",
+        "alice": {
+          "deviceID": 1001,
+          "identity": {
+            "privateKey": "6868167d82bbfee14f01cbd5d26b9df923234693863c88eb578e9b5c16c96a54",
+            "publicKey": "c1411a7b9d344ad12fd8ae240466be8d5ab39e6bd741509ab440c09c4009bf10"
+          },
+          "signedPreKey": {
+            "id": 11,
+            "privateKey": "81ac7b6cf69f605fb2790038f8dd8a58c1e84f74e61026769d87fc8e208542b9",
+            "publicKey": "37ea40c41b8983ded6d4a48803ed7285c31bc652d457c72318ee4275532ebe53",
+            "signature": "ebaf2477f4347b2228cb04890cd9497f43ce87f8fd3fea5b18378c25c5c361191f8549ffb3a4c630d1fe3eb92a5b50712a417b06f647968bc4a1dca36a479189"
+          },
+          "preKeys": [
+            {
+              "id": 101,
+              "privateKey": "5f3ee31bfea1ed112c2c626689fbaa34b6aafb6ead68b8f19a3801cd3f465932",
+              "publicKey": "e743b3655a60fbb97b0f519d03c2ddd83cdd83c366967f2437cb9283ab2c2c41"
+            }
+          ]
+        },
+        "bob": {
+          "deviceID": 2002,
+          "identity": {
+            "privateKey": "38e270aa832a8ff84452a35d903d3007c347299b72caab7b39338ce220fb745f",
+            "publicKey": "32128bc534fa3f681daa66edc876b261139b50af38e18aa5b47ac807d1504d34"
+          },
+          "signedPreKey": {
+            "id": 23,
+            "privateKey": "508240c39b11d97871f5de5c98b559ae52e85107293eb815e7636ad5bda57f23",
+            "publicKey": "99642b34feca63d07e05e94ec9334aaf9720244f1968884e464b5ad3be820b2d",
+            "signature": "ba2309756d8633f8647a51cc9f519fc7fc7dc0afcdd65b2c650818583d0614cbb8f12a906adad9aaa0eb3467705745c5f62fc851c344cf8f4688bad678d2c300"
+          },
+          "preKeys": [
+            {
+              "id": 2345,
+              "privateKey": "7bef9427c4266c9eeb0dc5e807117bbc8e9db5ed0e268f0dafd43c0c944f90d8",
+              "publicKey": "6feb16a01b9c0c29b7bdb20ae10a008adecd2b1655f7dd5a235145f33aeb7c65"
+            }
+          ]
+        },
+        "aliceEphemeralKey": "673b2003be697799533d80da8640f49fa43bb4f9d68f7cff06aa42f30b165363",
+        "ratchetKeys": {
+          "alice": [
+            "2f4cbcb95970de67724c619e14ca0245033447bde4c82e73fc4b04e850acd556",
+            "b5b9a5edf371e3b9ff0cda0b0312506836e7d44515bd974e81f66a0d3887fa4d",
+            "0d23d46660e26f98849fb64e6ebe2e717f5d6a9a950f33a9df5de66f8f61c67c"
+          ],
+          "bob": [
+            "7c0d13ed597a382814493af63364048b15d774cff719d7f3c10044c345421131",
+            "304a351480cc3d372d1894356d84fcf38f89b19205d393968345d78d27c5d8a6",
+            "749b8c10f5235d8f7fd6eb431df93ab245d814c861eef073c37a740b58e88aa0"
+          ]
+        },
+        "messages": [
+          {
+            "sender": "alice",
+            "keyExchange": true,
+            "key": "3308a912122105a3c7c137f5aa4044a5636073542ec74b43e034b7266e33f9b6e11428e63fe6781a2105c1411a7b9d344ad12fd8ae240466be8d5ab39e6bd741509ab440c09c4009bf102262330a2105523f040844f4652110b92810c4ba532e0646cbde66f366d14d9cb2e60a3c2d27100018002230ae1bbe14894af8c99da73ecff26407a1ff98eee899ebe15be3c19539e444291065d1ff06f1789c8825871f8e860c38d9d40ba7c400f6b6313017",
+            "keyMaterial": "3bc5cde9de545cee5386085819a4bd8a294d7bc8d9fbd654355c4993ac1b35f0",
+            "payload": "01aed0733d2879d78e",
+            "iv": "56aecc5b6bd4a7ea732f7340",
+            "plaintext": "48656c6c6f20426f62"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": true,
+            "key": "3308a912122105a3c7c137f5aa4044a5636073542ec74b43e034b7266e33f9b6e11428e63fe6781a2105c1411a7b9d344ad12fd8ae240466be8d5ab39e6bd741509ab440c09c4009bf102262330a2105523f040844f4652110b92810c4ba532e0646cbde66f366d14d9cb2e60a3c2d27100118002230657c0eca8f177fd02cad8542103ea2576faa2207eb34b4e3b9770333c5b7a68e02df629f94ab2730c0894e3ab9ac8f8309ac2e32ecbadd953017",
+            "keyMaterial": "5b767f39c6a7ad53e319f88d097f970f15b33db3fcd1048fc73a9da8dcd0bef1",
+            "payload": "364e99e0af15fdacb32d90f08d5b",
+            "iv": "29068bfe5ec910a8cfa18dfa",
+            "plaintext": "41726520796f752074686572653f"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "330a2105094bd6aeb5acb887ce257547e5ab27acfb3ed3e2d0ae8f32ae8e8d36b5ad5776100018002230f3e43136224839b1705026e1a415f6a78230efb6f9f277891d209759e433c3dd8c70f03b9fd2762a963ccaf33f40e7ce6834a19a06ad4803",
+            "keyMaterial": "11be40133499e355d991a9b7a3e688e3ff8d2c68233a649bcc75ab3e48183456",
+            "payload": "ef30c5084b931b56",
+            "iv": "07125f6051346cee32788900",
+            "plaintext": "486920416c696365"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "330a210500b873d3d51deee9780df90e6f3f5b1302eab916f55a6018ae757b575373ed6110001802223033660b917f2fb337ba21508b992d56d724e74cd8cd7264b9ba395461a41983fb239b1afd7e0081025f81c20691d8f1c3e4ee371e8b21ebdc",
+            "keyMaterial": "d15480f2a28c39308692f580f319d68f7a3fa4fd7da58ee0b7726cf5a42926a1",
+            "payload": "87e5ae27bd36602e4711ecaef8d9ad",
+            "iv": "9440fa7e6cde6240684b34f1",
+            "plaintext": "476f6f6420746f2073656520796f75"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "330a2105d8171ff48587bceae8a4b6674490643059f18d3de75f9449c33a9ebc7ddf2f6c100018012230c1da4282fd9ee167e7cd0241d8845bbe37264128848a04e5c63a438ca7b73f718efb75408108ad08e901173b41cf7213696716ec6d50f589",
+            "keyMaterial": "d440d67eedd9f69a16619d3f6ab9869ac090a257ee794108980ad5207e9a2f8e",
+            "payload": "65de4f9a0c7641de1b",
+            "iv": "78e5987a4a71408466ebfb2b",
+            "plaintext": "53616d652068657265"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "330a2105d8171ff48587bceae8a4b6674490643059f18d3de75f9449c33a9ebc7ddf2f6c100118012230f668833e3d54413dc5beaca4a3055da82820deb485dd3ef91d1946effe0291213cd972dac4b24e118d159bc358c4cdf58b3f502a01ae648a",
+            "keyMaterial": "6c13d820d62f7642aeca333d254f0ad167cda4423d7c0cd84b3aedc97bd8c927",
+            "payload": "cdb85bd097a240b806fc55cf",
+            "iv": "53059df2d47b6fec0d3a34f9",
+            "plaintext": "54776f20696e206120726f77"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "330a2105163e55b835bd0fa09159b79eae3916d301766fc260a27a39f053ec02cf52df39100018012230a9263a202a840a1659c7b456c0ada4999c09155d977521b3aad7faacc7b594dcee67a1bb617312a688a604996c5d1ecb8aeafb5243a3a7a7",
+            "keyMaterial": "8679dcccdd8ded91d8a754e2b1a5747dcc84ce9a3b6db9a8a42b404f8c7c6f1b",
+            "payload": "2f9f3d1617cbac44bd1e9463763629e131729a522ff0addf9855deb308fb782455fa7ecafcd5bc61a8826c7c8c99ea21e752726942c2939f68e98ed640d0a4173ff36fff14567e8abc40805de843a84119bef34d3ba86c077693f6c61d4fd7a392c3ba3e8e07a7b3dd90a548cecf2f683a41e1600e21e55a1d7142f44c4265f22f5e12104b0d5a38f39de028920cb1878e6ccba4a3d749d649744f9e4e6a51e735532b190e408808dd4e2e550c4483647932d4110cb8889fb150817bc9eda205f6eb84a3b2359596c2587fd035ec44cf72bb316f9ccde6c899ac4ce60363e5e3f62aa9f512a8cb938eecc574ecb3637b053546a23e137061e7c107b23f95525b2d9b708d16516f6d5485a99bbeda7b612740bede31b33af09d77b2832241481c69c6afd2e6e29d0560878ee8888ff95777a7c069cf51318658ef496db4e1583480ebf3452e78f65a1e88262c4a79e49105020f53ef0e457ab475b89d8a9ff2bac01bab18e3237c8ab6b31fa095555c4f74a9cb7e064604130900273e5dd1ca25e9ba7c34b96258afc07ba204c4c42c2124f4ca5774d996b638660cfe7d50f354f4a091e2b15433e443eab5e62f3aa42e80fd2777f103046c91043e917cc7d217c4566a92279a0874215f34c9c6123790dde9bb71e2e696095305f77c616af8a1e462ece3b9d7dc299ec7bd5676f8ae216ad5e2ac664ef563a384557c2e1a253344517a22ffd4e0d8d764a448fb5435020e5f4742fb5d0ce85b2177ef263ddeb6c6408e79d7fdfb600c8cd51ce21612d07531bc75e50e91c606319a712659a1f15cc3fba53201e7d528d20d86004f3f9115f0baac842c9736410d1ef09dc67b8fa9e7dd9ac02e45fe76a875b568ea65edefcff98e14cc95b78b4e8eb301fa7d8192378429ffa766dee845cc76d9437a195264c791e07e5ebcd910e7b407360cf4489d3312ec4c3410c2847c952dacfc62aa960227dc8bbd795765ce04f96c1f960c2df42774c4eac3bd05a6c1372759872eaeb2d38b29a38e8ce4f5d33e51cc3f44f12425b82cbac05f5141618d9f1d7d6a5c556482ca40a7c24b0d8596604c17aba687005c96cae22313f7a4301dc414d27b925771329e8e431a215a3a240c5eed90c611b709aa23b0669c8d3c07ec034b2244d2f9d73a8f870017c530adcf258d9c4dd12629f706f61b700fffc25fccc57c202a5bec18038598e4762dfe434c69a279c53f5bd60bd184dded5f0f3f46496361231bb85389fdb11df83aea5def8d56614e557b78b83febe6b6997d5be1f9e4396b815aa36f0b08c21984b44e5d71da5208115089c3d77156cf6148fbb659516554d4a9c2807e2232bd41c6320567b4887ee98728d75edc4e35af5604a14fea26d4d4bf80cc8331ed54e1ad944ccaa729ed315e96ba72271687f4007502a04629f112bbac359b86c39edb4460a4e27fde943ec7f530574afb12164b7fbfb0f8535e490d17447127ff5293713242c39d7adce28acdc62bbca68b6dd1a9bd10cb9588f1b4fc8a4e84ed7178c50e949783f63f0da8e546488027a3da45cfb8e9c7ac20be06c9d67243f6c5dba8a7b7020226b2246386f89c54354c0f63522e95013f8771fd91f7a0e258323d9bfa4384022671c36964c477ad23f1e0094a5d88e67afe1f09f9b375705a6fa34b7a52cf41a7b1a37c33c56e18f0b7ec89269c9e866d247e62cfa91e56644ba882d8f8fef59d",
+            "iv": "73bee6e7c55fb1b4d115c229",
+            "plaintext": "4772c3bcc39f6520617573204bc3b66c6e2c20f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982"
+          }
+        ],
+        "events": [
+          {
+            "encrypt": 0
+          },
+          {
+            "decrypt": 0
+          },
+          {
+            "encrypt": 1
+          },
+          {
+            "decrypt": 1
+          },
+          {
+            "encrypt": 2
+          },
+          {
+            "decrypt": 2
+          },
+          {
+            "encrypt": 3
+          },
+          {
+            "decrypt": 3
+          },
+          {
+            "encrypt": 4
+          },
+          {
+            "decrypt": 4
+          },
+          {
+            "encrypt": 5
+          },
+          {
+            "decrypt": 5
+          },
+          {
+            "encrypt": 6
+          },
+          {
+            "decrypt": 6
+          }
+        ]
+      },
+      {
+        "name": "outOfOrder",
+        "alice": {
+          "deviceID": 1001,
+          "identity": {
+            "privateKey": "d8fffed094ce4ae1ac4f1e330f0faa9e0246fc4e830107b24afa75400e7aab5d",
+            "publicKey": "e124a134452a0a93eef99eaad1c40edebe2ad59ebffbe4db4cee14be5dee5d31"
+          },
+          "signedPreKey": {
+            "id": 11,
+            "privateKey": "2c0c7dd1b56ddd004e6bc9c18bcabede6700992a9f2bda014010f9f8a5aca104",
+            "publicKey": "b9f51cfb88d9064e574cdb73907afa7e2072f7ea8c4baf48e812b2c567706c78",
+            "signature": "baccd49464b599d32f0a00fdbbf122121e2348fb35b94bf537eb8b190dc6673187ee2116cbf3369c48fb66ad795a358fce59d091381250a80c5ba16a6ec41307"
+          },
+          "preKeys": [
+            {
+              "id": 101,
+              "privateKey": "f164e5fa5263730dc4c8b7e31f6d2b66a309e812a8d6ad8228bab3101abe3e15",
+              "publicKey": "b38986dac94d72cf0600b78f116408f413b8e926daba17634c25a5ab44d9a623"
+            }
+          ]
+        },
+        "bob": {
+          "deviceID": 2002,
+          "identity": {
+            "privateKey": "489fdffc48eeac522924d64f87d2634258e9c4e14d0dd0f3b860267fc14b645b",
+            "publicKey": "a780df37f28e6430c4ef1e769b71768ca416ff83ea2cced12028748bd074e46c"
+          },
+          "signedPreKey": {
+            "id": 23,
+            "privateKey": "cdecf4555acac33fb10b5abf691bf9579684331db651e637701527ec9a2d3f85",
+            "publicKey": "f14f3b14947a2a3002ec0269405553707f720e526bdd0416cb497d9e95cfd74c",
+            "signature": "6d759a9829a2fec83aaafe769d4fdd8fc324092e9c46a0cb9a39b5929034e3db41a2da5ca63e9dcdb46310d0034d73dfab41a245b292ad166abd436deb26eb0a"
+          },
+          "preKeys": [
+            {
+              "id": 2345,
+              "privateKey": "82ddf7cffc787bf58c52408361fac1d68f87b34f51c96d821bc3ab5afb9b50bc",
+              "publicKey": "ba4433a0ce1165ac19f47bea62233f4b753496c7ec8025f35d68bb8b42d77300"
+            }
+          ]
+        },
+        "aliceEphemeralKey": "ad393fdb81931e8221a039dbe710b3bbaadfbb0d5dcbb6c7678bb3b4418fba6f",
+        "ratchetKeys": {
+          "alice": [
+            "d00fc83b3873b839f97ed48ff61ad746390e976f8ef323b9141040c0df6dd1bd",
+            "edbf26c8151b6baaa70c816bc6e13b89ec6858b96598205dffa46916498b3b6b",
+            "a3798c2142fc543fb83c13eaeb611c2b03b8a495b0775d2c71db17d45586924d",
+            "1f59b155269cb41da1488dd6d360d2b526b11e2c2864137ef6b249349f56799c"
+          ],
+          "bob": [
+            "0f8eec7ce2e8e4ff6cfd0f16861815e6fba4048bc79e3fa5f341975dae5f2df0",
+            "2264b391e7ff80bfb255c77e5664b9c87d17b85dfda8a7a2eeb80270666b9297",
+            "8e13878e00c17406ecf10275aaaf7ab09728c124de9ea61b555254e81bd49ca9"
+          ]
+        },
+        "messages": [
+          {
+            "sender": "alice",
+            "keyExchange": true,
+            "key": "3308a912122105f28610de1cb7751b45a30b99797c78f2cf1f8d20651a70a814a1fba147ae71611a2105e124a134452a0a93eef99eaad1c40edebe2ad59ebffbe4db4cee14be5dee5d312262330a2105a16d4ce088d74742892d8897fcf617605184991c334c388b10ea82037969e1361000180022302d543cde4f380ee83237b8a8c4a16b0f5c07613fe18c8c3c70bc7c7eb3e57936137a986e0fb04cf62bd1742d4b82ba915b610e547f6932593017",
+            "keyMaterial": "60a7e9892a49ff091b9e8b981d799ffa67e2c26fcf62046e24db7fc1c19ac466",
+            "payload": "f283",
+            "iv": "6fd33c6b5a4a9434e0c5256e",
+            "plaintext": "6d30"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": true,
+            "key": "3308a912122105f28610de1cb7751b45a30b99797c78f2cf1f8d20651a70a814a1fba147ae71611a2105e124a134452a0a93eef99eaad1c40edebe2ad59ebffbe4db4cee14be5dee5d312262330a2105a16d4ce088d74742892d8897fcf617605184991c334c388b10ea82037969e1361001180022309bb2b4aeff4961ce3aa271b4be211a88969a2b78d4961a6908f560d0d57933109000f58213a06ef9afc786b011355600d9aac8f486c35f393017",
+            "keyMaterial": "3eac70c6becd9c7284eb02418aa469241f9613a7e821da2dd24fe296c208540b",
+            "payload": "069e",
+            "iv": "4275c94607c51bb8d5b50b7e",
+            "plaintext": "6d31"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": true,
+            "key": "3308a912122105f28610de1cb7751b45a30b99797c78f2cf1f8d20651a70a814a1fba147ae71611a2105e124a134452a0a93eef99eaad1c40edebe2ad59ebffbe4db4cee14be5dee5d312262330a2105a16d4ce088d74742892d8897fcf617605184991c334c388b10ea82037969e136100218002230a7f915236a3e22f8fe1b8d26149e0a2734baa1cf8991c3166b0639b2c0edc9d54add58f2acda2df94f629d53e28d527ac6f028b8a77935d23017",
+            "keyMaterial": "0860423a0168b73c6ed02ee2e793e26af010df72235308590439e76dc6804b48",
+            "payload": "b6e9",
+            "iv": "a109cdbdfb392462ec78c0de",
+            "plaintext": "6d32"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": true,
+            "key": "3308a912122105f28610de1cb7751b45a30b99797c78f2cf1f8d20651a70a814a1fba147ae71611a2105e124a134452a0a93eef99eaad1c40edebe2ad59ebffbe4db4cee14be5dee5d312262330a2105a16d4ce088d74742892d8897fcf617605184991c334c388b10ea82037969e136100318002230af7bdcc64afdfae8a67a062b09da1dc083179c595b435242c6c96368ff9fd358e2658a3a3d7fe549886efbaea7ed1fd440d20cbf10e4ba443017",
+            "keyMaterial": "c8eeaa1f14076837332b4c6cd0487b197fd93e4b10b810307600cc5fcf616805",
+            "payload": "7eef",
+            "iv": "9f4489549d0b222ecf64282e",
+            "plaintext": "6d33"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "330a21052d3719bbd81d51cdf60ccf8bc5f3243e1caf37cf7fc716de39be7ac13922f32e1000180022306c39df8d7fc03cefe9a3b0f089a468441986e28076aa5bcdb077402ac5ffd319435a934f001fc87991983e514b1ba51d792c60e35f629412",
+            "keyMaterial": "e26f70133f593482f7bf79d7e7489d70225a24b8f0a6499fefaa471d0f4cf847",
+            "payload": "d9ff",
+            "iv": "20d4eb219f77e521f3460212",
+            "plaintext": "7230"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "330a21052d3719bbd81d51cdf60ccf8bc5f3243e1caf37cf7fc716de39be7ac13922f32e100118002230d537d1cbefcd2f1739291fb615a63f35076f0678b3356691baaa5913e3bf58bb5243acb546ea740a9224c6af3f7df5d622dbe0c433e5ee0e",
+            "keyMaterial": "8e40afb9b4eb9264789b494dd552813796241a03d1f1936b9ea63f94e46fa632",
+            "payload": "68c2",
+            "iv": "4415e50be3de58e3db811153",
+            "plaintext": "7231"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "330a21052d3719bbd81d51cdf60ccf8bc5f3243e1caf37cf7fc716de39be7ac13922f32e100218002230104f29c4df72c33187aa79f7c1c5125afdf6c1ceaef6c6784a87e4761ac75cb65926373ed426d5268feb2d3977d52e81a9c6e04735168d6b",
+            "keyMaterial": "13bec0a9518a35675afc112770150274bf48d4e87c39fe24863749d8f385c956",
+            "payload": "4674",
+            "iv": "df4142ed05b0a0a412ebcd86",
+            "plaintext": "7232"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "330a2105d10d790c656298b6cfa33aefcdfd8801f80fabb6d06e47f7c6779ed44f7b4c41100018042230cca332ef1ada2f246edb1364677e199c18dd2d09be0e8bd2f51f52fe5e8289ad0ed1e0dc6ff8507846fd7d17edc20e50fc82444959f71b09",
+            "keyMaterial": "d0fbb39ce0a48547e6422be67ad6fec803a7e8f2c2135ac7f5cc55f058f563ec",
+            "payload": "b395",
+            "iv": "bda31b759abb73eb9aca5b44",
+            "plaintext": "6d34"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "330a2105d10d790c656298b6cfa33aefcdfd8801f80fabb6d06e47f7c6779ed44f7b4c4110011804223024c0080fff55b439714248daae984edb350a32d418a3374b123edc06e106f67b5718bf2cafd0713810e9cc8311d5cf73848cc57ce5ccdd7d",
+            "keyMaterial": "a97e98868be4b440090bb156593540d2b8a473abe0bdaf54a33bc2e3bd781cec",
+            "payload": "66cc",
+            "iv": "cb6c4e8281d2c6ca5c36d009",
+            "plaintext": "6d35"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "330a2105d10d790c656298b6cfa33aefcdfd8801f80fabb6d06e47f7c6779ed44f7b4c411002180422301310589bb6971adf5cda83f42b68c590346b8592889d3471dfae1448940f6c8cb4b18b8e99debcdf381d0fb59890499304e352d35abacd54",
+            "keyMaterial": "461c1aa4de70a8ef6d01ba0d2a66c5bb27aaafd100629cf3e2f417611ad91501",
+            "payload": "ac74",
+            "iv": "95c190297ea208d42b12dad1",
+            "plaintext": "6d36"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "330a21057ce982aca66e6cf4143988f22242e7a59515b3e202b609a133987897c4e1e86810001803223069aefe0895e9420dd57edb7c9e5ce2a9201b65dc10b15b7f0611e8632c335961165364b36f32de5835c1322278c1a3081744ffefab8967fd",
+            "keyMaterial": "17a1488579a61b7ba6b3af051173421055a3d25663016a39282355c0f4c5f6fa",
+            "payload": "fc69",
+            "iv": "5c15d384118d278ce7eaaf65",
+            "plaintext": "7233"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "330a2105ddd3142eff913c56659646986933c8f78c94c3e4eef18d43a5c4487b0eaee749100018032230dd08f81872a5188b3e662a79246e850b4c1eb2bcd6a4fb596791cf37f0cfc883830ed62fa5c1b461b131ec82143255b8e2bb9e7f115d0a08",
+            "keyMaterial": "4b8a06770666cd7b5e3e702db10362b0f3eb9c81e76adf04c50c694bdaa27ed8",
+            "payload": "9e04",
+            "iv": "b2e435d41e1506f54da6c133",
+            "plaintext": "6d37"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "330a2105948d5a238e754ed9b65660b6ada1d3913cdd6d1621022ac10b755c024adb2569100018012230835bdda3f3dca32cd52fe67163989cd0b77138c7783658ed07d659bc97f06bdae464ee1a04759720a2f2561fb0308437a196e31b418230ed",
+            "keyMaterial": "ff266c368d51ff51322eded18172dcc3c1562986ae51adb8d3976207bb6fa446",
+            "payload": "6c33",
+            "iv": "83c8bf02c27addfb0d1cfbc5",
+            "plaintext": "7234"
+          }
+        ],
+        "events": [
+          {
+            "encrypt": 0
+          },
+          {
+            "decrypt": 0
+          },
+          {
+            "encrypt": 1
+          },
+          {
+            "encrypt": 2
+          },
+          {
+            "encrypt": 3
+          },
+          {
+            "decrypt": 3
+          },
+          {
+            "decrypt": 1
+          },
+          {
+            "decrypt": 2
+          },
+          {
+            "encrypt": 4
+          },
+          {
+            "encrypt": 5
+          },
+          {
+            "encrypt": 6
+          },
+          {
+            "decrypt": 6
+          },
+          {
+            "decrypt": 4
+          },
+          {
+            "encrypt": 7
+          },
+          {
+            "decrypt": 7
+          },
+          {
+            "encrypt": 8
+          },
+          {
+            "encrypt": 9
+          },
+          {
+            "encrypt": 10
+          },
+          {
+            "decrypt": 10
+          },
+          {
+            "decrypt": 5
+          },
+          {
+            "encrypt": 11
+          },
+          {
+            "decrypt": 11
+          },
+          {
+            "decrypt": 9
+          },
+          {
+            "decrypt": 8
+          },
+          {
+            "encrypt": 12
+          },
+          {
+            "decrypt": 12
+          }
+        ]
+      },
+      {
+        "name": "emptyMessages",
+        "alice": {
+          "deviceID": 1001,
+          "identity": {
+            "privateKey": "882bc38d277919aa6c87493c2dc7da2892bae36e0a9738ec6c75fdce03a4c04a",
+            "publicKey": "84ec8d2a343d29662c35940c0d2d904cd6d4d634c02ac02b16f14161aecb8d43"
+          },
+          "signedPreKey": {
+            "id": 11,
+            "privateKey": "80dbb97a085d56cf978fb98e845c9350248859fb9939235ff3d86df4ad252d46",
+            "publicKey": "370cedf31d381e2f9292d6bef63a1b6a594bf1fbcbe49e544119326949a1577c",
+            "signature": "82e46022f0e804149b45bbd0319fc1d065376777d6380d9769a74a54d0ae650645b38c09fb6d74672b7a3595a9e003482879b6afe3b2a0160aefdeb28901c088"
+          },
+          "preKeys": [
+            {
+              "id": 101,
+              "privateKey": "2af6bfda7b4a3b536cce3e13b03e2e46fda309cd4725e04c2c8d681f0a376945",
+              "publicKey": "7a469668d610ce15258c6c1aa1631b0e4d1858d8e2595a39c068b7cd9e7f1d45"
+            }
+          ]
+        },
+        "bob": {
+          "deviceID": 2002,
+          "identity": {
+            "privateKey": "c0766307db853a819d76d926336c92b355123a7026633b3ea401eec5523e2c6b",
+            "publicKey": "08f56a5b812ff73768f7c0e337c3abd1f03ce78586c6d595645daec6d31bcf1f"
+          },
+          "signedPreKey": {
+            "id": 23,
+            "privateKey": "7354a17b841dfafc12e65288cb1325f8e62dd9f05a246498ed03330831da3a41",
+            "publicKey": "57eb1af4fc59017ad928d118c61e3d15b2df36c7cbfaf9f71f2953540bf3681c",
+            "signature": "da13510084eb564292c0823f90eabf727e088b716e4d6a3373718d62a119f0d0e2052c87a303400bf9824410f1236147440f8c551b5147e543131d0bf325a809"
+          },
+          "preKeys": [
+            {
+              "id": 2345,
+              "privateKey": "3ca98ea893d140215c747f256687ade9e48680a52fc3ecc28897b4ffeeb3510b",
+              "publicKey": "95526696671a04b95a37edb87591bbb5b77061300a8dd29c6dd4fac225457c4b"
+            }
+          ]
+        },
+        "aliceEphemeralKey": "add885764359c89e53194a567fd0e4d07b801ef1f98310029678e07740890578",
+        "ratchetKeys": {
+          "alice": [
+            "d9ce14475743c4c1ad5c3df3a715b66fcfacf7b00e1becb6134a56375440c007",
+            "6801212e785acb7a4d0a9efebbfb94609142c5a0c23177bdb3f002c293292eda"
+          ],
+          "bob": [
+            "94f7d4cc7a0275a400f617d759ea391ccd31f07fb428d12f5b7b5be7fba79126",
+            "508e6c6562018c14cf2e6381d6d95c391a41fbb7b06def8bf6f6573e16c37ccc"
+          ]
+        },
+        "messages": [
+          {
+            "sender": "alice",
+            "keyExchange": true,
+            "key": "3308a9121221054f841b0ea7253c7162a3d163899bb70ac137a2afbd629794cbeca423ec17567e1a210584ec8d2a343d29662c35940c0d2d904cd6d4d634c02ac02b16f14161aecb8d432262330a2105f45be29f2b679d2aad137bd071aa54164eed0c87304b15cae336d41d2f55595d100018002230e5cdceaf1606b00b80776c77b6ed2f7c4bf8eb7d327bc483316f9fa1dfe3abbe687eb47176be0dd375a5243604a098eb9906bc3d1fbaa3563017",
+            "keyMaterial": "27ba50703521ce06e337bdc9fbab2887ed0ac77e227a6d43f7b2a4eacd0db730",
+            "payload": "697c7a015b",
+            "iv": "21f315ca13d028b91d2ac8a3",
+            "plaintext": "6669727374"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "330a2105d56637972ab76ea9bcaf0c79176b743966e3c9187ff30eaad24b957acf8474601000180022206d5f01f5f50b3bb245250a0fbd4bdaba6ea1656f98dd25cbbc28b128474cf7e7620352617b3cfc8c",
+            "keyMaterial": "06ac8181c443240441677f2585add5fd",
+            "payload": null,
+            "iv": "58cea35f0663993cd4335571",
+            "plaintext": null
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "330a21059641c4f89d6714dc3ed78020f75e33ca1ec73f2fa0d95a5647021249d26e925f100018012220e0073c51f25cef8360b82a2f613f8d17d624fb4060a42e480f06819af7e834282af2fe22d9d0cd19",
+            "keyMaterial": "bcb881dbc2f421dd11bcb60f1a95689f",
+            "payload": null,
+            "iv": "d24f7ec4c10696538def51f2",
+            "plaintext": null
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "330a21059641c4f89d6714dc3ed78020f75e33ca1ec73f2fa0d95a5647021249d26e925f100118012230b48f045a439abf33010536b9373062703ecd98f14a71a2327f27f3c1040464b9c8211f8cbb9be1039fd74a5813a7cfbb7daaf46aed2f6ca0",
+            "keyMaterial": "ca18fc6cd9803d970e005c5927339fddfbca838c18c3a2fa527d3f48b750eca4",
+            "payload": "b5a28fdde50113904769eefb70b8426d6715da",
+            "iv": "173f7f18b7fd51d31bcf4720",
+            "plaintext": "61667465722074686520686561727462656174"
+          }
+        ],
+        "events": [
+          {
+            "encrypt": 0
+          },
+          {
+            "decrypt": 0
+          },
+          {
+            "encrypt": 1
+          },
+          {
+            "decrypt": 1
+          },
+          {
+            "encrypt": 2
+          },
+          {
+            "decrypt": 2
+          },
+          {
+            "encrypt": 3
+          },
+          {
+            "decrypt": 3
+          }
+        ]
+      }
+    ],
+    "legacyPayload": [
+      {
+        "plaintext": "",
+        "key": "f90f48f03c28dc866d91b62c99a0ea47",
+        "ciphertext": "f8a6a6a9fe3a228eb9aec979863653d1",
+        "keyMaterial": "f90f48f03c28dc866d91b62c99a0ea47",
+        "iv": "a4423959838711ca3133f19b0abb0915"
+      },
+      {
+        "plaintext": "2b",
+        "key": "140b675676bce11275840801ed52ecf5",
+        "ciphertext": "a2bc362495cb78099a6f7764503983becf",
+        "keyMaterial": "140b675676bce11275840801ed52ecf5",
+        "iv": "8867412e6c4009295861905c0d1bba59"
+      },
+      {
+        "plaintext": "2dae93e6ac4e8a1d17beaa3ef7aeb468",
+        "key": "e85e092ae7b45f9861fe325d00a5c764",
+        "ciphertext": "d2b3adcf1ddfb9491911ff238a7ebd10549514dad1b3997b266ae68e272bbff5",
+        "keyMaterial": "e85e092ae7b45f9861fe325d00a5c764",
+        "iv": "53d1e259991a1558b4401e9a"
+      },
+      {
+        "plaintext": "88cad9adc219c735ccabd85ed854a1004f57e3e81287ec5955bf5d85030129c0dc",
+        "key": "9bb304ebe783e7137785067864832c14",
+        "ciphertext": "d4118f354ce7e1a0366238a761853406a24b9696602133000f9762e9ee76f47be1d4473dec882e1d44926b55142ecd4507",
+        "keyMaterial": "9bb304ebe783e7137785067864832c14",
+        "iv": "852efe5354f20d26f25488174116043b"
+      },
+      {
+        "plaintext": "a052d52c212fe52117cc5043ce4ec09e12e600b6256384d6dd9ed89edd47e35e11cb4ae3b69cac5f22f37b628c7a2c6fe49f88eef3f045955dd530a909d339e30f7b927508df856e93f1f2434b16e084bd860c052ff21d38d83c0d990af2cdb0c8c0c1fc7bb97f3e79b57ce09944ca777e4ec3b51402ea8624d8f678151d5c6513897e7bcb071e767f32cd1d3329c5db71a22fa9b90bed7f1abe729698dabcbd504fbe5c46e325cff4664ac4b1bd8fb1b48d4b131fff7064cbd62e1edd781976b685e4575fa4f0fd",
+        "key": "809b94e7e391ffa44542706e32287606",
+        "ciphertext": "98f82af97307d44a92fe38d4c0d56ab42099342f43d0487bb0f7e019229e89e8a98c51a47fdc4c8f31e8cd7859d5aed476d957ebaeededf39f68b2b955c25ef616e99ff22ba36edeeb084ac56e0d1141212c774d38eb8e62042deff96062dc04634016969f664d20d65033d8f87a09fdda861a3931736ba614ba3ed434de1da9400c44b7125b19c2a207eedd5c9173701cfadcff2e814b65d0d35ec7a9221810d38ceb2bf37926f763ca1a30a6b8312d26fc07c9f191f9c6586c4b038ebce6f87d9e6f4394960ad5e0320cb8eb21f5a11ef4658cfe6d3d05",
+        "keyMaterial": "809b94e7e391ffa44542706e32287606",
+        "iv": "d188a737ea880a3271141bde12efdb9d"
+      },
+      {
+        "plaintext": "f2729aec3e850a31560fc2430a2bf701b6b8a993cc52e764321ad15f0a4d677a7c3700cf2aa3b3bb9ed9d34e8fdd5b506cb3d307f2d9de79ee",
+        "key": "3399854fea000bfd625185d9239a9418",
+        "ciphertext": "df8f1437c4c11ac60c8bec35a4f6890437658a1398a91f4b5d82e8040db559d4ac52b226b5e986b64f8e6e0e22826ff49620ad98e18031948b20ee2ff26db75dfbd9ca2f878a9bcd62",
+        "keyMaterial": "3399854fea000bfd625185d9239a9418",
+        "iv": "960a462e25bc76f37a87a94e"
+      }
+    ]
+  },
+  "v2": {
+    "x3dh": [
+      {
+        "aliceIdentity": {
+          "privateKey": "a40438563624429f63166c2a69ac5a7b19757ce617f4906981ae07a6801a5e72",
+          "publicKey": "29868e3be10048895eae75684d053c378dbadfae80ad3add00bfa4686219f784"
+        },
+        "bobIdentity": {
+          "privateKey": "f7744097d38797a13eb1b786478795d65feec349af2fe6f8f1d4973d38ccb52c",
+          "publicKey": "4a23e9a2171b433e8efee65551ee904d34ca34dfd1fbbcdfb8db973d853e2a8a"
+        },
+        "signedPreKey": {
+          "id": 4,
+          "privateKey": "a182f5e043d6cdbb6d8bde509b6d99cc4835452a7472a4c87046ef163ecff341",
+          "publicKey": "2f9bb225d5bfe3f85b86793cfa0ccd80029551abf5373976f3cf07ea91b0a545",
+          "signature": "6558f7f95a348e1d95240046780aa69f076cf1db6fa18ee1ba6b454455402e446608fbf38981332a1d1204da18858ff7bfef9c854541b7ad90cdfd21fb1bf802"
+        },
+        "preKeys": [
+          {
+            "id": 31,
+            "privateKey": "1e3dd80db3343c87583ade7151c9d8cf8430dbda714a815b57dc35b3a4850d9c",
+            "publicKey": "1196ee34bdae77f81520c3d76f0f62967b98ff785b439de7bce188c970178a12"
+          },
+          {
+            "id": 38,
+            "privateKey": "dd5c9f087e6dec3d66894cc882bb0479a88dd1abb6d7b45e0acd15ca58bba093",
+            "publicKey": "5f69b03ce8df21a29bfad4ab80677c302a24489c8c8007c0cb36fbfc9ce1d869"
+          },
+          {
+            "id": 45,
+            "privateKey": "7463f8bcbd0e44c86dbd2328254e3744f329d6fb2addae620ef704f579f0ec4c",
+            "publicKey": "7f0ea212aa3c3aa4ac12dc300db7c7341a15c25c372120babdc1a627aea6bb67"
+          }
+        ],
+        "usedPreKeyID": 38,
+        "ephemeral": {
+          "privateKey": "e1b2039260e4b34594f0fdf2a1b8e1a8661a56f816b074b087fa81df371df81f",
+          "publicKey": "22f775c4c641d79921f3ccbab3a3a81b66a8af655be43c6a5c4bcdc6019fa52a"
+        },
+        "sharedSecret": "bf2df9efff5f14b25e3f0ed0dc75f90f26e1e5d89ae31285fdcd0a69e16f01fa",
+        "associatedData": "29868e3be10048895eae75684d053c378dbadfae80ad3add00bfa4686219f7844a23e9a2171b433e8efee65551ee904d34ca34dfd1fbbcdfb8db973d853e2a8a"
+      },
+      {
+        "aliceIdentity": {
+          "privateKey": "4a77df841b9db82afbf4eb65a8cbe8c9448a867324a46418bdc9313b7875cea5",
+          "publicKey": "6b00029dfa8f83c4d4ec79dba7f055cb34e04ec957f23111d868733a17e6d78d"
+        },
+        "bobIdentity": {
+          "privateKey": "1a98f169e7856a1a52bbc3405833af24d887d762cd4aacfb567e97ae933c1235",
+          "publicKey": "5b971f9d97ac387b1712e404256d6253c9344d023a6cabea91231fdf25d0c69c"
+        },
+        "signedPreKey": {
+          "id": 4,
+          "privateKey": "cdd8040a0d681624c9deb2f73e9bfcedbad363c0dc91ef57a45b8b1a1941f665",
+          "publicKey": "743555883769a055ce03d2fe6bd0315f72a94b4857b517867cb634cf67d8211c",
+          "signature": "938fe11905f4ce2937e6b537068a95834da170ef34f459a7b40a12de7d9f783f13727f7419cad126a1bc25015f2b4c4fc7d62f6430611b057479be6fb551f80b"
+        },
+        "preKeys": [
+          {
+            "id": 31,
+            "privateKey": "cd3bb6220a66bca3a0c6f66ab4d149d7da02dedee98bd1e6e476949328b83edd",
+            "publicKey": "65c849b2e07ba1dc431667adba791c4508d0e950b250423163e7f2e6e93e6270"
+          },
+          {
+            "id": 38,
+            "privateKey": "f2120497e0b86d7329ebfb35f3bda8e123b470db5fe5f91580113ab2d976e0dc",
+            "publicKey": "6a9cdeabb9ad914e93cac64181b86e3641b1c0130e4a66d94313770201e9981a"
+          },
+          {
+            "id": 45,
+            "privateKey": "d0ed5e46375e1fa98d696653bc8e8bc8cd9836885e68578811313b48fbd785a0",
+            "publicKey": "cd114879942eeacc4cca38b18a61202fb911f5984b66a0bed63d05b333fa8365"
+          }
+        ],
+        "usedPreKeyID": 45,
+        "ephemeral": {
+          "privateKey": "061ad0a2c87876f2022bd54ea30f9d99431ab624f210f1e342559f81c903be88",
+          "publicKey": "821b50c46eb01faa1b293c71d45aa784ea2feb0d06472e4a3745b95707a29848"
+        },
+        "sharedSecret": "aef8c1cbcb2c89eacf84b58290368652115be9fc246079dcb84071feabcf879f",
+        "associatedData": "6b00029dfa8f83c4d4ec79dba7f055cb34e04ec957f23111d868733a17e6d78d5b971f9d97ac387b1712e404256d6253c9344d023a6cabea91231fdf25d0c69c"
+      },
+      {
+        "aliceIdentity": {
+          "privateKey": "1de40662a5a5aee2bf17d32efe705b209cd2bd53960b535713bcf387f88ad3a8",
+          "publicKey": "f3615197232847317dc4d5b144189d30953edc727820f7f178269f92e9b5f165"
+        },
+        "bobIdentity": {
+          "privateKey": "db94045141270130f27333b754129fe790bd9b84d9f7db2cce6beab33585eaee",
+          "publicKey": "f7ad47a83dc768a61ed16a13cfe1ea35f1e9a1c28b7bb5187918a63209fe0d97"
+        },
+        "signedPreKey": {
+          "id": 4,
+          "privateKey": "d145effde7f32f6d19b536cf83dac60e6f59001a5d2bd4d9e5fdc844a4ce07ec",
+          "publicKey": "a0e0e32c78a9ce8ac5d938f1b1034ee2b83281f6c9bd716b9da62397ced6c374",
+          "signature": "7db4e93e28c126f882a14637c6f8d522f7a3c62aeec7f00b943ab08ad0f2d5482ccd0088ad6496318f029d65fd653fb604a93b1090d1f6c73298bcb30a504603"
+        },
+        "preKeys": [
+          {
+            "id": 31,
+            "privateKey": "4c2b7f57701b13739d5d4676a44adaac6e4231a50ac74e5cee614cc6cb3445cf",
+            "publicKey": "680351459ed1dc7ac11aa18692feb074f3a036dc42dc435ab1ab709dcd794977"
+          },
+          {
+            "id": 38,
+            "privateKey": "dcedd369583a052275875a984b8937c3ede3908ae363806cdbbc0a0b281fdfc2",
+            "publicKey": "72f86e9ed2d5ae4abb25b4ce9c4b7b80fd0a05db008e4121b7a78c04a0f78263"
+          },
+          {
+            "id": 45,
+            "privateKey": "4ecd31121f039d12f28f324e89aa3ac3f9cd39b132a2b8a95454056a6053826f",
+            "publicKey": "c2deb2030884b470fe7e25ba18bdca5ebc87fa4b22974f8d2bde7f5568be7c6c"
+          }
+        ],
+        "usedPreKeyID": 38,
+        "ephemeral": {
+          "privateKey": "2c034cba65d4d5c69600a98643ddf7d0433e104bc108d98a4fdf42f610d22eaa",
+          "publicKey": "cfd1377718982bdb4af0b9696e0c5433b6b8e6bb28e07c605267511e5f446c5a"
+        },
+        "sharedSecret": "06bcba995a390364ff955b42228e688996f5ca9092a8d7dffdba51df580d9bc6",
+        "associatedData": "f3615197232847317dc4d5b144189d30953edc727820f7f178269f92e9b5f165f7ad47a83dc768a61ed16a13cfe1ea35f1e9a1c28b7bb5187918a63209fe0d97"
+      },
+      {
+        "aliceIdentity": {
+          "privateKey": "81de248b054e1ac3c7c22595321cc2232dd5a621e3aac5519b29de0c1a9e4854",
+          "publicKey": "b5fe1a554b699f78cba2bd35b276b4cb4e1a88fa69fe0c91e6863a18494d205a"
+        },
+        "bobIdentity": {
+          "privateKey": "d67fcef489e8cb1071e1211a90e8062546655385213e678f0a3467b0752f9b88",
+          "publicKey": "564f15b7f39c07bebea935b5f8564d127baefe631f0d0182e8b84e04ab5606cf"
+        },
+        "signedPreKey": {
+          "id": 4,
+          "privateKey": "47ff29e167e1f064c8548d8da287169e3bd9220102fa717937a5a900d4cf300a",
+          "publicKey": "fb02b65445778600cad71eb2be344291bbe00fb883fbd04489dc30ddf8c3a42f",
+          "signature": "2efb9f8f931d5ccbbf6f71060244dc3658148399223e04d972a0073c88722a2457fe9f9694ecf7ce47328eb07737ec9b6eb538356f96832c064bd9e7ad598b06"
+        },
+        "preKeys": [
+          {
+            "id": 31,
+            "privateKey": "47d5f83a1d08c140cfbc5af7e92dee0c06da892cbee93dd265f38cd1237b4c2e",
+            "publicKey": "6b694b4f25174ee379edb64057123ef325a249cb844f5027f0b1ae36392e9412"
+          },
+          {
+            "id": 38,
+            "privateKey": "b913b48275b34ecf7c3f036480c13dc9fa141a4b1b7bfc3c413494be7d311944",
+            "publicKey": "8d18d645ffd05802046d1a5392f3f528db5673e0f88fe553a9198a5a56f00307"
+          },
+          {
+            "id": 45,
+            "privateKey": "4f470b97a45d7263f47901a0e798bc6bb86ece57c2da36247817c93a626e6db4",
+            "publicKey": "a7287a50f0b959658de9257bdf1c50eb4a6af54e74e435fd51059365204f426f"
+          }
+        ],
+        "usedPreKeyID": 38,
+        "ephemeral": {
+          "privateKey": "b71ec2d51c104cb2fa9b894a15f37c823bafeffdd3c96504c7dd149e719f371f",
+          "publicKey": "f8f6365291e93d3a8db818eb95d72b46e05176cc08ea096bbefc15677e63547d"
+        },
+        "sharedSecret": "431bbc819b391d930e0a928c4b71f92646185c340eab71b02e9550536ee6c8c9",
+        "associatedData": "b5fe1a554b699f78cba2bd35b276b4cb4e1a88fa69fe0c91e6863a18494d205a564f15b7f39c07bebea935b5f8564d127baefe631f0d0182e8b84e04ab5606cf"
+      },
+      {
+        "aliceIdentity": {
+          "privateKey": "65f290c73c64d43271bdf00181f8ba536b7e3cb3342562c1e2067ee9f45a1feb",
+          "publicKey": "a91a1b4d50c7a214b65b3b07a76c7f8cd4c5054a344e068c4856efa0f7fd89cf"
+        },
+        "bobIdentity": {
+          "privateKey": "a6f22394f99587d0d29bc95e944329d5b7c712d467aada84ca92a3512868e93e",
+          "publicKey": "1ef6b5f28520cd4f5d9ced34fdad452986bddd49219ce5dc2211da27b69cc276"
+        },
+        "signedPreKey": {
+          "id": 4,
+          "privateKey": "0c373468f06b09a01fe91ca0aaa43bfc6e829ae5f453f1f4a400d6e82aace3f0",
+          "publicKey": "a2ef433102cf416584ddb3c11e8331e8bdabc75c00111a538e0e620126258c5e",
+          "signature": "67270fb45738c673b3901a083346b12e2c86368f0a8a575697b6f08bf76494b7d6ce4c0451fbf847602434aee55690324109cac3120e85c848a46b63838b4a0a"
+        },
+        "preKeys": [
+          {
+            "id": 31,
+            "privateKey": "65bdfc04f970dcacbe9761e2e8ebeb1b941f008f8cb70e08258bc34fd66242a3",
+            "publicKey": "20c3a1141a29e0bc55af522cb9cab80b7d8e0a2166744d35f873369fe852dd65"
+          },
+          {
+            "id": 38,
+            "privateKey": "1c3f0bf9da8645e1617a25b0b24cb4b1438c4a2eeac960618ece8c41c2615ca1",
+            "publicKey": "c350a1a2a90b1dfe3bb39668a7f72a00e5d0827fa569d91ae4324756df91a902"
+          },
+          {
+            "id": 45,
+            "privateKey": "3315a14a0f7fadb54450b368bc84abf0756eb597b32cd79c884ff9bd408f0473",
+            "publicKey": "c5af0613fee7cc5e8421e4798a376e7e511fe9a542af81cbfede907ef3d47c43"
+          }
+        ],
+        "usedPreKeyID": 38,
+        "ephemeral": {
+          "privateKey": "6eea717b8c975fa8312520ea1a24bbd71976b6b0e3cdf835e69c94b8f5e2e30a",
+          "publicKey": "f30b0a2423523933b49bc203495137d320f8b77c8567832749887da10f312356"
+        },
+        "sharedSecret": "e9cd90842a5cab1748937f90d6e9e84969b200e4ed671dcb2d59b2824785054f",
+        "associatedData": "a91a1b4d50c7a214b65b3b07a76c7f8cd4c5054a344e068c4856efa0f7fd89cf1ef6b5f28520cd4f5d9ced34fdad452986bddd49219ce5dc2211da27b69cc276"
+      },
+      {
+        "aliceIdentity": {
+          "privateKey": "f6c5499adff3e462eaea6e49c55a9d0c4fe95b666eb5e811f6d78ec6ce23bbd5",
+          "publicKey": "f762b307bcb393b0f00cccbb64ca3bbddfd36968f552f84fb6cd6d9b6be461b4"
+        },
+        "bobIdentity": {
+          "privateKey": "24e69ce34a737e94fd8d69a6ba78f36290d427d0ba128a6be2edbe8464761006",
+          "publicKey": "206f69e1786ca4af7206d14cb0535e22255bc15f0ca413b6d702d245968e4cd2"
+        },
+        "signedPreKey": {
+          "id": 4,
+          "privateKey": "3b391ce31c8d5cf1c80404f6ad5e68262aad4f271825029d6f6771225d4a12f4",
+          "publicKey": "5b81186a0675c2a70e11f0646ccfae228888bcf9490309cae02113c86b7df123",
+          "signature": "c78d575ee272fecfeae738f4563b93bd9f115ac579745bbed55007114105531a363b0690e724dd4463506d193ad06495bb1572a7e6bbcd94c75f486dd76f510c"
+        },
+        "preKeys": [
+          {
+            "id": 31,
+            "privateKey": "8587932f1f05eac24a79e31ffa076d1195fc781b01c5fedd38373d936e5b8741",
+            "publicKey": "748bda5413f08ea9a9d6f7b66a774eb926defebbd27b8dd3e660ee7edb9bac0c"
+          },
+          {
+            "id": 38,
+            "privateKey": "8064bdea839b2a6933b07a5a5ebf5a85a067c549b0221f27787dcd30c94c0774",
+            "publicKey": "887b907810c094b4d1727d244425bea8232d6e214aae7c7a6dd0e829f1fcb376"
+          },
+          {
+            "id": 45,
+            "privateKey": "68a7eac00e709d8ab3c7d46b9880704af214175c08fd439b452f99043b93bed8",
+            "publicKey": "e4ed5f97c392ffed0d123703e1f1dd957f9f02d1db48f910aefae99695923b79"
+          }
+        ],
+        "usedPreKeyID": 31,
+        "ephemeral": {
+          "privateKey": "3fb1ef8870484bc390f996c9272572d6368ac7a460c240ed35c2eab4f954748a",
+          "publicKey": "6c57f46f45bff382dcc2520374229f214956bd4297781669f5a7b3fe2658cc78"
+        },
+        "sharedSecret": "2c8c2183482cd0fb6c26d975edbf01d45340f99e34d5a0b9f82e1088b04fbf06",
+        "associatedData": "f762b307bcb393b0f00cccbb64ca3bbddfd36968f552f84fb6cd6d9b6be461b4206f69e1786ca4af7206d14cb0535e22255bc15f0ca413b6d702d245968e4cd2"
+      }
+    ],
+    "kdf": [
+      {
+        "rootKey": "4b3ef13954ae3e752a1aeb63911a0f2a6229b6b4cd20f5cfcc7c4e3eec96dc5d",
+        "dhOutput": "704bb8fa04b021acc46ab82f0ebe3a3c39a36c586d51430a279d4ddf0b7e8af1",
+        "nextRootKey": "6675e232a01621d0dbed36518dc619f778df4458f5b9ad0b2fc8cba5ab41ed37",
+        "newChainKey": "fd008364a66419caa59e1d939e254cc1eb51c3b216c261b4e8300ad870d5dacb",
+        "chainKey": "db8bcf340aafd600e906a4a0cb608df085f84d8b3a9ac324cc55081e9494c26d",
+        "nextChainKey": "1fbf90d7bcefe1769031245d9c3cfbe1ec516c43ccab52cea9933d2a8f00c19e",
+        "chainMessageKey": "f5a5af0719f1dd5369ec0f762759e381b53b3fe83f397071b90a4b4b083819ca",
+        "messageKey": "6ab34fb76ee603aa42a21a71f971a0191c84b5363fb94dadbca83bc5048f0ab4",
+        "encryptionKey": "345ccb09c155d66aa8f2d2888e9c06d1fdce578f43b626df80ca2b225a95ae4a",
+        "authenticationKey": "e350b735d5f4cc77fe7009411a9dabea5651526502f3a56733dc58c40f4ca322",
+        "iv": "1087b480e20996c79e93e186dad4ec98"
+      },
+      {
+        "rootKey": "731ef33cd25d6325fe766e840236bf6468190fa64638698fe960260fe2742a21",
+        "dhOutput": "d10b474e01ae6cf38bfbe25ceb24ca416baa1af1f7f7265e48ef1a165a445d0d",
+        "nextRootKey": "0ddee31f43a5d18dcdfdebf2e1a78d34037522e993f78fa0de23a8691df515b1",
+        "newChainKey": "c447b0d24a360e7c1014898727bbc8d4f6b76238132884d7724ef81a1c9f4320",
+        "chainKey": "5e9e76b57f7e032bae3c47ad79433b9cb65661cbd781f0cd4eaa28c35e73abe4",
+        "nextChainKey": "2dd416529fc48c9bf0e39040c4cd8195c8c34066064074f2cfae122b499bd42b",
+        "chainMessageKey": "f81eaa2cbb5827f06ce9fc40c137dc4df8f415015bcfc4ff085269775e39abc4",
+        "messageKey": "957047fa906c1647a6f45b4d7510f0b09f183f5353fcab0067b59933034f9bb2",
+        "encryptionKey": "9fb7316c0cc64340a11078b4310e929d9300c95c39b69b255f1d9541b0182392",
+        "authenticationKey": "a0d06acac06a2b01fc592f4e5d2a293b7a95ee8b56ffce3902625221b0fcdf83",
+        "iv": "9258b96de232b37b0b5c7cbda2fade3d"
+      },
+      {
+        "rootKey": "70a803ec4298bed60f08cb2cadc86979747829c9a52a403f3f06529a61c8423e",
+        "dhOutput": "74f8f59620eea33e694f8ce024ff89f282cfb5e53705d6db8d36192f5d3d2cab",
+        "nextRootKey": "860332a8413f74408aa4982c114c09fb11a119e2cd0d2713ca1bf097a95904ad",
+        "newChainKey": "dd9d325690c919b18f25a92936e83532015fa6207cfa8525032dc28463fa74f4",
+        "chainKey": "e6a794cb9dd5d036318391345d5085176deb88a18c8ca93c7273545d57fde8ae",
+        "nextChainKey": "3ccd0eb6f05e09c471fd41a596c6eb9fcc4929fa1ba07989ef21e937d9697430",
+        "chainMessageKey": "26f8d52e11deca74c523d38d49d78d3cc1bedeb874edc1de805578a78b25b606",
+        "messageKey": "17a6790a0875f8e2612a477d0ac29fa15b7392cc38bab3b54d2a28dce5a4bfda",
+        "encryptionKey": "2a70e012222c57e2715c23615ab4c0c9576898793b00eadc96d2a93b8246ae62",
+        "authenticationKey": "c47d2f5e9c37c8df697f1db336ca05802823a2fa828bc4d5b4fa724874adc6a0",
+        "iv": "5587bffb6b75b20c6d8225832fb78414"
+      },
+      {
+        "rootKey": "a357688c8fee179ba36071bbb90bd41219b64b02055463ff34ebb07f264cd769",
+        "dhOutput": "be4982e0284b34f7429f534c04c99800835a73635ee1a3c96602f19e81fc6295",
+        "nextRootKey": "bead9100b2915344276ee745df70d1dc90be1c54b0d3859f032415e846f7fe6d",
+        "newChainKey": "b095b000f9b6e30dbb6532ed5a463c2fe3bf4059ec1e9627c17b290f4860ddbb",
+        "chainKey": "981ccf0abdbfc2e4470a6b9421cc5fe731b08a89c21c49a4ce4a499fb00b6202",
+        "nextChainKey": "c39bf5a0c08cf39ad6f6961eeee0b090e504fb924b4a2102d65fdaad56479899",
+        "chainMessageKey": "748e63be6f3925c17531c1b3712422f6ced7af66d0ab923adb40b060e29838b2",
+        "messageKey": "eb47bd76b3cbe8773ddbbbb67fd20df05db581ed65437de7725b788a0bee2548",
+        "encryptionKey": "215f9a3779154f36be519ecdd6e2319c1f8d14cbee6562d159a5d8e9510d1435",
+        "authenticationKey": "1f046b1dd6dd9ed274352dcbedc6a4aa94ef2a2cce6b20006602e1b33f30ea11",
+        "iv": "ac707329adae550e903c52deec949376"
+      },
+      {
+        "rootKey": "16b4b2832b6f83d3c8fec21860c00fcd6cdf91243cfd4a7d1653f0f2bd893696",
+        "dhOutput": "30736c0c001cea305fd975c8544942d60906c8490305b90e982fbce171728113",
+        "nextRootKey": "6d8608205dcc6f771948a963d9f7d29067ea7e96e9b4a5970eda90c1c3432baf",
+        "newChainKey": "bf8a3da9587076cb5fde991dc10973daa952e0631fc83b2c55a07d347a2944ab",
+        "chainKey": "841fe828f66ad9b06ba1812d21fc347212e932ae739c03bdaa09d2fb85b17c8c",
+        "nextChainKey": "8fc8dcc0467f8f21f91f0acf142cc49401d2948e522598c3bc660168b55f6608",
+        "chainMessageKey": "c6fe66c5e39d4c54ca8b42e58b863e15b5944e069737cf4d0bb0d3a66a3ffc8c",
+        "messageKey": "c4a93dc7df55a199f4ddaaa82f7f2a9ea50a4618bd0c6bd443aa3b84d0067e06",
+        "encryptionKey": "c1403f5b31ed51209b2da7c6049e2e997d1e0a49b42e3e5f13bccbbb437cd327",
+        "authenticationKey": "2d680b7dd7ec9f5ce8833fb9f95b9a459ee0001a891a5b06191066f3b08bc211",
+        "iv": "70836b3fcfa0c2f2ba6217398ef604a0"
+      },
+      {
+        "rootKey": "1514000ffa175ab09ff7841400700762e635e5ba2d9fc1651431720dc8a9da2c",
+        "dhOutput": "19f4b8d4386798b0e89197744709d567e65a43009f44ef803c75f09faa7266f7",
+        "nextRootKey": "c18fa675dfc590bc203a9c20ed026444e3a32ccb7856e013e45428b78004f69f",
+        "newChainKey": "02b10a3a96f4662ee9423463fa2747e78af3c8137b59f170fe89a8b6197d6626",
+        "chainKey": "2be7df867f11895af09354d3610e365a5110a219e758a0816690939b40d52566",
+        "nextChainKey": "0b42ad9bf61221b62fb4a8cdd9ac8d135ed869bc84dbd7f18012ded159b06dcf",
+        "chainMessageKey": "6b04efb1b28a700b26e1f3a6fbc7ad53581a0f978bcccfdfcfb313a85ebc0451",
+        "messageKey": "bda0aa90897d99ec5f0f0d76bc5d518e72b842ffb06cd8703883af994ec3a099",
+        "encryptionKey": "c94b75d902d0fa4b4b29257a58ee4fa379fb453741cb263965f3a30e1e7da663",
+        "authenticationKey": "ca0554e440bafcfbf585df3fa550e2781b4c6d42898bc94f88f3e95604b2d59f",
+        "iv": "fc6c91fd261b444c04bbe42734db10d9"
+      }
+    ],
+    "payload": [
+      {
+        "plaintext": "b9",
+        "key": "838319f915acedfdb3e0664012e165fbe0b75416a9d76d1d1b3f0ec5f8e88cee",
+        "ciphertext": "164f8bb935cf2609490595cec89347c1",
+        "keyMaterial": "838319f915acedfdb3e0664012e165fbe0b75416a9d76d1d1b3f0ec5f8e88cee69e23f4cd5f34d6bb54b18964c2c80c2"
+      },
+      {
+        "plaintext": "e4bac557e8768bf1e5323207c789c1",
+        "key": "1fceb957094431d04d432973be6ae6e3cba8fd22fd0ba10aa64ad79b3aa32a76",
+        "ciphertext": "fedc5037dd130f648d42d22488d08018",
+        "keyMaterial": "1fceb957094431d04d432973be6ae6e3cba8fd22fd0ba10aa64ad79b3aa32a761c5eb5b59b41929d201bd7cd01426b3c"
+      },
+      {
+        "plaintext": "61652d6ceed0423ce0f32f59b993c29d",
+        "key": "4725ad990b6d601f54647d32b201c251e1a4e0bef42825651a3cc351c921c5ee",
+        "ciphertext": "fedbbfeb97e8e107673ab449dc7d0c44887bf67df5ba7fd4091fd8407ded12ad",
+        "keyMaterial": "4725ad990b6d601f54647d32b201c251e1a4e0bef42825651a3cc351c921c5ee62b49b6d5ec249e5ab4ddf138c813b1e"
+      },
+      {
+        "plaintext": "2bc1f66f3e4ec2bc93a4fc140b74cb8b59",
+        "key": "7884b4078f2e6fb13bbfc440a338ca422876f7b7352f9c853def31947d439da3",
+        "ciphertext": "1639fb935ccb96de268cfc4b4bf76da2841b140eb8f2bf9f01c3421d3bb760c8",
+        "keyMaterial": "7884b4078f2e6fb13bbfc440a338ca422876f7b7352f9c853def31947d439da331b3b64a700fd265558b499de83f254f"
+      },
+      {
+        "plaintext": "b70c5988c22e5e3375b4bb1bdda547e104a0198d33f5e05974789eb8d91817",
+        "key": "7664e25d984193bbf832b8f9ff664025f7447aa4e8c65a80866a5c12ed47d0bd",
+        "ciphertext": "8e72df2a05cd3f61eaa72306642cd8d50c0127db6fa7f9df45f1a4c040d0b14f",
+        "keyMaterial": "7664e25d984193bbf832b8f9ff664025f7447aa4e8c65a80866a5c12ed47d0bd5f395cb32f2cd1ce723c948a419dc8ad"
+      },
+      {
+        "plaintext": "5bc87caaf6d41766bb3f1b8eb77c28fec6ea5146f5c7153f762ccc2821a7db9bdb790193ced12920fb8d325e7df0678b469e381cf1509efdbe8fd244b43c70cf73f27485c531ed709db7902534a9980dc9964932d90ce7730346964a2b99abb69723d305",
+        "key": "d13852fca115625279bafa484cddf5cc9d515670238fe165de572847f238613f",
+        "ciphertext": "bb75719a401f807886ba2e3dedd634efa3e76941ca801f3aa06d54a6aac39b8bf0169091c5ca4fd27d65cb45859e25ea50758f38b9bd4ea55af0ff7c1ee90fa7f19b021a7272c30ffb4bc093dab7a24af042873399e703a6f10b43ba958a68f87e164002993b5e2f703db05f3c6c5bec",
+        "keyMaterial": "d13852fca115625279bafa484cddf5cc9d515670238fe165de572847f238613f8b79841717e95c7d4de05b7797ea58b2"
+      },
+      {
+        "plaintext": "b7504538bf882be20ca9ae2f6dda69a3e94a2edd7964b8f5786807183179fbfcb59d3de991ee344ee2a5037b1adee189700cd897c9912290e443d9734a99025a36c09e8eaf3da770f89b4bcbb136c96eca14fd1c6782b69a98125886a3cde171669c2ae05694c24efef235143040c66f53a0acb299ffb03d73efb87f0b183a2edb2aa147176a33bd5b92e1797db4b37e2e20213e7e7c71cb29a720d3e5a0581b4e643f409e02c753484fdb29f5d98989dcc8bd0878a6d4a95dfe17d423c481df57a48c3354d8889729c6b22b04ef64cdbe196deba17a4650ea50b18bee8b6e07cc1f7452f0dca75a5215e94b11567db29273d5f6ed1390d591ebdebba606a346332e5715abf94f7cef2e9008c41aee8b3e9f94cac5e4bcf3350a4bd08af410b6d423de18b65fb8c3f4585cad502b3a9019b9259133f35166e06c79a0bb415d67735a22f712272b18865ec6d37e8b1a3e4377cad570d5503851683fc5204e5908b4c74d55c38f5938d05f24280e66c54df0a8265b7b61b89031a744163a21f97e37da5632560432a5dc957cf1243b52728d4f34c7e866fa44d7a5454f72f4973e1385167e40b0198f8ebfad10a7785a7d12658c5063d422d275902d70be742394e6fef1f08a6225f8f04e71d45aa254c3b4a188ee3341f7bc2d20d8247596f99acf07a27f4284586a4afceaf8059ae2bd5ba9c0712d1e75a217281c7819844732fd21371f26f9e02dd6a7188294f5aa13062a2e9364dc5b4cf4fae7b625ca239408a998ccf88322e3b0dcad04cc16e164eb5963c9b96dc98f9c765b76f7376ac3bc1cdd05a78f876e1ab811745bdd8e10e457f65a6ec429b66635362994bad664461ad9991d6e742ef4dbf274d978e73deb11ca272ee61ab39927b87a9c942e5a25050a4db6233ad535c0644d79c1dfbff83150fe5ae20dabb6a9c93178b8b17a92243794cb55d9295589c50b2392eb194dcd70af64ec54276735b0e68247d4e19c3d77a6002df3741b408c6c30cb1236cabb25df526b5f86c4f119113cdc1fddf644a4d89b7f961e85a41a7d86175eabc1147d05bf6a4273bd2b7cced8771ef4d856219afcf5e306708a637a034acfad0efb905dafd524148625934081d311202bd5b9db15f33ae2cdc5bf0df3717b0ea1a65f0658c16b34c45d040eb0d0513cd4f28e109fccf2e88009886dce25eae4401909a914821a87b4570163a4fc07cc35c59c8a2d8a0c6c39e0ed00373caefe8e9220c3d5e363a8a7a2ed19d7cdc425a433b2efd7dd2ba797e87907817583c00c6a4d0c91a8d4bb0385266bcf95d2fa8ee0518ec7d0aea1ff520cd1f2456e5d89434a3b83ef0174482f31496b455a4438b82b87f61df0cb32562636d8cfb0547fe6e93cc43b360714613be8f15096751d0c940453e18251",
+        "key": "9f14d3c6ce88211bf32b6c7f93b9f8009fc7a6e8442b07c009a56e2cb5bb5ebf",
+        "ciphertext": "da746bfcbfb8729060e21907aaae6cd28e4323aeb09325f120408b6e094a9f8706217e9202a587a7742e163a9b179d70c1349947854087b8788746e1a7092444fa18e1af92fa7542db6d956c10d93e554ee1a4eb750dd0cda42e41332abbe451e75334dc2387197281ca22a47c374640bf5fef1b48333b7986d121f0e6205718b4f90cc99b9a87b8431336315db9a40ae784e1df9278f79c3dda077ae23dcc91fa2763948d6c7f9fbd01b4575eaee7043cb883654caa53a91457537945b8eaba1c7e2a501259f39c35e2c564849b84353c3df10572b6798a7abde9c627745808f14adb09e87a6590bb300d0d6f57d38e6a85245d70e4123d1a3f889daa172a0ce28d03ec59e0c691c6602d32d1d1c9f9cfd9cb5ca276ae1ff2a7b6f85ac994ce46279cb054a370344ea3f6e31b01b0926ed9943c0f2ca70ac9ea252a6fe8cfdae9b551fc65df65daa47a7205f9b93eeb3e04837f1300981be23e019316f52a2bf22462742ef6827e706f3fbd670141d88c5f60cb405048eb8cc06573911ebf81fc1116a9bd8a0475f32c53ff5d3655c959731ae3f5a5cb905cef91198a0ff653f1c463e2c464c6a387a51594a0138d3bdfd5f5eee78a6506fb94bdb2c650229b84d29149b918a3955f96b8072b8370bc92624ce253e0f093576d13635f7abf149e83002accc1c7172adce49299017e114595b3e38c3592ec705432b318f320b6d78c1ceee7a0acccb776d979e5225d7a29d4346641d7d8afa18e4716f091bedcf2e4fcbaa56966e80bd953b7dc97f48baf59d33c60fba2d385be41d59a78c7187459e30bf1720ceb05a0ef1d5ca836ae4358537983dfd11c8948bad02a58be74838394c3d40e34c63b74d6ab07fae20016e6c399861222d0591cf6cf247c8d1518c66a80e32bd156a5d3737d432a5b7d03341dfdb5c4bdb0d99417d286a54d7b7b49b210942c3c2161d539fdd1d93935710e659824345892a8a5cfcbe0f562920582066c1a443ff15e36e6e2060fec524e88b6fa381bfcd9848f755eb2d29976bb5b74bedb33763dbdbe14c88b08ab8f35e9be5bb63270a04c7c830376317632b64f99fae51a3cd279592ff1847d1e5bedfc5ac464fb0b6e23eacaad9e4d1ac3dfe3defa0c822369d450d3075c2f5408c72486901f2a01b5e0c5cb2f9aea77946b9cbe2131afbf1f5da5095d8744bd5d740d6a999edab47254beda5cb015e740515e13527c1deef4d0d16d2d1d6b5494853cd5f65e79e1562eec1538f2648e04c589ca76fd6e9c57f0b7e09fad8b4012d8d547a4746d35b557d260094d287244e0984a66b215158faec10dcba500b52d522b753a94dcd6778a338db86c94c1362f007b092b18815458a6961935ca57c41fe88a42500b7b711d09693fe2391967268a6e0fe405620c0c1f741d244779ab",
+        "keyMaterial": "9f14d3c6ce88211bf32b6c7f93b9f8009fc7a6e8442b07c009a56e2cb5bb5ebfcada44519708a81a1af4beb6ab370e6d"
+      }
+    ],
+    "sessions": [
+      {
+        "name": "conversation",
+        "alice": {
+          "deviceID": 1001,
+          "identity": {
+            "privateKey": "c01f974359491b4c642e57105628d8a2abdb9deea2ca93c2e03be8725a3571fc",
+            "publicKey": "18a7322b06e03cabd77db46f89950a7685f5c45bd56519b3e454562dd25cba5f"
+          },
+          "signedPreKey": {
+            "id": 11,
+            "privateKey": "0c3a5272066c0672c17a454c9b8fb198d0492100f643b68f7e89666c7f255217",
+            "publicKey": "14a8666257681845d5c95b801f81f733dcdb31580bb52660619ec2d42d13f756",
+            "signature": "e927c16313716fd662d7285853f1eb934671394b51761a9187c0caf83dd719049879749e8fa22ad5e9a232919ee29415158cbc1de753bb3572b4591ff1a76905"
+          },
+          "preKeys": [
+            {
+              "id": 101,
+              "privateKey": "d52fd591424c0045ca463f0111d4c3237ff8dbbd9e0f0fd437e5daf0fc4a36b0",
+              "publicKey": "611c9174df746d237e3315aebaf5ae47350b1d2a6e581cc66d5561e137ff4e08"
+            }
+          ]
+        },
+        "bob": {
+          "deviceID": 2002,
+          "identity": {
+            "privateKey": "f87660f3cb306916069db1eb311dc626191723434b16303752c044e935d5527a",
+            "publicKey": "4e02a3112074bea099daf21f180061954f142872d8b654b271d0d4d0a82f1b51"
+          },
+          "signedPreKey": {
+            "id": 23,
+            "privateKey": "3e1b5a31406b6bdc3ff373e9e898e8eb5c9c26542fbeb909f97f1b896134bfaf",
+            "publicKey": "cb65c2e047e0b05690cf2b89f06eb0a777cab824b0b271c0c9688ac379d29b30",
+            "signature": "0f5ba6b708c0b7f55a3930773d43a52f1d44e80cafa297508a0dbc75f3f47702ed4ca869a696d9cda09c54503204dc9e7643759fd883d775c30ba3e13e94d20e"
+          },
+          "preKeys": [
+            {
+              "id": 2345,
+              "privateKey": "312554cc577154e8e71b8be073983b4d2ba85333c68c302a11418750cc73d95e",
+              "publicKey": "9425a05e0e1da2af545c89610d581a2e35a441c0754c7c72310f99d45cb31e62"
+            }
+          ]
+        },
+        "aliceEphemeralKey": "e22217896a499943bddce9fcff83c42e90621a6ee6f18af0c1c71f7b619227f6",
+        "ratchetKeys": {
+          "alice": [
+            "508a53e87b1339665fec0edda4d9f74144d8cbf4f2297296f1222da9825292db",
+            "06564d6b575a44c9a2704b9c18b050cb5c790d69344bbd969df6cd628a32986e",
+            "935051c9bc26d91f4cf3f96aaa4824c8cf406a2fcaee87e4b5b4177cbcfea19b"
+          ],
+          "bob": [
+            "bbff746859dbe1f64bc4bd726580a2ff530d8fd9b68c69ee0dfc0a77ca9173c4",
+            "f3390138c152af7c0c143983f93944ca73460782ecc937f65a9657991e97015d",
+            "851f3d055f217892a941c1165bc1aa92a9870f75418a41c4b73792107dfaf125"
+          ]
+        },
+        "messages": [
+          {
+            "sender": "alice",
+            "keyExchange": true,
+            "key": "08a91210171a2018a7322b06e03cabd77db46f89950a7685f5c45bd56519b3e454562dd25cba5f22200d881cf5ab05dee288f69dc2ac58911f236e3e86fd75b86b096819d71a440c7c2a7c0a1065a31aa2a40417a4266edd9c2d36f89d1268080010001a20e9506cd6a4fb202a3e515811752d9c3bbf1d1ec2afea8102d0a2aeff6f39de61224075a3fef6c83cd89b1e9d993f561621308ae95d24973a6262b3ed2784d1d641de832282949b10de204ca1d4e3e5774772e974e4b6538690c85b41ac85e603f545",
+            "keyMaterial": "84ce6aa9df6732a6219e3090b94410be4dc0b67aff5cb55e3ed259984b7b7c2ef7a179c1c346189138e7eabdc8cc9983",
+            "payload": "8fa8ce692c5a4ff18dfc432b9c22383e",
+            "iv": null,
+            "plaintext": "48656c6c6f20426f62"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": true,
+            "key": "08a91210171a2018a7322b06e03cabd77db46f89950a7685f5c45bd56519b3e454562dd25cba5f22200d881cf5ab05dee288f69dc2ac58911f236e3e86fd75b86b096819d71a440c7c2a7c0a103a83fd1e167b598560419f5865bc58e51268080110001a20e9506cd6a4fb202a3e515811752d9c3bbf1d1ec2afea8102d0a2aeff6f39de6122408febef91adccfce5f58e603900c8bcff9332fabf9bd1e1ce44c868e583bf3fce8c1ec64af4c2e879d4bf12acacb97347d136254106a9bdee99821a75c7b52bcc",
+            "keyMaterial": "9bd519da6b1f602f58b305afc9ba85683d57c100264788cb7165dc9ee6dc7917666494d245dbb7366c46a02ba71b1a30",
+            "payload": "0e356c7411f15c328f311b2fec562100",
+            "iv": null,
+            "plaintext": "41726520796f752074686572653f"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "0a103b54be8bb52b047f14ccf79a579dbb511268080010001a207e92089305fdeaa1e9bda90853e35a737829360cbfaec5946e938532fd950669224068012e6ace83013b06a9145d0ef46811d3b5c25b6905fcbe182b7971cf1ee4ddda5150511d8c2db667d5b06c1e7cfa265212790dac4d9d4df65539a9ef7d0fec",
+            "keyMaterial": "76f50f086ac8d76bb289148b4d1f29b004db6d073ff759129986c4205e96ff5cff64d066100a8063fe9c6312876305f9",
+            "payload": "d914384e56f147061fdc7986a23acdc5",
+            "iv": null,
+            "plaintext": "486920416c696365"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "0a10b93455b38401170ec5c8fcbd492638f31268080010021a20cb7439a7b84716722e60c16dc47ec8568425316bb277e1215e9b0f1a1a299674224005efbbcc2b5aaeef7d219c257711232884a1dabff0140480a62e69572e07f6d447915b7c93ebe71f2b7764f1a0067f7920ceee81b3a6bc889add9cc6a7a43d88",
+            "keyMaterial": "80c3cae449055776154f361b7edcba07a0098c5ef75ef9bb8ad6fb0222a22cc4bce39396c0047d69fc409a31466473ba",
+            "payload": "09ec792a4b1c9c7487cd3dff5eb0e44b",
+            "iv": null,
+            "plaintext": "476f6f6420746f2073656520796f75"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "0a100d906e8d76eba1c20ed39aa8194aa41a1268080010011a20d891e9cee508d39269d2b20908430fd2cc0fc92f6b38f94c0fe1c30c2500af71224089b8adb15ec79f1037eeaad185862033976d967c3e1de17d3894946cc22166d021d31bd292808cc7315cb248b095071ec21f75eee9645b8f89d6d8fb36ae6eb7",
+            "keyMaterial": "9838367d8e811d6c62df013716e488dcdeb9095dbcab6f8bd7a2a1afcf8269a96924cacf5617d87e37ff3b2514275cc8",
+            "payload": "b7ebe9107d1bdbc0c6011ec778feafea",
+            "iv": null,
+            "plaintext": "53616d652068657265"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "0a1079336e0d5eecbd60b3d29e9458bc30a71268080110011a20d891e9cee508d39269d2b20908430fd2cc0fc92f6b38f94c0fe1c30c2500af7122401632a8af3622a645139a6e5a1040879d002a766f68d897b6c33eb3a27c617d54b50d12ca2c611c46b73666105b904280c8c06cf65af30cbc43a5dcc64e95e049",
+            "keyMaterial": "0619d5dae70b2923fa76cbbb410f3c096b66e063683afc559147e2e0de953117111de9dcf00792a550a49ad38dad2ab8",
+            "payload": "f63a607413b78985f3288a43ed3f5c5b",
+            "iv": null,
+            "plaintext": "54776f20696e206120726f77"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "0a105a3938bbeacb2d81bea42cd858266b411268080010011a20873105b7c0723365460c4927933ee641295cbc69384ade17dbbe88679784812e224082a82f99dd73f31a9dfeb75175ea65237683255721a4aad80a96a4f376c30c4d3e41c10c0fe47a20c43910131fe18a0ed17a2fe0791fcc9801b3625be62eaf53",
+            "keyMaterial": "4a8befeccfce80da6fcb8ee4f98fa120e0882e90de3229642c4baa997e11c1351280ac6a289ac1def15ec9ae0e417e04",
+            "payload": "e6dd8b3b1ca97f552efdd671f6c91c46173d1219198f6bb59d1407fb6eb83221af9c23b28db0bb6ee0f3af54b9e5817bc71da40c84865edc98253f8672661afc2866b043920df71e3c7936479186d5c7ce7ea1644bce471e3845fb117a5a7acd4eb236e10f90091b155ec80268fa6f1f1ca4c5327a81e793d719ed0b990c7960053a7f48344fa6821b7e5358ba1ec3071b37e9532d0a7a52972e06a0758e8d08b8e8a3e41de7bcacf01511fc109e19bc81d47bdd507b7bd1b8e814a26293974867bab068c03af70bb1f4666413d5f53d0c7936f0c8dae0fb4a8dbbee5d01967c2584f1303266973eb35886a0719afcf7557dc965e961aa664f903818aa1d00d4fa69586e4f5d96301863af4a19884c31374a93dc6250723fc6829ec8d49796ba45a39feee672cf6bbcd4d7e5fc66c6a90bc8ae9afe1f47e3b831aa32f3aaf442549bc7ed37c6ee49d765ef4059cb56b53bcfba9e50c75dd67faf5b48b4dc7cd1961616c63486fa55dd3e16931a48a3642f5af4b2943d9dfcb70b313a3206fd7e88496abd7771bb9d9ad663a479c9cd8ea207734909ca1bd8c963fc207a27a7e704ce3120abf87845b076540f9de98634582a8490532d17f23e424daa42ae81d159a8ff68daf14f6c988bc70e31e1b1b95d91bc8abb63a34aa4e1d6119baaa28cd972e1ca6a7d0af6b83ef9d56241e0b9096db50a254201bbbde8f189741421262d3f702f45ce368e6de56163d624c82e53b9c526846812ee8ed6e724cd3b96c4742c19639c04e29ba3abae35de0679e748d20062a216a16e6535ce42c61c2650cad25cca1fd1e56c65d5b52302066beeef12e452f31b6455ecb91d19088f094dd8be90b8f6f9f43f09e7c2c46cfe313e6e00498b443a4867c217d419011d185cec1a6e53b8b771ac835ba4cf06b29988022a0d0ce76ad7733666faf55bacef9ea0fb26aae180782fdc31b59d399d12c2200d67ba274f8164311d64f4d09aca63cffebce5efdefbcb3b4d2fa5ce8885ebd4e385c2f11fa6c62a2340a35d5bb5e7d9528e5e08bc70605c5f97f153d613c00d43740026a93768f2fad64159bcb398f2f43753cce069d9a7a8727e6ab8f5528f1093d393d6b0506dfe46ac9ed67d8def403289cccac98850dead27696fbed4153f0cd56341ddef26b4e68d164b679dbca39bc3bcd0be0d465db07686492cb37ac117fdbec47d606b457bde03885552deba0f44f35a595abcd8aeee0773ffb154da80d61ae5c79e633bd820a3a0e3bee49b49209af367d5aaac35c679a81e9c798f4f76e85258c6186521852b86a3e493ba006ae7419020d84d5e86ac88eef97f83b160714b5e7f6b8bfb7122e13a894376de458ad191a671d24b4281756d7cd93a1df53e71abf298c8ba5bd69758230cce97ee8d6978506e346f54fa1ff5c8b6614cc89a8c1d1e0105262a93f7c18a0feb9b0663eaf2216d9e72b96cc571e8d646264693b272796f0df9fa48c3372c7cca55949009483bce69bc85206f3601f3bd37f4a24ee32aa6667a5948110b583e643287ccf91100a4f35c9a3f3ff725c886d3ec30f98205690629995c7b6b654a8bf70dcc0e5dda59b6017a2ea1f5370c388d897eff3a88e1eac612421e0e2bbf20e7617e3b17247de427ed5d06acff5f97b73cd763712cf5e9ac5646925308bf8351109caecebcd3c19287dcda7642437ffe64a815aa197443cd0a6a2431f4c9c689d8847aeb4579ad1235d62b5886",
+            "iv": null,
+            "plaintext": "4772c3bcc39f6520617573204bc3b66c6e2c20f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982f09f9982"
+          }
+        ],
+        "events": [
+          {
+            "encrypt": 0
+          },
+          {
+            "decrypt": 0
+          },
+          {
+            "encrypt": 1
+          },
+          {
+            "decrypt": 1
+          },
+          {
+            "encrypt": 2
+          },
+          {
+            "decrypt": 2
+          },
+          {
+            "encrypt": 3
+          },
+          {
+            "decrypt": 3
+          },
+          {
+            "encrypt": 4
+          },
+          {
+            "decrypt": 4
+          },
+          {
+            "encrypt": 5
+          },
+          {
+            "decrypt": 5
+          },
+          {
+            "encrypt": 6
+          },
+          {
+            "decrypt": 6
+          }
+        ]
+      },
+      {
+        "name": "outOfOrder",
+        "alice": {
+          "deviceID": 1001,
+          "identity": {
+            "privateKey": "47b5d0e95c788593793a61f7e1bf3827742afe3b8ee70622d0c3fa1d265e532b",
+            "publicKey": "0a42a1826e7d71202c53f760067937ff9d04c07196ed7b0aefd5bf499b888174"
+          },
+          "signedPreKey": {
+            "id": 11,
+            "privateKey": "92fbff1f262751d7780343852de6ee907c69bd3f11449b544d3895b440d92260",
+            "publicKey": "425d55aa560c6dcb1d54c67e0adc0948d42781c442d7accb632b96c8fd17ad60",
+            "signature": "5486fa0bd7e8a083c3b2cb4b168722e14ebfcb5cdeb1807f12a95b5265cbad415098366beab65690271fdda29a672e9a99d7765111929cb724e3925f1699df04"
+          },
+          "preKeys": [
+            {
+              "id": 101,
+              "privateKey": "770beaa5a3211d91687d754993fea8feb15335502afd3c441b07304cc51294cf",
+              "publicKey": "2a3093eb59301460990342b5667ad7ab37014a7fec0981ce4c2d960a55d79e21"
+            }
+          ]
+        },
+        "bob": {
+          "deviceID": 2002,
+          "identity": {
+            "privateKey": "35d7d100cbc77ace68fe8c37c9c3a01edd16ab35d8ee14676dd92884c6dc2ef5",
+            "publicKey": "c7a73196ddca9236e958c3933a60fcab56da4b523c40a71fbba202c0ac162adf"
+          },
+          "signedPreKey": {
+            "id": 23,
+            "privateKey": "fcc948ebf52ee08d3f5d63f17ebfadfe5544e44129a9477e37fe57067a881e07",
+            "publicKey": "4df2374f857095e03e8c6537c02b36587472f138bc65dd8ba633efa9d5853d47",
+            "signature": "18ad758c7f9aa7988bc878256e4bd7669429275ef0181ae8860e9aa99b5c12b6cb3a687bf16902dcd4b6cebe1eef6f5d3704bf8977aa79cf1a1c86c40d7e7500"
+          },
+          "preKeys": [
+            {
+              "id": 2345,
+              "privateKey": "ef50e8fbf3564f6d38466d570676ddc1bdab10ddb4cfe88734703bb4b75d380d",
+              "publicKey": "a705bb8695924e4df5702c881fa26a37e75000ecd530e0440e44b591072d3261"
+            }
+          ]
+        },
+        "aliceEphemeralKey": "fc9a42bfdd0d0de7e00d822ec629bc8ab8b1e5a2498109a0eaa167917cbb7422",
+        "ratchetKeys": {
+          "alice": [
+            "0cf45e6b18fbaca85fc3c13b1bd1c52a78a99cc173ee7f5ba618cceec78fff05",
+            "8e76f1baab7d2a9b5915d315bbc75ba1551ae684f42349465f61c6717ef5a321",
+            "182fa72808a0a98665e137bb26b28055d665b495c6a70669e3e02a850b22be94",
+            "9d8ca6a082b9436d69393773306e98958e47b85c2dfa743a91f68e5f65606315"
+          ],
+          "bob": [
+            "9cbe8ccd60d78597e496e320d8b8a05e56235fe5e120f026c11b17e75e41e0b6",
+            "a7ad60cb3d2fa1dd5b94bd85e236f204e5e383e71c43b020a2918547664e3768",
+            "22da809e1c54787eb3034fc691c636faa8e694c10454fc27485d34c1fbbcb821"
+          ]
+        },
+        "messages": [
+          {
+            "sender": "alice",
+            "keyExchange": true,
+            "key": "08a91210171a200a42a1826e7d71202c53f760067937ff9d04c07196ed7b0aefd5bf499b88817422206554b96946bba628e54d04d7df8c9203a6ced8bbc74a430f362378d384ddec342a7c0a10a26d59d455bc3e91c8d5562d3ec00d9d1268080010001a20188c20e75310f7e3030b21b36fe10c3ae9aa703b0ad018148b2e8e69ac27fa7c224078f952780f3cf027127a79ec059e687a6224fd35918a228d549a64b69d272fb1963a2cebb49c922c815c2430d7437a85958879602e8a421f776bb61735e24b28",
+            "keyMaterial": "b9afbf15aa6aba7841784d2d45ab998f3f00e53c214c5d980df06c7b610496f76d3e07cdd56bc6930322e0533a41704b",
+            "payload": "0bb776e7ab1e5030b97b50b81a0a7522",
+            "iv": null,
+            "plaintext": "6d30"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": true,
+            "key": "08a91210171a200a42a1826e7d71202c53f760067937ff9d04c07196ed7b0aefd5bf499b88817422206554b96946bba628e54d04d7df8c9203a6ced8bbc74a430f362378d384ddec342a7c0a10ff8f4e35dd59d977c8eb556f240ba7921268080110001a20188c20e75310f7e3030b21b36fe10c3ae9aa703b0ad018148b2e8e69ac27fa7c2240d77352da978bb276efe1a482df82f561242c5b8aaa945cc19cdc0df43fdbe88e585cf265af517198b3a9e06fbca04c7c6273e28175c8ba9c20c5078543a5d56d",
+            "keyMaterial": "08081f386ab938e1624ced160b3e32c1fc741023d704dafc848df1f9db084ee8cf051574aec702e91e6049add57a5ad1",
+            "payload": "a5895b12fc1fc8bba7934a18d7637b02",
+            "iv": null,
+            "plaintext": "6d31"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": true,
+            "key": "08a91210171a200a42a1826e7d71202c53f760067937ff9d04c07196ed7b0aefd5bf499b88817422206554b96946bba628e54d04d7df8c9203a6ced8bbc74a430f362378d384ddec342a7c0a10b02c226cf96815956de2afe0eceff30b1268080210001a20188c20e75310f7e3030b21b36fe10c3ae9aa703b0ad018148b2e8e69ac27fa7c224088dfc31f0dc0859780cf54af4ee1276850f876ce57492d61186bc28d31085a62a1fd80327d2b4515039efbefbcf67bb1231353517ba7e1abf970b36f23691ad8",
+            "keyMaterial": "dcb54231a43bdd88b18e19442e4ca387b414f8aa1bf36b0788f9fe46e5f312fddf232746ec1100d7cecf36d096cd6ff1",
+            "payload": "c6fecbb2f30df30b3bd11871bd122740",
+            "iv": null,
+            "plaintext": "6d32"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": true,
+            "key": "08a91210171a200a42a1826e7d71202c53f760067937ff9d04c07196ed7b0aefd5bf499b88817422206554b96946bba628e54d04d7df8c9203a6ced8bbc74a430f362378d384ddec342a7c0a10c5a7605e53567d31c2be72a38b4c31e21268080310001a20188c20e75310f7e3030b21b36fe10c3ae9aa703b0ad018148b2e8e69ac27fa7c2240c866fe8ef9caf8827c4dff3038343560ea9daccefc09ee299e27d2b752823a4ec8d22af86fe6f33880108667e629cab79f2b40a2b1541e66d3208e0643ac6806",
+            "keyMaterial": "24320b8676f5a037f119ec137c09f8f1fcc5adf485bc2c2d53ae4496f5429201638e2806cc9d622a904b4edd124f4669",
+            "payload": "a36b935801e79f1097d074c4f153b68b",
+            "iv": null,
+            "plaintext": "6d33"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "0a10e7078078dd11bd045907b8636f3389351268080010001a20625cdc648a4bdd755274689469ac67762f4904af0bfd8d4656ed414d0f28417b22401931d8b31f9da973d1c95ad51883b20d27f5978694f15dbe7ed2b3ce681825d59669b5ce45955d0e983eca224a29becb8a75247480ae3154de76856aeb6be379",
+            "keyMaterial": "1fda9252b9724c9b56bf4b6ad963047df377273151252c0ded85d15fadbc42dbaa3e398dcb02d0500de510d49b9c2825",
+            "payload": "e504f43dc00b99d4792fbbcc2ec2abd7",
+            "iv": null,
+            "plaintext": "7230"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "0a10d67983110911151ab007690df2dafc5c1268080110001a20625cdc648a4bdd755274689469ac67762f4904af0bfd8d4656ed414d0f28417b22405e427468a52dfc18970d58786495c6567cdadd2f7a355a1eb0d933858a9a6aaf19c7f92b464bb06c73ba27ec20f3bddfc34255b599013f77462c547b046a946f",
+            "keyMaterial": "b0df757045d6c4dba711dfe3cead7f929aeae30b955fbffcfaa868d8e731a05949d70655198883bc73f88f01adf15ddb",
+            "payload": "18b14428cfd478f4c61a23b625ec0978",
+            "iv": null,
+            "plaintext": "7231"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "0a10dff81bba525a944312772a715a2bcedd1268080210001a20625cdc648a4bdd755274689469ac67762f4904af0bfd8d4656ed414d0f28417b22407afa0af8d814b8e2623cdd9ed87bd0c9eb2ccb6556ecc76dcf80baa477c744cb200c21b7ad065e2e2f887e0f414ededec7574c01621f5b55f410489a2b874c99",
+            "keyMaterial": "74f9f8043e84cb0a3d075b143bde49ca530145f1e0b51c49d1f8a83add87b58486839316d9dfd39b8ad1e918fdc4477b",
+            "payload": "471f687a157e9b10e14ca0642a2ece12",
+            "iv": null,
+            "plaintext": "7232"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "0a101d8e1baa117106ff7225ed823d8510ba1268080010041a20f3c652e2a07eda281c4b9f2f355677ac135451955c07885cc38f8e20fb2c142d2240bed284d211cbfae90b1b8ea6841bd1f877ae4103b5ad010a3faba5d334bd68e1650a9992c8bd50f9ae62206b261a896aaa3c6287211d187a02f88645dc739041",
+            "keyMaterial": "912349c96028199dc7f2a538666b8180cb7e015c4ab4a485af05fae9b91884fb65ca70f13c71950775f003ca2ba7da9d",
+            "payload": "97f3da40d185fec4c6100ffd77162647",
+            "iv": null,
+            "plaintext": "6d34"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "0a10fcae5eb2e0051dcc45c5a3e3179a32631268080110041a20f3c652e2a07eda281c4b9f2f355677ac135451955c07885cc38f8e20fb2c142d2240a994b02d3393a9080317a2c0671ca020ea4f5905aaa07bdf2311f1affa16fbdba48f932be4c848f0a71449af80e37245579b6fd17f3d540f10a0773c1147e6e3",
+            "keyMaterial": "5e83c6e7bb6bb3038b3bedacb0bec646a7c43cc8527fcfc17eb7a8eb3cbda3d6759139c09ace74663b86661e88f4038f",
+            "payload": "a41c60e2931c7fa4c9345e7cb3c54607",
+            "iv": null,
+            "plaintext": "6d35"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "0a1075a7ba2d586a83b1908392699d351a911268080210041a20f3c652e2a07eda281c4b9f2f355677ac135451955c07885cc38f8e20fb2c142d2240366a42df2a8ae2900e743639510224630c56a037f8beb1d7cc9781020fce7477d68074199712e6404992def3481e2c1cf0f9d8f862766aa9b330a2ffe78d2c29",
+            "keyMaterial": "bc1cbd88bf3f936939076a32e7416dae53db4923c0c56a61393f33262685c7a23bec4cc5501e4f2975c64b10a41a544b",
+            "payload": "c09e8f194e5fe8ef812d1f2fecd5c257",
+            "iv": null,
+            "plaintext": "6d36"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "0a103bfcd943a9edcc465b1ebd3c2b99103d1268080010031a20d4fc6fd2b9675f263bb35913f63fea0052d3950624d58c12b5de121cc1329d78224085dc5756bc0933b192b0f74ccca620d79745da8f4f16257b6fa90d27a6b13a456734cf1dc53778c213a0238c46ffcc2348197412f921862f094a528a67dcc40c",
+            "keyMaterial": "bce6daa0828e60af697961799dd9a7af2e4209649c31291c181fa8d521ec97f5d427a26b9adba1e3bc15cde4481b78b1",
+            "payload": "e2ee14403b9d6f313bbb696e7a5d3b79",
+            "iv": null,
+            "plaintext": "7233"
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "0a10d9ee80dbcbd012c8bfae0f60b6ae5f481268080010031a20aaea3b183aa43180069bdee82d3aff54ca0997bf1443278f4745be94a02af66422400144154b89942064e2f1c96dcbbc4e8e0ecc610e191edcd1327e1f25c4ba5a352202366e43b4b34513601ed007469daba320305e33db6946477fd28ab695b95f",
+            "keyMaterial": "f2c6ec66536fe35ec285a5c8f359a195527a42b4874b7730ce2d0de49862eec4ca4f3cf8f2a3087a76314c720ddb8a7c",
+            "payload": "34dead8d77afe3718f4bc87e0ebc2002",
+            "iv": null,
+            "plaintext": "6d37"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "0a106d7e680442cd81b6e0dd1a797fdba0df1268080010011a20a2a922e39651936f5e1b956a860f15344b3138ef5d48bcda594b1225478455662240eaf41fed6c5cc1314e4bee2336ac0c9b18cd98a1907ab8a57c5fdb861f6c46a3976557eb2979283a9683dc7895cf3a934362302e6ee7d4935700142b3ff1bb4b",
+            "keyMaterial": "2efd12aafc92d2a1b1216f5f0ff539af0ed4e8a56e3e53be4594025973ba00b072f19cce18e2e3c5a91d3b0fbfc0f521",
+            "payload": "802abb44c47ced1ec1671409d4086ebc",
+            "iv": null,
+            "plaintext": "7234"
+          }
+        ],
+        "events": [
+          {
+            "encrypt": 0
+          },
+          {
+            "decrypt": 0
+          },
+          {
+            "encrypt": 1
+          },
+          {
+            "encrypt": 2
+          },
+          {
+            "encrypt": 3
+          },
+          {
+            "decrypt": 3
+          },
+          {
+            "decrypt": 1
+          },
+          {
+            "decrypt": 2
+          },
+          {
+            "encrypt": 4
+          },
+          {
+            "encrypt": 5
+          },
+          {
+            "encrypt": 6
+          },
+          {
+            "decrypt": 6
+          },
+          {
+            "decrypt": 4
+          },
+          {
+            "encrypt": 7
+          },
+          {
+            "decrypt": 7
+          },
+          {
+            "encrypt": 8
+          },
+          {
+            "encrypt": 9
+          },
+          {
+            "encrypt": 10
+          },
+          {
+            "decrypt": 10
+          },
+          {
+            "decrypt": 5
+          },
+          {
+            "encrypt": 11
+          },
+          {
+            "decrypt": 11
+          },
+          {
+            "decrypt": 9
+          },
+          {
+            "decrypt": 8
+          },
+          {
+            "encrypt": 12
+          },
+          {
+            "decrypt": 12
+          }
+        ]
+      },
+      {
+        "name": "emptyMessages",
+        "alice": {
+          "deviceID": 1001,
+          "identity": {
+            "privateKey": "845a66b3e9688f7ea84d34be46a2577afc5737b1c704210530219604cef59099",
+            "publicKey": "8c665680b2b87c90b2c5d3efa0ff7564c46c690c58646c0d911fd164dc78046d"
+          },
+          "signedPreKey": {
+            "id": 11,
+            "privateKey": "986cf1db9ccf6a7530a199a281067d9a243fcb4336af8e42e7859214fdb611a6",
+            "publicKey": "07a1d3356b754602712f3cbf26b602612333d8fd2794a51fdde054c23f289207",
+            "signature": "d2648b20d024cd8f95ade31615e5d0286ca0bf97d4fb12af49fe34e145fb536724511e03b37ffaa11c62f60fd168bd0a47baabd7f6ec34204a7217d4a122840f"
+          },
+          "preKeys": [
+            {
+              "id": 101,
+              "privateKey": "309d9e28f5a4f88e85fd6d3eccbac4d1b937366dde2b94cc44d63c6ba19af1b6",
+              "publicKey": "cf3307d639022c54c19f2e5bdafdba8ad864233e3c806803398cdb0b504ea838"
+            }
+          ]
+        },
+        "bob": {
+          "deviceID": 2002,
+          "identity": {
+            "privateKey": "2b90a6403b6a558c28fcd3e8d686092f1e644da1cdc2d8642d48ec288fb7c37a",
+            "publicKey": "e924076a76be5422e76e58d20f11be351e83ef6102189831f66c7c0ac492fb48"
+          },
+          "signedPreKey": {
+            "id": 23,
+            "privateKey": "fcefe8949a62a1b86959c6196ef958af9ae47f3ae67afdac8aa03065f3274b2b",
+            "publicKey": "095ec7fe426bcc6a003b35817fccfbe9d32473797295a5ad82a50bdd8b69b474",
+            "signature": "3e3a8c0562f24a6512933ca4207ec61c771567df718174e186661f53af148c7d2e8e1f6fc035d1159f107170d7bcb7d6a08faa2af4760e9e377b056d803f890b"
+          },
+          "preKeys": [
+            {
+              "id": 2345,
+              "privateKey": "3c03169eefc826e87a7e08056e53b4be5eb3b6c2c59838181d1a9e49846b783e",
+              "publicKey": "b0dda5e71857847cb12946c798f6aca1f348888a7df69ede979d1fbe8614b466"
+            }
+          ]
+        },
+        "aliceEphemeralKey": "9cb6eadd096632e73ac2e904c243e381a0128b8bb5d47b9271fa23900ecbfb6c",
+        "ratchetKeys": {
+          "alice": [
+            "036b5c6c477ad3aab42ee1f52b4dbe531515def97bffb8268df918855e61f79e",
+            "9f8730234a85f58874419e8f07621b200860e2ded359e87284dc0a73babde83c"
+          ],
+          "bob": [
+            "16a0a51cc24d7b208025246a221bab1defdc3466b4b05ee8812266d46aa04c55",
+            "7e9bffb907c7c6d2e37cb07fd60998745f315f1a951dcb525d81b68945bd78ad"
+          ]
+        },
+        "messages": [
+          {
+            "sender": "alice",
+            "keyExchange": true,
+            "key": "08a91210171a208c665680b2b87c90b2c5d3efa0ff7564c46c690c58646c0d911fd164dc78046d22208cd4765dbb206fb1df3e30c753815ccaa0aa3e0c21587c22ea747068cce9c1552a7c0a10d436a70a7d58a258903a96c6e2a4df081268080010001a2004ff20623dfee6ae1cca22ab5d24a3a400d3acfc43819092b4c1cb44dde4391a224033027ce709e189d8680bc975e46f13d92a6a61a7ee8ca1951d5ef6806e7fae751fe00a87146026c29849ce65467bfc1e3067542de9e88ef3c9b744ca571fddf7",
+            "keyMaterial": "44b6704eff6cc7fad83a8a17945d47df3a073b5e1c6fff50f8841ba028147c4009efe38b9054506007980291f5009c01",
+            "payload": "03058a3df290250140a63a14671a9008",
+            "iv": null,
+            "plaintext": "6669727374"
+          },
+          {
+            "sender": "bob",
+            "keyExchange": false,
+            "key": "0a10a227afbcb80425a31dffab9256a728511258080010001a20bff9a51a4e18207d73ebec4e8c3940048d65cca935c80bdcfe9f026ab00a6d4e2230eda0f12ced03c60ab82af95160b238d4115eea5aa23fb933863b439958f81e36ba80cf5133ad5335372200707f29f962",
+            "keyMaterial": "0000000000000000000000000000000000000000000000000000000000000000",
+            "payload": null,
+            "iv": null,
+            "plaintext": null
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "0a10ddbda77dc7816184919e00193168957c1258080010011a203eaf3b2dc670794d74b29b3d880a0882b736d643812fd0ea753425d3a45a54742230571dcf6dee9223579ad42b3101c1c1fbe492e89afd8def07f77f7d1c2b72ef30bda19b1c32f493836bd2047354aa561e",
+            "keyMaterial": "0000000000000000000000000000000000000000000000000000000000000000",
+            "payload": null,
+            "iv": null,
+            "plaintext": null
+          },
+          {
+            "sender": "alice",
+            "keyExchange": false,
+            "key": "0a101be1cfec337a363b2c682eac292d230f1268080110011a203eaf3b2dc670794d74b29b3d880a0882b736d643812fd0ea753425d3a45a54742240358c207f84868d951d2155b28892dd452cfed088d04361775c2ee36200ca5b137bed14b4bf4c53688f9a446f39be65aab60e6ecf73c34504b563ed7580f606f2",
+            "keyMaterial": "d8916945114614c8a9ac62c96b07fd9c0fc770865f29148f63d681c9b176da842ec7bd3ec2333bfc41bbcb64d4f8fddb",
+            "payload": "4a7cd6a5cdfa97ed3603da5c4b89c4fde4638faf077fb02c990b49bfa88d181c",
+            "iv": null,
+            "plaintext": "61667465722074686520686561727462656174"
+          }
+        ],
+        "events": [
+          {
+            "encrypt": 0
+          },
+          {
+            "decrypt": 0
+          },
+          {
+            "encrypt": 1
+          },
+          {
+            "decrypt": 1
+          },
+          {
+            "encrypt": 2
+          },
+          {
+            "decrypt": 2
+          },
+          {
+            "encrypt": 3
+          },
+          {
+            "decrypt": 3
+          }
+        ]
+      }
+    ]
+  }
+}

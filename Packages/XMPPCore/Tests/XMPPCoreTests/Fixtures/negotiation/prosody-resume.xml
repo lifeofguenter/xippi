@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Prosody 13.0, direct TLS on 5223, resuming a session, alice@prosody.test. Recorded by NegotiationRecordingTests with XIPPI_RECORD=1. SASL data, SM ids and FAST tokens are placeholders. -->
+<transcript>
+<client><![CDATA[<?xml version='1.0'?><stream:stream from='alice@prosody.test' to='prosody.test' version='1.0' xml:lang='en' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>]]></client>
+<server><![CDATA[<?xml version='1.0'?><stream:stream xmlns='jabber:client' xml:lang='en' xmlns:stream='http://etherx.jabber.org/streams' to='alice@prosody.test' version='1.0' id='47e53f81-a780-44a4-9bb3-4a0717e4d81e' from='prosody.test'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>SCRAM-SHA-1-PLUS</mechanism><mechanism>OAUTHBEARER</mechanism><mechanism>PLAIN</mechanism><mechanism>SCRAM-SHA-1</mechanism></mechanisms><sasl-channel-binding xmlns='urn:xmpp:sasl-cb:0'><channel-binding type='tls-exporter'/></sasl-channel-binding><register xmlns='http://jabber.org/features/iq-register'/><limits xmlns='urn:xmpp:stream-limits:0'><max-bytes>10000</max-bytes><idle-seconds>840</idle-seconds></limits></stream:features>]]></server>
+<client><![CDATA[<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='SCRAM-SHA-1-PLUS'>{{sasl}}</auth>]]></client>
+<server><![CDATA[<challenge xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>{{sasl}}</challenge>]]></server>
+<client><![CDATA[<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>{{sasl}}</response>]]></client>
+<server><![CDATA[<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>{{sasl}}</success>]]></server>
+<client><![CDATA[<?xml version='1.0'?><stream:stream from='alice@prosody.test' to='prosody.test' version='1.0' xml:lang='en' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>]]></client>
+<server><![CDATA[<?xml version='1.0'?><stream:stream xmlns='jabber:client' xml:lang='en' xmlns:stream='http://etherx.jabber.org/streams' to='alice@prosody.test' version='1.0' id='33d84dd5-26b6-472a-8886-a84b7cd744a8' from='prosody.test'><stream:features><csi xmlns='urn:xmpp:csi:0'/><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><required/></bind><session xmlns='urn:ietf:params:xml:ns:xmpp-session'><optional/></session><sm xmlns='urn:xmpp:sm:2'/><sm xmlns='urn:xmpp:sm:3'/><c xmlns='http://jabber.org/protocol/caps' ver='t7yIEer8rEWWuTvLJ5EqOk88+tg=' hash='sha-1' node='http://prosody.im'/><ver xmlns='urn:xmpp:features:rosterver'/><sub xmlns='urn:xmpp:features:pre-approval'/><limits xmlns='urn:xmpp:stream-limits:0'><max-bytes>262144</max-bytes><idle-seconds>840</idle-seconds></limits></stream:features>]]></server>
+<client><![CDATA[<resume xmlns='urn:xmpp:sm:3' h='3' previd='{{sm-id}}'/>]]></client>
+<server><![CDATA[<resumed xmlns='urn:xmpp:sm:3' previd='{{sm-id}}' h='3'/><r xmlns='urn:xmpp:sm:3'/>]]></server>
+</transcript>

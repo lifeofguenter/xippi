@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0172: User Nickname, version 1.1 (2012-03-21). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0172.html; each 'source' names the XEP's example number. -->
+<examples xep='0172' version='1.1'>
+<example name='subscribe-with-nick' source='Example 3. Including Nickname with Subscription Request'><![CDATA[
+<presence from='narrator@moby-dick.lit' to='starbuck@moby-dick.lit' type='subscribe'>
+  <nick xmlns='http://jabber.org/protocol/nick'>Ishmael</nick>
+</presence>
+]]></example>
+<example name='message-with-nick' source='Example 4. Including Nickname with First Message'><![CDATA[
+<message from='narrator@moby-dick.lit/pda' to='starbuck@moby-dick.lit' type='chat'>
+  <body>Call me Ishmael</body>
+  <nick xmlns='http://jabber.org/protocol/nick'>Ishmael</nick>
+</message>
+]]></example>
+</examples>

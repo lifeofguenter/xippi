@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0221: Data Forms Media Element, version 1.0 (2008-09-03). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0221.html; each 'source' names the XEP's example number. -->
+<examples xep='0221' version='1.0'>
+<example name='media-in-form' source='Example 2. Inclusion in Data Form'><![CDATA[
+<x xmlns='jabber:x:data' type='form'>
+  [ ... ]
+  <field var='ocr'>
+    <media xmlns='urn:xmpp:media-element'
+           height='80'
+           width='290'>
+      <uri type='image/jpeg'>
+        http://www.victim.com/challenges/ocr.jpeg?F3A6292C
+      </uri>
+      <uri type='image/jpeg'>
+        cid:sha1+f24030b8d91d233bac14777be5ab531ca3b9f102@bob.xmpp.org
+      </uri>
+    </media>
+  </field>
+  [ ... ]
+</x>
+]]></example>
+</examples>

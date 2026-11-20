@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Written by hand in the shape of the examples of XEP-0388 (SASL2), XEP-0386 (Bind2), XEP-0198 section 9 and XEP-0484 (FAST): direct TLS without channel binding, SCRAM-SHA-1 with Bind2, inline SM and carbons, and a token request. SASL data, the SM id and the FAST token are placeholders. -->
+<transcript>
+<client><![CDATA[<?xml version='1.0'?><stream:stream from='alice@example.com' to='example.com' version='1.0' xml:lang='en' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>]]></client>
+<server><![CDATA[<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' id='Dq1wTW7ehvrn' from='example.com' version='1.0' xml:lang='en'>
+<stream:features>
+  <authentication xmlns='urn:xmpp:sasl:2'>
+    <mechanism>SCRAM-SHA-1</mechanism>
+    <mechanism>PLAIN</mechanism>
+    <inline>
+      <sm xmlns='urn:xmpp:sm:3'/>
+      <bind xmlns='urn:xmpp:bind:0'>
+        <inline>
+          <feature var='urn:xmpp:carbons:2'/>
+          <feature var='urn:xmpp:csi:0'/>
+          <feature var='urn:xmpp:sm:3'/>
+        </inline>
+      </bind>
+      <fast xmlns='urn:xmpp:fast:0' tls-0rtt='true'>
+        <mechanism>HT-SHA-256-ENDP</mechanism>
+        <mechanism>HT-SHA-256-EXPR</mechanism>
+        <mechanism>HT-SHA-256-NONE</mechanism>
+      </fast>
+    </inline>
+  </authentication>
+</stream:features>]]></server>
+<client><![CDATA[<authenticate xmlns='urn:xmpp:sasl:2' mechanism='SCRAM-SHA-1'><initial-response>{{sasl}}</initial-response><user-agent id='6f1c2b7a-934e-4d52-8a10-5e2d41c37b09'><software>Xippi</software><device>Mac</device></user-agent><request-token xmlns='urn:xmpp:fast:0' mechanism='HT-SHA-256-NONE'/><bind xmlns='urn:xmpp:bind:0'><tag>Xippi</tag><enable xmlns='urn:xmpp:carbons:2'/><enable xmlns='urn:xmpp:sm:3' resume='true'/></bind></authenticate>]]></client>
+<server><![CDATA[
+<challenge xmlns='urn:xmpp:sasl:2'>{{sasl}}</challenge>]]></server>
+<client><![CDATA[<response xmlns='urn:xmpp:sasl:2'>{{sasl}}</response>]]></client>
+<server><![CDATA[
+<success xmlns='urn:xmpp:sasl:2'>
+  <additional-data>
+    {{sasl}}
+  </additional-data>
+  <authorization-identifier>alice@example.com/Xippi.4232f4d4</authorization-identifier>
+  <bound xmlns='urn:xmpp:bind:0'>
+    <enabled xmlns='urn:xmpp:sm:3' id='{{sm-id}}' resume='true' max='300'/>
+    <metadata xmlns='urn:xmpp:mam:2'>
+      <start id='YWxwaGEg' timestamp='2008-08-22T21:09:04Z'/>
+      <end id='b21lZ2Eg' timestamp='2020-04-20T14:34:21Z'/>
+    </metadata>
+  </bound>
+  <token xmlns='urn:xmpp:fast:0' expiry='2030-01-01T00:00:00Z' token='{{fast-token}}'/>
+</success>
+<stream:features>
+  <csi xmlns='urn:xmpp:csi:0'/>
+  <ver xmlns='urn:xmpp:features:rosterver'/>
+  <sm xmlns='urn:xmpp:sm:3'/>
+</stream:features>]]></server>
+</transcript>

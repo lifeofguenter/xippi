@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0410: MUC Self-Ping (Schrödinger's Chat), version 1.1.0 (2019-09-25). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0410.html; each 'source' names the XEP's example number. -->
+<examples xep='0410' version='1.1.0'>
+<example name='self-ping' source='Example 1. Self-Ping by Juliet&#x27;s Client'><![CDATA[
+<iq from='juliet@capulet.lit/client' id='s2c1' type='get'
+      to='characters@chat.shakespeare.lit/JuliC'>
+  <ping xmlns='urn:xmpp:ping'/>
+</iq>
+]]></example>
+<example name='not-occupant' source='Example 2. Server Response to a Non-Occupant'><![CDATA[
+<iq from='characters@chat.shakespeare.lit/JuliC' id='s2c1' type='error'
+      to='juliet@capulet.lit/client' >
+  <error type="cancel" by="characters@chat.shakespeare.lit">
+    <not-acceptable xmlns="urn:ietf:params:xml:ns:xmpp-stanzas" />
+  </error>
+</iq>
+]]></example>
+<example name='reflection' source='Example 3. Server Reflection of Ping'><![CDATA[
+<iq from='characters@chat.shakespeare.lit/JuliC' id='c0ffee-s2c1' type='get'
+      to='juliet@capulet.lit/somerandomclient' >
+  <ping xmlns='urn:xmpp:ping'/>
+</iq>
+]]></example>
+<example name='optimization' source='Example 4. MUC Service Advertises Self-Ping Optimization'><![CDATA[
+<iq from='darkcave@chat.shakespeare.lit'
+    type='result'>
+  <query xmlns='http://jabber.org/protocol/disco#info'>
+    <!-- ... -->
+    <feature var='http://jabber.org/protocol/muc#self-ping-optimization'/>
+  </query>
+</iq>
+]]></example>
+</examples>

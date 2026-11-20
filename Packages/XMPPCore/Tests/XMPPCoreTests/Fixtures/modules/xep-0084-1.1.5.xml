@@ -1,0 +1,184 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0084: User Avatar, version 1.1.5 (2026-08-23). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0084.html; each 'source' names the XEP's example number. -->
+<examples xep='0084' version='1.1.5'>
+<example name='publish-data' source='Example 1. Publishing avatar data to data node'><![CDATA[
+<iq type='set' from='juliet@capulet.lit/chamber' id='publish1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='urn:xmpp:avatar:data'>
+      <item id='111f4b3c50d7b0df729d299bc6f8e9ef9066971f'>
+        <data xmlns='urn:xmpp:avatar:data'>
+          qANQR1DBwU4DX7jmYZnncm...
+        </data>
+      </item>
+    </publish>
+  </pubsub>
+</iq>
+]]></example>
+<example name='publish-result' source='Example 2. Pubsub service replies with success'><![CDATA[
+<iq type='result' to='juliet@capulet.lit/chamber' id='publish1'/>
+]]></example>
+<example name='publish-metadata' source='Example 3. Publishing avatar metadata'><![CDATA[
+<iq type='set' from='juliet@capulet.lit/chamber' id='publish2'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='urn:xmpp:avatar:metadata'>
+      <item id='111f4b3c50d7b0df729d299bc6f8e9ef9066971f'>
+        <metadata xmlns='urn:xmpp:avatar:metadata'>
+          <info bytes='12345'
+                id='111f4b3c50d7b0df729d299bc6f8e9ef9066971f'
+                height='64'
+                type='image/png'
+                width='64'/>
+        </metadata>
+      </item>
+    </publish>
+  </pubsub>
+</iq>
+]]></example>
+<example name='metadata-url' source='Example 4. Publishing avatar metadata'><![CDATA[
+<iq type='set' from='juliet@capulet.lit/chamber' id='publish2'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='urn:xmpp:avatar:metadata'>
+      <item id='111f4b3c50d7b0df729d299bc6f8e9ef9066971f'>
+        <metadata xmlns='urn:xmpp:avatar:metadata'>
+          <info bytes='23456'
+                height='64'
+                id='357a8123a30844a3aa99861b6349264ba67a5694'
+                type='image/gif'
+                url='http://avatars.example.org/happy.gif'
+                width='64'/>
+        </metadata>
+      </item>
+    </publish>
+  </pubsub>
+</iq>
+]]></example>
+<example name='metadata-event' source='Example 5. Subscribers receive avatar metadata notification'><![CDATA[
+<message to='romeo@montague.lit/home' from='juliet@capulet.lit'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='urn:xmpp:avatar:metadata'>
+      <item id='111f4b3c50d7b0df729d299bc6f8e9ef9066971f'>
+        <metadata xmlns='urn:xmpp:avatar:metadata'>
+          <info bytes='12345'
+                height='64'
+                id='111f4b3c50d7b0df729d299bc6f8e9ef9066971f'
+                type='image/png'
+                width='64'/>
+        </metadata>
+      </item>
+    </items>
+  </event>
+  <addresses xmlns='http://jabber.org/protocol/address'>
+    <address type='replyto' jid='juliet@capulet.lit/chamber'/>
+  </addresses>
+</message>
+]]></example>
+<example name='data-request' source='Example 6. Subscriber requests last item by ItemID'><![CDATA[
+<iq type='get'
+    from='romeo@montague.lit/home'
+    to='juliet@capulet.lit'
+    id='retrieve1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <items node='urn:xmpp:avatar:data'>
+      <item id='111f4b3c50d7b0df729d299bc6f8e9ef9066971f'/>
+    </items>
+  </pubsub>
+</iq>
+]]></example>
+<example name='data-result' source='Example 7. PEP service returns avatar data'><![CDATA[
+<iq type='result'
+    from='juliet@capulet.lit'
+    to='romeo@montague.lit/home'
+    id='retrieve1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <items node='urn:xmpp:avatar:data'>
+      <item id='111f4b3c50d7b0df729d299bc6f8e9ef9066971f'>
+        <data xmlns='urn:xmpp:avatar:data'>
+          qANQR1DBwU4DX7jmYZnncm...
+        </data>
+      </item>
+    </items>
+  </pubsub>
+</iq>
+]]></example>
+<example name='disable' source='Example 8. Temporarily disabling avatar publishing'><![CDATA[
+<iq type='set' from='juliet@capulet.lit/chamber' id='publish3'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='urn:xmpp:avatar:metadata'>
+      <item>
+        <metadata xmlns='urn:xmpp:avatar:metadata'/>
+      </item>
+    </publish>
+  </pubsub>
+</iq>
+]]></example>
+<example name='disabled-event' source='Example 9. Subscribers receive avatar metadata notification'><![CDATA[
+<message to='romeo@montague.lit/home' from='juliet@capulet.lit'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='urn:xmpp:avatar:metadata'>
+      <item>
+        <metadata xmlns='urn:xmpp:avatar:metadata'/>
+      </item>
+    </items>
+  </event>
+</message>
+]]></example>
+<example name='multiple-formats' source='Example 10. Publishing avatar metadata (multiple formats)'><![CDATA[
+<iq type='set' from='juliet@capulet.lit/chamber' id='publish3'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='urn:xmpp:avatar:metadata'>
+      <item id='111f4b3c50d7b0df729d299bc6f8e9ef9066971f'>
+        <metadata xmlns='urn:xmpp:avatar:metadata'>
+          <info bytes='12345'
+                height='64'
+                id='111f4b3c50d7b0df729d299bc6f8e9ef9066971f'
+                type='image/png'
+                width='64'/>
+          <info bytes='12345'
+                height='64'
+                id='111f4b3c50d7b0df729d299bc6f8e9ef9066971f'
+                type='image/png'
+                url='http://avatars.example.org/happy.png'
+                width='64'/>
+          <info bytes='23456'
+                height='64'
+                id='357a8123a30844a3aa99861b6349264ba67a5694'
+                type='image/gif'
+                url='http://avatars.example.org/happy.gif'
+                width='64'/>
+          <info bytes='78912'
+                height='64'
+                id='03a179fe37bd5d6bf9c2e1e592a14ae7814e31da'
+                type='image/mng'
+                url='http://avatars.example.org/happy.mng'
+                width='64'/>
+        </metadata>
+      </item>
+    </publish>
+  </pubsub>
+</iq>
+]]></example>
+<example name='pointer' source='Example 11. Publishing avatar metadata (with pointer)'><![CDATA[
+<iq type='set' from='juliet@capulet.lit/chamber' id='publish4'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='urn:xmpp:avatar:metadata'>
+      <item id='111f4b3c50d7b0df729d299bc6f8e9ef9066971f'>
+        <metadata xmlns='urn:xmpp:avatar:metadata'>
+          <info bytes='12345'
+                height='64'
+                id='111f4b3c50d7b0df729d299bc6f8e9ef9066971f'
+                type='image/png'
+                width='64'/>
+          <pointer>
+            <x xmlns='http://example.com/virtualworlds'>
+              <game>Ancapistan</game>
+              <character>Kropotkin</character>
+            </x>
+          </pointer>
+        </metadata>
+      </item>
+    </publish>
+  </pubsub>
+</iq>
+]]></example>
+</examples>

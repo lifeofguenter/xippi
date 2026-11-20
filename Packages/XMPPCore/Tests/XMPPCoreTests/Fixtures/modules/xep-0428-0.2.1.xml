@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0428: Fallback Indication, version 0.2.1 (2024-03-20). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0428.html; each 'source' names the XEP's example number. -->
+<examples xep='0428' version='0.2.1'>
+<example name='reply-fallback' source='Example 1. '><![CDATA[
+<message to='anna@example.com' id='message-id2' type='groupchat'>
+  <body>
+    > Anna wrote:
+    > Hi, how are you?
+    Great
+  </body>
+  <reply to='anna@example.com' id='message-id1' xmlns='urn:xmpp:reply:0' />
+  <fallback xmlns='urn:xmpp:fallback:0' for='urn:xmpp:reply:0'>
+    <body start='0' end='33' />
+  </fallback>
+</message>
+]]></example>
+</examples>

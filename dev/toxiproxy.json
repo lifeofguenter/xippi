@@ -1,0 +1,14 @@
+[
+  {
+    "name": "prosody-starttls",
+    "listen": "0.0.0.0:25222",
+    "upstream": "prosody:5222",
+    "enabled": true
+  },
+  {
+    "name": "prosody-tls",
+    "listen": "0.0.0.0:25223",
+    "upstream": "prosody:5223",
+    "enabled": true
+  }
+]

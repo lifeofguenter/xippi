@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0352: Client State Indication, version 1.0.0 (2020-10-14). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0352.html; each 'source' names the XEP's example number. -->
+<examples xep='0352' version='1.0.0'>
+<example name='inactive' source='Example 2. Client indicates it is inactive'><![CDATA[
+      <inactive xmlns='urn:xmpp:csi:0'/>
+]]></example>
+<example name='active' source='Example 3. Client indicates it is active'><![CDATA[
+      <active xmlns='urn:xmpp:csi:0'/>
+]]></example>
+</examples>

@@ -1,0 +1,170 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0402: PEP Native Bookmarks, version 1.2.0 (2024-08-15). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0402.html; each 'source' names the XEP's example number. -->
+<examples xep='0402' version='1.2.0'>
+<example name='conference' source='Example 1. An example of the conference element'><![CDATA[
+<conference xmlns='urn:xmpp:bookmarks:1'
+            name='Council of Oberon'
+            autojoin='true'>
+  <nick>Puck</nick>
+</conference>
+]]></example>
+<example name='minimal' source='Example 2. Minimalist conference element'><![CDATA[
+<conference xmlns='urn:xmpp:bookmarks:1'/>
+]]></example>
+<example name='retrieve' source='Example 4. Client retrieves all bookmarks'><![CDATA[
+<iq from='juliet@capulet.lit/balcony' type='get' id='retrieve1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <items node='urn:xmpp:bookmarks:1'/>
+  </pubsub>
+</iq>
+]]></example>
+<example name='retrieve-result' source='Example 5. Server returns the bookmarks'><![CDATA[
+<iq type='result'
+    to='juliet@capulet.lit/balcony'
+    id='retrieve1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <items node='urn:xmpp:bookmarks:1'>
+      <item id='theplay@conference.shakespeare.lit'>
+        <conference xmlns='urn:xmpp:bookmarks:1'
+                    name='The Play&apos;s the Thing'
+                    autojoin='true'>
+          <nick>JC</nick>
+        </conference>
+      </item>
+      <item id='orchard@conference.shakespeare.lit'>
+        <conference xmlns='urn:xmpp:bookmarks:1'
+                    name='The Orcard'
+                    autojoin='1'>
+          <nick>JC</nick>
+          <extensions>
+            <state xmlns='http://myclient.example/bookmark/state' minimized='true'/>
+          </extensions>
+        </conference>
+      </item>
+    </items>
+  </pubsub>
+</iq>
+]]></example>
+<example name='add' source='Example 6. Client adds a new bookmark'><![CDATA[
+<iq from='juliet@capulet.lit/balcony' type='set' id='pip1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='urn:xmpp:bookmarks:1'>
+      <item id='theplay@conference.shakespeare.lit'>
+        <conference xmlns='urn:xmpp:bookmarks:1'
+                    name='The Play&apos;s the Thing'
+                    autojoin='true'>
+          <nick>JC</nick>
+        </conference>
+      </item>
+    </publish>
+    <publish-options>
+      <x xmlns='jabber:x:data' type='submit'>
+        <field var='FORM_TYPE' type='hidden'>
+          <value>http://jabber.org/protocol/pubsub#publish-options</value>
+        </field>
+        <field var='pubsub#persist_items'>
+          <value>true</value>
+        </field>
+        <field var='pubsub#max_items'>
+          <value>max</value>
+        </field>
+        <field var='pubsub#send_last_published_item'>
+          <value>never</value>
+        </field>
+        <field var='pubsub#access_model'>
+          <value>whitelist</value>
+        </field>
+      </x>
+    </publish-options>
+  </pubsub>
+</iq>
+]]></example>
+<example name='add-result' source='Example 7. Server acknowledges successful storage'><![CDATA[
+<iq to='juliet@capulet.lit/balcony' type='result' id='pip1'/>
+]]></example>
+<example name='edit' source='Example 8. Client corrects typo in name of bookmark'><![CDATA[
+<iq from='juliet@capulet.lit/balcony' type='set' id='pip2'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='urn:xmpp:bookmarks:1'>
+      <item id='orchard@conference.shakespeare.lit'>
+        <conference xmlns='urn:xmpp:bookmarks:1'
+                    name='The Orchard'
+                    autojoin='true'>
+          <nick>JC</nick>
+          <extensions>
+            <state xmlns='http://myclient.example/bookmark/state' minimized='true'/>
+          </extensions>
+        </conference>
+      </item>
+    </publish>
+    <publish-options>
+      <x xmlns='jabber:x:data' type='submit'>
+        <field var='FORM_TYPE' type='hidden'>
+          <value>http://jabber.org/protocol/pubsub#publish-options</value>
+        </field>
+        <field var='pubsub#persist_items'>
+          <value>true</value>
+        </field>
+        <field var='pubsub#max_items'>
+          <value>max</value>
+        </field>
+        <field var='pubsub#send_last_published_item'>
+          <value>never</value>
+        </field>
+        <field var='pubsub#access_model'>
+          <value>whitelist</value>
+        </field>
+      </x>
+    </publish-options>
+  </pubsub>
+</iq>
+]]></example>
+<example name='remove' source='Example 10. Client removes a new bookmark'><![CDATA[
+<iq from='juliet@capulet.lit/balcony' type='set' id='remove-bookmark1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <retract node='urn:xmpp:bookmarks:1' notify='true'>
+      <item id='theplay@conference.shakespeare.lit'/>
+    </retract>
+  </pubsub>
+</iq>
+]]></example>
+<example name='notify-new' source='Example 12. Client receives a new bookmark notification'><![CDATA[
+<message from='juliet@capulet.lit' to='juliet@capulet.lit/balcony' type='headline' id='new-room1'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='urn:xmpp:bookmarks:1'>
+      <item id='theplay@conference.shakespeare.lit'>
+        <conference xmlns='urn:xmpp:bookmarks:1'
+                    name='The Play&apos;s the Thing'
+                    autojoin='1'>
+          <nick>JC</nick>
+        </conference>
+      </item>
+    </items>
+  </event>
+</message>
+]]></example>
+<example name='notify-autojoin-false' source='Example 13. Client receives a bookmark notification with autojoin=&#x27;false&#x27; (its default value)'><![CDATA[
+<message from='juliet@capulet.lit' to='juliet@capulet.lit/balcony' type='headline' id='unjoined-room1'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='urn:xmpp:bookmarks:1'>
+      <item id='theplay@conference.shakespeare.lit'>
+        <conference xmlns='urn:xmpp:bookmarks:1'
+                    name='The Play&apos;s the Thing'>
+          <nick>JC</nick>
+        </conference>
+      </item>
+    </items>
+  </event>
+</message>
+]]></example>
+<example name='notify-retract' source='Example 14. Client receives a bookmark retraction notification'><![CDATA[
+<message from='juliet@capulet.lit' to='juliet@capulet.lit/balcony' type='headline' id='removed-room1'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='urn:xmpp:bookmarks:1'>
+      <retract id='theplay@conference.shakespeare.lit'/>
+    </items>
+  </event>
+</message>
+]]></example>
+</examples>

@@ -1,0 +1,746 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0045: Multi-User Chat, version 1.35.6 (2026-11-12). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0045.html; each 'source' names the XEP's example number. -->
+<examples xep='0045' version='1.35.6'>
+<example name='room-info' source='Example 10. Room Returns Extended Disco Info Result'><![CDATA[
+<iq from='coven@chat.shakespeare.lit'
+    id='ik3vs715'
+    to='hag66@shakespeare.lit/pda'
+    type='result'>
+  <query xmlns='http://jabber.org/protocol/disco#info'>
+    <identity
+        category='conference'
+        name='A Dark Cave'
+        type='text'/>
+    <feature var='http://jabber.org/protocol/muc'/>
+    <feature var='muc_passwordprotected'/>
+    <feature var='muc_hidden'/>
+    <feature var='muc_temporary'/>
+    <feature var='muc_open'/>
+    <feature var='muc_unmoderated'/>
+    <feature var='muc_nonanonymous'/>
+    <x xmlns='jabber:x:data' type='result'>
+      <field var='FORM_TYPE' type='hidden'>
+        <value>http://jabber.org/protocol/muc#roominfo</value>
+      </field>
+      <field var='muc#roominfo_description'
+             label='Description'>
+        <value>The place for all good witches!</value>
+      </field>
+      <field var='muc#roominfo_contactjid'
+             label='Contact Addresses'>
+        <value>crone1@shakespeare.lit</value>
+      </field>
+      <field var='muc#roominfo_subject'
+             label='Current Discussion Topic'>
+        <value>Spells</value>
+      </field>
+      <field var='muc#roomconfig_changesubject'
+             label='Subject can be modified'>
+        <value>true</value>
+      </field>
+      <field var='muc#roominfo_occupants'
+             label='Number of occupants'>
+        <value>3</value>
+      </field>
+      <field var='muc#roominfo_ldapgroup'
+             label='Associated LDAP Group'>
+        <value>cn=witches,dc=shakespeare,dc=lit</value>
+      </field>
+      <field var='muc#roominfo_lang'
+             label='Language of discussion'>
+        <value>en</value>
+      </field>
+      <field var='muc#roominfo_logs'
+             label='URL for discussion logs'>
+        <value>http://www.shakespeare.lit/chatlogs/coven/</value>
+      </field>
+      <field var='muc#maxhistoryfetch'
+             label='Maximum Number of History Messages Returned by Room'>
+        <value>50</value>
+      </field>
+      <field var='muc#roomconfig_pubsub'
+             label='Associated pubsub node'>
+        <value>xmpp:pubsub.shakespeare.lit?;node=the-coven-node</value>
+      </field>
+    </x>
+  </query>
+</iq>
+]]></example>
+<example name='join' source='Example 18. User Seeks to Enter a Room (Multi-User Chat)'><![CDATA[
+<presence
+    from='hag66@shakespeare.lit/pda'
+    id='n13mt3l'
+    to='coven@chat.shakespeare.lit/thirdwitch'>
+  <x xmlns='http://jabber.org/protocol/muc'/>
+</presence>
+]]></example>
+<example name='join-password' source='Example 26. User Provides Password On Entering a Room'><![CDATA[
+<presence
+    from='hag66@shakespeare.lit/pda'
+    id='djn4714'
+    to='coven@chat.shakespeare.lit/thirdwitch'>
+  <x xmlns='http://jabber.org/protocol/muc'>
+    <password>cauldronburn</password>
+  </x>
+</presence>
+]]></example>
+<example name='join-history' source='Example 36. User Requests Limit on Number of Messages in History'><![CDATA[
+<presence
+    from='hag66@shakespeare.lit/pda'
+    id='n13mt3l'
+    to='coven@chat.shakespeare.lit/thirdwitch'>
+  <x xmlns='http://jabber.org/protocol/muc'>
+    <history maxstanzas='20'/>
+  </x>
+</presence>
+]]></example>
+<example name='join-no-history' source='Example 39. User Requests No History'><![CDATA[
+<presence
+    from='hag66@shakespeare.lit/pda'
+    id='n13mt3l'
+    to='coven@chat.shakespeare.lit/thirdwitch'>
+  <x xmlns='http://jabber.org/protocol/muc'>
+    <history maxchars='0'/>
+  </x>
+</presence>
+]]></example>
+<example name='password-required' source='Example 25. Service Denies Access Because No Password Provided'><![CDATA[
+<presence
+    from='coven@chat.shakespeare.lit/thirdwitch'
+    id='n13mt3l'
+    to='hag66@shakespeare.lit/pda'
+    type='error'>
+  <x xmlns='http://jabber.org/protocol/muc'/>
+  <error by='coven@chat.shakespeare.lit' type='auth'>
+    <not-authorized xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+  </error>
+</presence>
+]]></example>
+<example name='members-only' source='Example 27. Service Denies Access Because User Is Not on Member List'><![CDATA[
+<presence
+    from='coven@chat.shakespeare.lit/thirdwitch'
+    id='n13mt3l'
+    to='hag66@shakespeare.lit/pda'
+    type='error'>
+  <x xmlns='http://jabber.org/protocol/muc'/>
+  <error by='coven@chat.shakespeare.lit' type='auth'>
+    <registration-required xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+  </error>
+</presence>
+]]></example>
+<example name='banned' source='Example 28. Service Denies Access Because User is Banned'><![CDATA[
+<presence
+    from='coven@chat.shakespeare.lit/thirdwitch'
+    id='n13mt3l'
+    to='hag66@shakespeare.lit/pda'
+    type='error'>
+  <x xmlns='http://jabber.org/protocol/muc'/>
+  <error by='coven@chat.shakespeare.lit' type='auth'>
+    <forbidden xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+  </error>
+</presence>
+]]></example>
+<example name='nick-conflict' source='Example 29. Service Denies Access Because of Nick Conflict'><![CDATA[
+<presence
+    from='coven@chat.shakespeare.lit/thirdwitch'
+    id='n13mt3l'
+    to='hag66@shakespeare.lit/pda'
+    type='error'>
+  <x xmlns='http://jabber.org/protocol/muc'/>
+  <error by='coven@chat.shakespeare.lit' type='cancel'>
+    <conflict xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+  </error>
+</presence>
+]]></example>
+<example name='room-not-found' source='Example 31. Service Denies Access Because Room Does Not (Yet) Exist'><![CDATA[
+<presence
+    from='coven@chat.shakespeare.lit/thirdwitch'
+    id='n13mt3l'
+    to='hag66@shakespeare.lit/pda'
+    type='error'>
+  <x xmlns='http://jabber.org/protocol/muc'/>
+  <error by='coven@chat.shakespeare.lit' type='cancel'>
+    <item-not-found xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+  </error>
+</presence>
+]]></example>
+<example name='not-in-room' source='Example 43. Service Response to groupchat 1.0 join / non-occupant presence update'><![CDATA[
+<presence
+    from='coven@chat.shakespeare.lit/thirdwitch'
+    to='hag66@shakespeare.lit/pda'
+    type='unavailable'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='none' role='none'>
+      <reason>You are not in the room.</reason>
+    </item>
+    <status code='110'/>
+    <status code='307'/>
+    <status code='333'/>
+  </x>
+</presence>
+]]></example>
+<example name='nick-change' source='Example 49. Occupant Changes Nickname'><![CDATA[
+<presence
+    from='hag66@shakespeare.lit/pda'
+    id='ifd1c35'
+    to='coven@chat.shakespeare.lit/oldhag'/>
+]]></example>
+<example name='nick-modified' source='Example 51. Occupant Changes Nickname, Modified by Service'><![CDATA[
+<presence
+    from='hag66@shakespeare.lit/pda'
+    id='nx6z2v5'
+    to='coven@chat.shakespeare.lit/OldHag'/>
+
+<presence
+    from='coven@chat.shakespeare.lit/oldhag'
+    id='D0E2B666-3373-42C9-B726-D52C40A48383'
+    to='hag66@shakespeare.lit/pda'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='member'
+          jid='hag66@shakespeare.lit/pda'
+          role='participant'/>
+    <status code='110'/>
+    <status code='210'/>
+  </x>
+</presence>
+]]></example>
+<example name='invite-mediated' source='Example 56. Occupant Sends a Mediated Invitation'><![CDATA[
+<message
+    from='crone1@shakespeare.lit/desktop'
+    id='nzd143v8'
+    to='coven@chat.shakespeare.lit'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <invite to='hecate@shakespeare.lit'>
+      <reason>
+        Hey Hecate, this is the place for all good witches!
+      </reason>
+    </invite>
+  </x>
+</message>
+]]></example>
+<example name='invite-received' source='Example 57. Room Sends Invitation to Invitee on Behalf of Invitor'><![CDATA[
+<message
+    from='coven@chat.shakespeare.lit'
+    id='nzd143v8'
+    to='hecate@shakespeare.lit'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <invite from='crone1@shakespeare.lit/desktop'>
+      <reason>
+        Hey Hecate, this is the place for all good witches!
+      </reason>
+    </invite>
+    <password>cauldronburn</password>
+  </x>
+</message>
+]]></example>
+<example name='decline' source='Example 58. Invitee Declines Invitation'><![CDATA[
+<message
+    from='hecate@shakespeare.lit/broom'
+    id='jk2vs61v'
+    to='coven@chat.shakespeare.lit'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <decline to='crone1@shakespeare.lit'>
+      <reason>
+        Sorry, I'm too busy right now.
+      </reason>
+    </decline>
+  </x>
+</message>
+]]></example>
+<example name='self-exit' source='Example 81. Service Sends Self-Presence Related to Departure of Occupant'><![CDATA[
+<presence
+    from='coven@chat.shakespeare.lit/thirdwitch'
+    to='hag66@shakespeare.lit/pda'
+    type='unavailable'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='member'
+          jid='hag66@shakespeare.lit/pda'
+          role='none'/>
+    <status code='110'/>
+  </x>
+</presence>
+]]></example>
+<example name='subject' source='Example 84. Moderator Changes Subject'><![CDATA[
+<message
+    from='wiccarocks@shakespeare.lit/laptop'
+    id='lh2bs617'
+    to='coven@chat.shakespeare.lit'
+    type='groupchat'>
+  <subject>Fire Burn and Cauldron Bubble!</subject>
+</message>
+]]></example>
+<example name='kick' source='Example 89. Moderator Kicks Occupant'><![CDATA[
+<iq from='fluellen@shakespeare.lit/pda'
+    id='kick1'
+    to='harfleur@chat.shakespeare.lit'
+    type='set'>
+  <query xmlns='http://jabber.org/protocol/muc#admin'>
+    <item nick='pistol' role='none'>
+      <reason>Avaunt, you cullion!</reason>
+    </item>
+  </query>
+</iq>
+]]></example>
+<example name='voice' source='Example 94. Moderator Grants Voice to a Visitor'><![CDATA[
+<iq from='crone1@shakespeare.lit/desktop'
+    id='voice1'
+    to='coven@chat.shakespeare.lit'
+    type='set'>
+  <query xmlns='http://jabber.org/protocol/muc#admin'>
+    <item nick='thirdwitch'
+          role='participant'/>
+  </query>
+</iq>
+]]></example>
+<example name='ban' source='Example 110. Admin Bans User'><![CDATA[
+<iq from='kinghenryv@shakespeare.lit/throne'
+    id='ban1'
+    to='southampton@chat.shakespeare.lit'
+    type='set'>
+  <query xmlns='http://jabber.org/protocol/muc#admin'>
+    <item affiliation='outcast'
+          jid='earlofcambridge@shakespeare.lit'/>
+  </query>
+</iq>
+]]></example>
+<example name='ban-presence' source='Example 113. Service Removes Banned User'><![CDATA[
+<presence
+    from='southampton@chat.shakespeare.lit/cambridge'
+    to='earlofcambridge@shakespeare.lit/stabber'
+    type='unavailable'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='outcast' role='none'>
+      <actor nick='The ♚'/>
+      <reason>Treason</reason>
+    </item>
+    <status code='301'/>
+  </x>
+</presence>
+]]></example>
+<example name='ban-list-request' source='Example 116. Admin Requests Ban List'><![CDATA[
+<iq from='kinghenryv@shakespeare.lit/throne'
+    id='ban2'
+    to='southampton@chat.shakespeare.lit'
+    type='get'>
+  <query xmlns='http://jabber.org/protocol/muc#admin'>
+    <item affiliation='outcast'/>
+  </query>
+</iq>
+]]></example>
+<example name='ban-list' source='Example 117. Service Sends Ban List to Admin'><![CDATA[
+<iq from='southampton@chat.shakespeare.lit'
+    id='ban2'
+    to='kinghenryv@shakespeare.lit/throne'
+    type='result'>
+  <query xmlns='http://jabber.org/protocol/muc#admin'>
+    <item affiliation='outcast'
+          jid='earlofcambridge@shakespeare.lit'>
+      <reason>Treason</reason>
+    </item>
+  </query>
+</iq>
+]]></example>
+<example name='ban-list-modify' source='Example 118. Admin Sends Modified Ban List to Service'><![CDATA[
+<iq from='kinghenryv@shakespeare.lit/throne'
+    id='ban3'
+    to='southampton@chat.shakespeare.lit'
+    type='set'>
+  <query xmlns='http://jabber.org/protocol/muc#admin'>
+    <item affiliation='outcast'
+          jid='lordscroop@shakespeare.lit'>
+      <reason>Treason</reason>
+    </item>
+    <item affiliation='outcast'
+          jid='sirthomasgrey@shakespeare.lit'>
+      <reason>Treason</reason>
+    </item>
+  </query>
+</iq>
+]]></example>
+<example name='grant-member' source='Example 120. Admin Grants Membership'><![CDATA[
+<iq from='crone1@shakespeare.lit/desktop'
+    id='member1'
+    to='coven@chat.shakespeare.lit'
+    type='set'>
+  <query xmlns='http://jabber.org/protocol/muc#admin'>
+    <item affiliation='member'
+          jid='hag66@shakespeare.lit'
+          nick='thirdwitch'/>
+  </query>
+</iq>
+]]></example>
+<example name='member-list-modify' source='Example 131. Admin Sends Modified Member List to Service'><![CDATA[
+<iq from='crone1@shakespeare.lit/desktop'
+    id='member4'
+    to='coven@chat.shakespeare.lit'
+    type='set'>
+  <query xmlns='http://jabber.org/protocol/muc#admin'>
+    <item affiliation='none'
+          jid='hag66@shakespeare.lit'/>
+    <item affiliation='member'
+          jid='hecate@shakespeare.lit'/>
+  </query>
+</iq>
+]]></example>
+<example name='created' source='Example 154. Service Acknowledges Room Creation'><![CDATA[
+<presence
+    from='coven@chat.shakespeare.lit/firstwitch'
+    to='crone1@shakespeare.lit/desktop'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='owner'
+          role='moderator'/>
+    <status code='110'/>
+    <status code='201'/>
+  </x>
+</presence>
+]]></example>
+<example name='instant-room' source='Example 155. Owner Requests Instant Room'><![CDATA[
+<iq from='crone1@shakespeare.lit/desktop'
+    id='create1'
+    to='coven@chat.shakespeare.lit'
+    type='set'>
+  <query xmlns='http://jabber.org/protocol/muc#owner'>
+    <x xmlns='jabber:x:data' type='submit'/>
+  </query>
+</iq>
+]]></example>
+<example name='config-request' source='Example 156. Owner Requests Configuration Form'><![CDATA[
+<iq from='crone1@shakespeare.lit/desktop'
+    id='create1'
+    to='coven@chat.shakespeare.lit'
+    type='get'>
+  <query xmlns='http://jabber.org/protocol/muc#owner'/>
+</iq>
+]]></example>
+<example name='config-form' source='Example 157. Service Sends Configuration Form'><![CDATA[
+<iq from='coven@chat.shakespeare.lit'
+    id='create1'
+    to='crone1@shakespeare.lit/desktop'
+    type='result'>
+  <query xmlns='http://jabber.org/protocol/muc#owner'>
+    <x xmlns='jabber:x:data' type='form'>
+      <title>Configuration for "coven" Room</title>
+      <instructions>
+          Your room coven@macbeth has been created!
+          The default configuration is as follows:
+            - No logging
+            - No moderation
+            - Up to 20 occupants
+            - No password required
+            - No invitation required
+            - Room is not persistent
+            - Only admins may change the subject
+            - Presence broadcasted for all users
+          To accept the default configuration, click OK. To
+          select a different configuration, please complete
+          this form.
+      </instructions>
+      <field
+          type='hidden'
+          var='FORM_TYPE'>
+        <value>http://jabber.org/protocol/muc#roomconfig</value>
+      </field>
+      <field
+          label='Natural-Language Room Name'
+          type='text-single'
+          var='muc#roomconfig_roomname'/>
+      <field
+          label='Short Description of Room'
+          type='text-single'
+          var='muc#roomconfig_roomdesc'/>
+      <field
+          label='Natural Language for Room Discussions'
+          type='text-single'
+          var='muc#roomconfig_lang'/>
+      <field
+          label='Enable Public Logging?'
+          type='boolean'
+          var='muc#roomconfig_enablelogging'>
+        <value>0</value>
+      </field>
+      <field
+          label='Enable Message Archiving?'
+          type='boolean'
+          var='muc#roomconfig_enablearchiving'>
+        <value>0</value>
+      </field>
+      <field
+          label='Allow Occupants to Change Subject?'
+          type='boolean'
+          var='muc#roomconfig_changesubject'>
+        <value>0</value>
+      </field>
+      <field
+          label='Allow Members to Invite Others?'
+          type='boolean'
+          var='muc#roomconfig_allowinvites'>
+        <value>0</value>
+      </field>
+      <field
+          label='Who Can Send Private Messages?'
+          type='list-single'
+          var='muc#roomconfig_allowpm'>
+        <value>anyone</value>
+        <option label='Anyone'>
+          <value>anyone</value>
+        </option>
+        <option label='Anyone with Voice'>
+          <value>participants</value>
+          </option>
+        <option label='Moderators Only'>
+          <value>moderators</value>
+        </option>
+        <option label='Nobody'>
+          <value>none</value>
+        </option>
+      </field>
+      <field
+          label='Maximum Number of Occupants'
+          type='list-single'
+          var='muc#roomconfig_maxusers'>
+        <value>20</value>
+        <option label='10'><value>10</value></option>
+        <option label='20'><value>20</value></option>
+        <option label='30'><value>30</value></option>
+        <option label='50'><value>50</value></option>
+        <option label='100'><value>100</value></option>
+        <option label='None'><value>none</value></option>
+      </field>
+      <field
+          label='Roles for which Presence is Broadcasted'
+          type='list-multi'
+          var='muc#roomconfig_presencebroadcast'>
+        <value>moderator</value>
+        <value>participant</value>
+        <value>visitor</value>
+        <option label='Moderator'><value>moderator</value></option>
+        <option label='Participant'><value>participant</value></option>
+        <option label='Visitor'><value>visitor</value></option>
+      </field>
+      <field
+          label='Roles and Affiliations that May Retrieve Member List'
+          type='list-multi'
+          var='muc#roomconfig_getmemberlist'>
+        <value>moderator</value>
+        <value>participant</value>
+        <value>visitor</value>
+        <option label='Moderator'><value>moderator</value></option>
+        <option label='Participant'><value>participant</value></option>
+        <option label='Visitor'><value>visitor</value></option>
+      </field>
+      <field
+          label='Make Room Publicly Searchable?'
+          type='boolean'
+          var='muc#roomconfig_publicroom'>
+        <value>1</value>
+      </field>
+      <field
+          label='Make Room Persistent?'
+          type='boolean'
+          var='muc#roomconfig_persistentroom'>
+        <value>0</value>
+      </field>
+      <field
+          label='Make Room Moderated?'
+          type='boolean'
+          var='muc#roomconfig_moderatedroom'>
+        <value>0</value>
+      </field>
+      <field
+          label='Make Room Members-Only?'
+          type='boolean'
+          var='muc#roomconfig_membersonly'>
+        <value>0</value>
+      </field>
+      <field
+          label='Password Required to Enter?'
+          type='boolean'
+          var='muc#roomconfig_passwordprotectedroom'>
+        <value>0</value>
+      </field>
+      <field type='fixed'>
+        <value>
+          If a password is required to enter this room,
+          you must specify the password below.
+        </value>
+      </field>
+      <field
+          label='Password'
+          type='text-private'
+          var='muc#roomconfig_roomsecret'/>
+      <field
+          label='Who May Discover Real JIDs?'
+          type='list-single'
+          var='muc#roomconfig_whois'>
+        <option label='Moderators Only'>
+          <value>moderators</value>
+        </option>
+        <option label='Anyone'>
+          <value>anyone</value>
+        </option>
+      </field>
+      <field
+          label='Maximum Number of History Messages Returned by Room'
+          type='text-single'
+          var='muc#maxhistoryfetch'>
+        <value>50</value>
+      </field>
+      <field type='fixed'>
+        <value>
+          You may specify additional people who have
+          admin status in the room. Please
+          provide one Jabber ID per line.
+        </value>
+      </field>
+      <field
+          label='Room Admins'
+          type='jid-multi'
+          var='muc#roomconfig_roomadmins'/>
+      <field type='fixed'>
+        <value>
+          You may specify additional owners for this
+          room. Please provide one Jabber ID per line.
+        </value>
+      </field>
+      <field
+          label='Room Owners'
+          type='jid-multi'
+          var='muc#roomconfig_roomowners'/>
+    </x>
+  </query>
+</iq>
+]]></example>
+<example name='config-submit' source='Example 159. Owner Submits Configuration Form'><![CDATA[
+<iq from='crone1@shakespeare.lit/desktop'
+    id='create2'
+    to='coven@chat.shakespeare.lit'
+    type='set'>
+  <query xmlns='http://jabber.org/protocol/muc#owner'>
+    <x xmlns='jabber:x:data' type='submit'>
+      <field var='FORM_TYPE'>
+        <value>http://jabber.org/protocol/muc#roomconfig</value>
+      </field>
+      <field var='muc#roomconfig_roomname'>
+        <value>A Dark Cave</value>
+      </field>
+      <field var='muc#roomconfig_roomdesc'>
+        <value>The place for all good witches!</value>
+      </field>
+      <field var='muc#roomconfig_enablelogging'>
+        <value>0</value>
+      </field>
+      <field var='muc#roomconfig_enablearchiving'>
+        <value>1</value>
+      </field>
+      <field var='muc#roomconfig_changesubject'>
+        <value>1</value>
+      </field>
+      <field var='muc#roomconfig_allowinvites'>
+        <value>0</value>
+      </field>
+      <field var='muc#roomconfig_allowpm'>
+        <value>anyone</value>
+      </field>
+      <field var='muc#roomconfig_maxusers'>
+        <value>10</value>
+      </field>
+      <field var='muc#roomconfig_publicroom'>
+        <value>0</value>
+      </field>
+      <field var='muc#roomconfig_persistentroom'>
+        <value>0</value>
+      </field>
+      <field var='muc#roomconfig_moderatedroom'>
+        <value>0</value>
+      </field>
+      <field var='muc#roomconfig_membersonly'>
+        <value>0</value>
+      </field>
+      <field var='muc#roomconfig_passwordprotectedroom'>
+        <value>1</value>
+      </field>
+      <field var='muc#roomconfig_roomsecret'>
+        <value>cauldronburn</value>
+      </field>
+      <field var='muc#roomconfig_whois'>
+        <value>moderators</value>
+      </field>
+      <field var='muc#maxhistoryfetch'>
+        <value>50</value>
+      </field>
+      <field var='muc#roomconfig_roomadmins'>
+        <value>wiccarocks@shakespeare.lit</value>
+        <value>hecate@shakespeare.lit</value>
+      </field>
+    </x>
+  </query>
+</iq>
+]]></example>
+<example name='config-cancel' source='Example 162. Owner Cancels Initial Configuration'><![CDATA[
+<iq from='crone1@shakespeare.lit/desktop'
+    id='create2'
+    to='coven@chat.shakespeare.lit'
+    type='set'>
+  <query xmlns='http://jabber.org/protocol/muc#owner'>
+    <x xmlns='jabber:x:data' type='cancel'/>
+  </query>
+</iq>
+]]></example>
+<example name='config-change' source='Example 171. Configuration Status Code'><![CDATA[
+<message from='coven@chat.shakespeare.lit'
+         id='80349046-F26A-44F3-A7A6-54825064DD9E'
+         to='crone1@shakespeare.lit/desktop'
+         type='groupchat'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <status code='170'/>
+  </x>
+</message>
+]]></example>
+<example name='destroy' source='Example 201. Owner Submits Room Destruction Request'><![CDATA[
+<iq from='crone1@shakespeare.lit/desktop'
+    id='begone'
+    to='heath@chat.shakespeare.lit'
+    type='set'>
+  <query xmlns='http://jabber.org/protocol/muc#owner'>
+    <destroy jid='coven@chat.shakespeare.lit'>
+      <reason>Macbeth doth come.</reason>
+    </destroy>
+  </query>
+</iq>
+]]></example>
+<example name='removed-error' source='Example 205. MUC service removes user because of error'><![CDATA[
+<presence
+    from='harfleur@chat.shakespeare.lit/pistol'
+    to='pistol@shakespeare.lit/harfleur'
+    type='unavailable'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='none' role='none' />
+    <status code='110'/>
+    <status code='333'/>
+  </x>
+</presence>
+]]></example>
+<example name='shutdown' source='Example 207. MUC service removes user because of service shutdown'><![CDATA[
+<presence
+    from='harfleur@chat.shakespeare.lit/pistol'
+    to='pistol@shakespeare.lit/client'
+    type='unavailable'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='none' role='none' />
+    <status code='110'/>
+    <status code='332'/>
+  </x>
+</presence>
+<presence
+    from='harfleur@chat.shakespeare.lit/othello'
+    to='othello@shakespeare.lit/client'
+    type='unavailable'>
+  <x xmlns='http://jabber.org/protocol/muc#user'>
+    <item affiliation='none' role='none' />
+    <status code='110'/>
+    <status code='332'/>
+  </x>
+</presence>
+]]></example>
+</examples>

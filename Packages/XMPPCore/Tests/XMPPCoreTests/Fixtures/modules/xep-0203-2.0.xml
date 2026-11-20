@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0203: Delayed Delivery, version 2.0 (2009-09-15). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0203.html; each 'source' names the XEP's example number. -->
+<examples xep='0203' version='2.0'>
+<example name='offline-message' source='Example 1. Receiving a Message Sent While Offline'><![CDATA[
+<message
+    from='romeo@montague.net/orchard'
+    to='juliet@capulet.com'
+    type='chat'>
+  <body>
+    O blessed, blessed night! I am afeard.
+    Being in night, all this is but a dream,
+    Too flattering-sweet to be substantial.
+  </body>
+  <delay xmlns='urn:xmpp:delay'
+     from='capulet.com'
+     stamp='2002-09-10T23:08:25Z'>
+    Offline Storage
+  </delay>
+</message>
+]]></example>
+<example name='last-presence' source='Example 2. Receiving the Last Presence Update of Another Entity'><![CDATA[
+<presence from='juliet@capulet.com/balcony' to='romeo@montague.net'>
+  <status>anon!</status>
+  <show>xa</show>
+  <priority>1</priority>
+  <delay xmlns='urn:xmpp:delay'
+     from='juliet@capulet.com/balcony'
+     stamp='2002-09-10T23:41:07Z'/>
+</presence>
+]]></example>
+<example name='room-history' source='Example 3. Receiving Cached Messages from a Conference Room'><![CDATA[
+<message
+    from='coven@macbeth.shakespeare.lit/secondwitch'
+    to='macbeth@shakespeare.lit/laptop'
+    type='groupchat'>
+  <body>
+    By the pricking of my thumbs,
+    Something wicked this way comes.
+    Open, locks,
+    Whoever knocks!
+  </body>
+  <delay xmlns='urn:xmpp:delay'
+     from='coven@macbeth.shakespeare.lit'
+     stamp='2002-09-10T23:05:37Z'/>
+</message>
+]]></example>
+</examples>

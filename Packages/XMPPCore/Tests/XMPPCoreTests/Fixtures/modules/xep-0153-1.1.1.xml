@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0153: vCard-Based Avatars, version 1.1.1 (2024-06-10). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0153.html; each 'source' names the XEP's example number. -->
+<examples xep='0153' version='1.1.1'>
+<example name='photo-hash' source='Example 3. User&#x27;s Client Includes Avatar Hash in Presence Broadcast'><![CDATA[
+<presence from='juliet@capulet.com/balcony'>
+  <x xmlns='vcard-temp:x:update'>
+    <photo>01b87fcd030b72895ff8e88db57ec525450f000d</photo>
+  </x>
+</presence>
+]]></example>
+<example name='not-ready' source='Example 6. User Is Not Ready to Advertise an Image'><![CDATA[
+<presence>
+  <x xmlns='vcard-temp:x:update'/>
+</presence>
+]]></example>
+<example name='no-image' source='Example 7. No Image to be Advertised'><![CDATA[
+<presence>
+  <x xmlns='vcard-temp:x:update'>
+    <photo/>
+  </x>
+</presence>
+]]></example>
+</examples>

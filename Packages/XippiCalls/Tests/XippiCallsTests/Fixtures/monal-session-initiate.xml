@@ -1,0 +1,89 @@
+<iq from='juliet@capulet.example/Monal-iOS.7c1e' id='5F2A9B3C-41D7-4E8A-B6C0-2D9E7F1A3B5C' to='romeo@montague.example/Xippi.9fQ2' type='set'>
+  <jingle xmlns='urn:xmpp:jingle:1' action='session-initiate' initiator='juliet@capulet.example/Monal-iOS.7c1e' sid='0B6E2D4F-8A1C-4E3B-9D7F-5C2A1E0B8D6F'>
+    <group xmlns='urn:xmpp:jingle:apps:grouping:0' semantics='BUNDLE'>
+      <content name='0'/>
+      <content name='1'/>
+    </group>
+    <content xmlns='urn:xmpp:jingle:1' creator='initiator' senders='both' name='0'>
+      <transport xmlns='urn:xmpp:jingle:transports:ice-udp:1' pwd='Qm4vT8xZ2nB6cW0pL5kR9sYd' ufrag='Jt7w'>
+        <candidate xmlns='urn:xmpp:jingle:transports:ice-udp:1' id='812447000' component='1' foundation='3127394519' generation='0' ip='10.20.30.40' port='61002' priority='2122260223' protocol='udp' type='host'/>
+        <candidate xmlns='urn:xmpp:jingle:transports:ice-udp:1' id='812519000' component='1' foundation='1076231993' generation='0' ip='198.51.100.52' port='50002' priority='41885695' protocol='udp' rel-addr='0.0.0.0' rel-port='0' type='relay'/>
+        <trickle xmlns='http://gultsch.de/xmpp/drafts/jingle/transports/ice-udp/option'/>
+        <renomination xmlns='http://gultsch.de/xmpp/drafts/jingle/transports/ice-udp/option'/>
+        <fingerprint xmlns='urn:xmpp:jingle:apps:dtls:0' hash='sha-256' setup='actpass'>9D:04:B7:6E:21:F3:8A:C5:0D:92:4B:E8:17:6A:3F:D1:C0:58:2E:A9:74:1B:E6:35:8F:02:BD:69:C4:17:A3:50</fingerprint>
+      </transport>
+      <description xmlns='urn:xmpp:jingle:apps:rtp:1' media='audio'>
+        <extmap-allow-mixed/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='1' uri='urn:ietf:params:rtp-hdrext:ssrc-audio-level'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='3' uri='http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='4' uri='urn:ietf:params:rtp-hdrext:sdes:mid'/>
+        <rtcp-mux/>
+        <payload-type id='111' name='opus' clockrate='48000' channels='2'>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='transport-cc'/>
+          <parameter name='useinbandfec' value='true'/>
+          <parameter name='minptime' value='10'/>
+        </payload-type>
+        <payload-type id='63' name='red' clockrate='48000' channels='2'>
+          <parameter name='encodings' value='111'/>
+          <parameter name='encodings' value='111'/>
+        </payload-type>
+        <payload-type id='0' name='PCMU' clockrate='8000'/>
+        <payload-type id='126' name='telephone-event' clockrate='8000'/>
+        <source xmlns='urn:xmpp:jingle:apps:rtp:ssma:0' ssrc='109112503'>
+          <parameter name='cname' value='kQ3sV9mX1bN7cZ5f'/>
+          <parameter name='msid' value='stream audio0'/>
+        </source>
+      </description>
+    </content>
+    <content xmlns='urn:xmpp:jingle:1' creator='initiator' senders='both' name='1'>
+      <transport xmlns='urn:xmpp:jingle:transports:ice-udp:1' pwd='Qm4vT8xZ2nB6cW0pL5kR9sYd' ufrag='Jt7w'>
+        <trickle xmlns='http://gultsch.de/xmpp/drafts/jingle/transports/ice-udp/option'/>
+        <renomination xmlns='http://gultsch.de/xmpp/drafts/jingle/transports/ice-udp/option'/>
+        <fingerprint xmlns='urn:xmpp:jingle:apps:dtls:0' hash='sha-256' setup='actpass'>9D:04:B7:6E:21:F3:8A:C5:0D:92:4B:E8:17:6A:3F:D1:C0:58:2E:A9:74:1B:E6:35:8F:02:BD:69:C4:17:A3:50</fingerprint>
+      </transport>
+      <description xmlns='urn:xmpp:jingle:apps:rtp:1' media='video'>
+        <extmap-allow-mixed/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='13' uri='urn:3gpp:video-orientation'/>
+        <rtp-hdrext xmlns='urn:xmpp:jingle:apps:rtp:rtp-hdrext:0' id='4' uri='urn:ietf:params:rtp-hdrext:sdes:mid'/>
+        <rtcp-mux/>
+        <ssrc-group xmlns='urn:xmpp:jingle:apps:rtp:ssma:0' semantics='FID'>
+          <source ssrc='3733210709'/>
+          <source ssrc='4025710505'/>
+        </ssrc-group>
+        <payload-type id='96' name='H264' clockrate='90000'>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='goog-remb'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='transport-cc'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='ccm' subtype='fir'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='nack'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='nack' subtype='pli'/>
+          <parameter name='packetization_mode' value='1'/>
+          <parameter name='level_asymmetry_allowed' value='true'/>
+          <parameter name='profile_level_id' value='6556724'/>
+        </payload-type>
+        <payload-type id='97' name='rtx' clockrate='90000'>
+          <parameter name='profile_level_id' value='4325392'/>
+          <parameter name='apt' value='96'/>
+        </payload-type>
+        <payload-type id='100' name='VP8' clockrate='90000'>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='goog-remb'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='transport-cc'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='ccm' subtype='fir'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='nack'/>
+          <rtcp-fb xmlns='urn:xmpp:jingle:apps:rtp:rtcp-fb:0' type='nack' subtype='pli'/>
+        </payload-type>
+        <payload-type id='101' name='rtx' clockrate='90000'>
+          <parameter name='profile_level_id' value='4325392'/>
+          <parameter name='apt' value='100'/>
+        </payload-type>
+        <source xmlns='urn:xmpp:jingle:apps:rtp:ssma:0' ssrc='3733210709'>
+          <parameter name='cname' value='kQ3sV9mX1bN7cZ5f'/>
+          <parameter name='msid' value='stream video0'/>
+        </source>
+        <source xmlns='urn:xmpp:jingle:apps:rtp:ssma:0' ssrc='4025710505'>
+          <parameter name='cname' value='kQ3sV9mX1bN7cZ5f'/>
+          <parameter name='msid' value='stream video0'/>
+        </source>
+      </description>
+    </content>
+  </jingle>
+</iq>

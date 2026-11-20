@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0292: vCard4 Over XMPP, version 0.12.2 (2026-10-25). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0292.html; each 'source' names the XEP's example number. -->
+<examples xep='0292' version='0.12.2'>
+<example name='retrieve' source='Example 1. vCard Retrieval Request'><![CDATA[
+  <iq from='samizzi@cisco.com/foo'
+      id='bx81v356'
+      to='stpeter@jabber.org'
+      type='get'>
+    <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+      <items node='urn:xmpp:vcard4'/>
+    </pubsub>
+  </iq>
+]]></example>
+<example name='retrieve-result' source='Example 2. Server Returns vCard'><![CDATA[
+  <iq from='stpeter@jabber.org'
+      id='bx81v356'
+      to='samizzi@cisco.com/foo'
+      type='result'>
+    <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+      <items node='urn:xmpp:vcard4'>
+        <item id='e0bf7714-a8dd-4749-8a18-e1979525b0d5'>
+          <vcard xmlns="urn:ietf:params:xml:ns:vcard-4.0">
+            <fn><text>Peter Saint-Andre</text></fn>
+            <n><surname>Saint-Andre</surname><given>Peter</given><additional></additional></n>
+            <nickname><text>stpeter</text></nickname>
+            <nickname><text>psa</text></nickname>
+            <photo><uri>https://stpeter.im/images/stpeter_oscon.jpg</uri></photo>
+            <bday><date>1966-08-06</date></bday>
+            <adr>
+              <parameters>
+                <type><text>work</text><text>voice</text></type>
+                <pref><integer>1</integer></pref>
+              </parameters>
+              <ext>Suite 600</ext>
+              <street>1899 Wynkoop Street</street>
+              <locality>Denver</locality>
+              <region>CO</region>
+              <code>80202</code>
+              <country>USA</country>
+            </adr>
+            <adr>
+              <parameters><type><text>home</text></type></parameters>
+              <ext></ext>
+              <street></street>
+              <locality>Parker</locality>
+              <region>CO</region>
+              <code>80138</code>
+              <country>USA</country>
+            </adr>
+            <tel>
+              <parameters>
+                <type><text>work</text><text>voice</text></type>
+                <pref><integer>1</integer></pref>
+              </parameters>
+              <uri>tel:+1-303-308-3282</uri>
+            </tel>
+            <tel>
+              <parameters><type><text>work</text><text>fax</text></type></parameters>
+              <uri>tel:+1-303-308-3219</uri>
+            </tel>
+            <tel>
+              <parameters>
+                <type><text>cell</text><text>voice</text><text>text</text></type>
+              </parameters>
+              <uri>tel:+1-720-256-6756</uri>
+            </tel>
+            <tel>
+              <parameters><type><text>home</text><text>voice</text></type></parameters>
+              <uri>tel:+1-303-555-1212</uri>
+            </tel>
+            <geo><uri>geo:39.59,-105.01</uri></geo>
+            <title><text>Executive Director</text></title>
+            <role><text>Patron Saint</text></role>
+            <org>
+              <parameters><type><text>work</text></type></parameters>
+              <text>XMPP Standards Foundation</text>
+            </org>
+            <url><uri>https://stpeter.im/</uri></url>
+            <note>
+              <text>
+              More information about me is located on my
+              personal website: https://stpeter.im/
+              </text>
+            </note>
+            <gender><sex>M</sex></gender>
+            <lang>
+              <parameters><pref><integer>1</integer></pref></parameters>
+              <language-tag>en</language-tag>
+            </lang>
+            <email>
+              <parameters><type><text>work</text></type></parameters>
+              <text>psaintan@cisco.com</text>
+            </email>
+            <email>
+              <parameters><type><text>home</text></type></parameters>
+              <text>stpeter@jabber.org</text>
+            </email>
+            <impp>
+              <parameters><type><text>work</text></type></parameters>
+              <uri>xmpp:psaintan@cisco.com</uri>
+            </impp>
+            <impp>
+              <parameters><type><text>home</text></type></parameters>
+              <uri>xmpp:stpeter@jabber.org</uri>
+            </impp>
+            <key>
+              <uri>https://stpeter.im/stpeter.asc</uri>
+            </key>
+          </vcard>
+        </item>
+      </items>
+    </pubsub>
+  </iq>
+]]></example>
+<example name='notification' source='Example 5. Receiving a vCard publication/update'><![CDATA[
+  <message from='romeo@montague.lit'
+           to='juliet@capulet.lit'
+           type='headline'>
+    <event xmlns='http://jabber.org/protocol/pubsub#event'>
+      <items node='urn:xmpp:vcard4'>
+        <item id='1e3fdd90-f542-41d3-82ae-33d183467a7a'/>
+      </items>
+    </event>
+  </message>
+]]></example>
+</examples>

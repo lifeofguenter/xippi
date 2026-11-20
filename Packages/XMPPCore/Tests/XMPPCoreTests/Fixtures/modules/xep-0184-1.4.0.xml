@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- XEP-0184: Message Delivery Receipts, version 1.4.0 (2018-08-02). Examples copied verbatim from
+     https://xmpp.org/extensions/xep-0184.html; each 'source' names the XEP's example number. -->
+<examples xep='0184' version='1.4.0'>
+<example name='request' source='Example 3. A content message with receipt requested'><![CDATA[
+<message
+    from='northumberland@shakespeare.lit/westminster'
+    id='richard2-4.1.247'
+    to='kingrichard@royalty.england.lit/throne'>
+  <body>My lord, dispatch; read o'er these articles.</body>
+  <request xmlns='urn:xmpp:receipts'/>
+</message>
+]]></example>
+<example name='receipt' source='Example 4. A message delivery receipt'><![CDATA[
+<message
+    from='kingrichard@royalty.england.lit/throne'
+    id='bi29sg183b4v'
+    to='northumberland@shakespeare.lit/westminster'>
+  <received xmlns='urn:xmpp:receipts' id='richard2-4.1.247'/>
+</message>
+]]></example>
+</examples>
