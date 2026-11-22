@@ -92,7 +92,7 @@ lint: ## swift format in strict mode, no fixed toolbar ids, and the App Store te
 	fi
 
 .PHONY: test-scripts
-test-scripts: ## Tests of the release, App Store text and screenshot scripts
+test-scripts: ## Tests of the release, signing, App Store text and screenshot scripts
 	python3 -m unittest discover -s scripts/tests
 	ruby fastlane/test/store_setup_test.rb
 

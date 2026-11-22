@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """Sets up the GitHub environment the release job uses (app-store, for v* tags only) and
-all its secrets, from the files Apple gave you and a few answers. Run it again to replace
-them, e.g. when the certificates are renewed.
+its secrets: the signing files from the folder scripts/signing.py wrote, and with the API
+key all the others too, asking for those no file holds.
 
 Needs the GitHub CLI, signed in: brew install gh && gh auth login
 
-Usage: scripts/release_secrets.py --api-key AuthKey_<id>.p8 --issuer <issuer id>
-           --distribution <Apple Distribution .p12> --installer <Mac Installer .p12>
-           --profile <Mac App Store .provisionprofile>
+Usage: scripts/release_secrets.py --api-key AuthKey_<id>.p8 --issuer <issuer id> --signing <folder>
+       scripts/release_secrets.py --signing <folder>    (renewed certificates: those only)
 """
 
 import argparse
@@ -22,8 +21,6 @@ ENVIRONMENT = "app-store"
 
 # What is asked for, by secret: the prompt, and whether it is hidden as it is typed.
 QUESTIONS = {
-    "DIST_CERT_PASSWORD": ("Apple Distribution .p12 password", True),
-    "INSTALLER_CERT_PASSWORD": ("Mac Installer Distribution .p12 password", True),
     "OPENAI_API_KEY": ("OpenAI API key", True),
     "REVIEW_FIRST_NAME": ("App Review contact, first name", False),
     "REVIEW_LAST_NAME": ("App Review contact, last name", False),
@@ -31,6 +28,11 @@ QUESTIONS = {
     "REVIEW_DEMO_USER": ("App Review test account, address", False),
     "REVIEW_DEMO_PASSWORD": ("App Review test account, password", True),
 }
+
+
+# The files scripts/signing.py writes, and the secret each goes into.
+SIGNING_FILES = {"distribution.p12": "DIST_CERT", "installer.p12": "INSTALLER_CERT"}
+PASSWORDS = "passwords.txt"
 
 
 def key_id(path: pathlib.Path) -> str:
@@ -45,17 +47,38 @@ def encoded(path: pathlib.Path) -> str:
     return base64.b64encode(path.read_bytes()).decode()
 
 
+def signing(folder: pathlib.Path) -> dict[str, str]:
+    """The signing secrets, from the folder scripts/signing.py wrote: both .p12 files with
+    their passwords, and the one profile."""
+    passwords = {}
+    if (folder / PASSWORDS).is_file():
+        for line in (folder / PASSWORDS).read_text().splitlines():
+            name, _, password = line.partition("\t")
+            passwords[name] = password
+    values = {}
+    for file, secret in SIGNING_FILES.items():
+        if not (folder / file).is_file() or not passwords.get(file):
+            raise ValueError(f"{folder}: no {file} with its password in {PASSWORDS}")
+        values[f"{secret}_P12"] = encoded(folder / file)
+        values[f"{secret}_PASSWORD"] = passwords[file]
+    profiles = sorted(folder.glob("*.provisionprofile"))
+    if len(profiles) != 1:
+        raise ValueError(f"{folder}: {len(profiles)} profiles, not one")
+    values["MAS_PROFILE"] = encoded(profiles[0])
+    return values
+
+
 def secrets(arguments: argparse.Namespace, answers: dict[str, str]) -> dict[str, str]:
-    """Every secret the release job reads, by name."""
-    values = {
-        "ASC_KEY_ID": key_id(arguments.api_key),
-        "ASC_ISSUER_ID": arguments.issuer,
-        "ASC_KEY_P8": encoded(arguments.api_key),
-        "DIST_CERT_P12": encoded(arguments.distribution),
-        "INSTALLER_CERT_P12": encoded(arguments.installer),
-        "MAS_PROFILE": encoded(arguments.profile),
-    }
-    values.update(answers)
+    """The secrets to set, by name: the signing ones, and with the API key every other one
+    the release job reads."""
+    values = signing(arguments.signing)
+    if arguments.api_key:
+        values.update({
+            "ASC_KEY_ID": key_id(arguments.api_key),
+            "ASC_ISSUER_ID": arguments.issuer,
+            "ASC_KEY_P8": encoded(arguments.api_key),
+        })
+        values.update(answers)
     return values
 
 
@@ -65,20 +88,23 @@ def gh(*arguments: str, value: str | None = None) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="The release job's GitHub environment and secrets")
-    for option in ("api-key", "distribution", "installer", "profile"):
-        parser.add_argument(f"--{option}", type=pathlib.Path, required=True)
-    parser.add_argument("--issuer", required=True)
+    parser.add_argument("--signing", type=pathlib.Path, required=True)
+    parser.add_argument("--api-key", type=pathlib.Path)
+    parser.add_argument("--issuer")
     arguments = parser.parse_args()
-    for path in (arguments.api_key, arguments.distribution, arguments.installer, arguments.profile):
-        if not path.is_file():
-            parser.error(f"no file {path}")
+    if bool(arguments.api_key) != bool(arguments.issuer):
+        parser.error("--api-key and --issuer go together")
     try:
-        key_id(arguments.api_key)
+        signing(arguments.signing)
+        if arguments.api_key:
+            if not arguments.api_key.is_file():
+                raise ValueError(f"no file {arguments.api_key}")
+            key_id(arguments.api_key)
     except ValueError as error:
         parser.error(str(error))
 
     answers = {}
-    for name, (prompt, hidden) in QUESTIONS.items():
+    for name, (prompt, hidden) in QUESTIONS.items() if arguments.api_key else ():
         value = (getpass.getpass if hidden else input)(f"{prompt}: ").strip()
         if not value:
             print(f"Aborted: no {prompt}", file=sys.stderr)
@@ -99,9 +125,11 @@ def main() -> int:
            f"repos/{{owner}}/{{repo}}/environments/{ENVIRONMENT}/deployment-branch-policies",
            "-f", "name=v*", "-f", "type=tag")
 
-    for name, value in secrets(arguments, answers).items():
+    values = secrets(arguments, answers)
+    for name, value in values.items():
         gh("secret", "set", name, "--env", ENVIRONMENT, value=value)
-        print(f"Set {name}")
+    # A count, not the names: nothing that came out of secrets() reaches the terminal.
+    print(f"Done: {len(values)} secrets set in {ENVIRONMENT}")
     return 0
 
 
