@@ -1,0 +1,14 @@
+Xippi is a native Mac app for XMPP, the open chat network. Use your account on any XMPP server.
+
+End-to-end encrypted
+OMEMO encrypts one-to-one chats and private group chats.
+
+Everything you'd ask a chat app
+- Replies, reactions, edits and mentions
+- Group chats and channels, with moderation
+- Audio and video calls, device to device where the network allows it
+- Pictures and GIFs in the chat, files and voice messages
+- Several accounts side by side
+
+A real Mac app
+Notifications you reply to, a menu bar item, light and dark.

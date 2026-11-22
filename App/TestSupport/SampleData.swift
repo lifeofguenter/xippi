@@ -12,6 +12,7 @@
     ///   Martin" also has a downloaded and a remote attachment, a removed message and a call;
     ///   "xsf" has a system message. The accounts do not exist, so nothing connects and the
     ///   commands only write to the database. `-UITestChats <n>` seeds n chats instead.
+    /// - `-UITestSeed store`: the chats of the App Store screenshots instead (`StoreSample`).
     /// - `-UITestDatabaseFile <name>`: the database is a file in the container's temporary
     ///   folder instead. With `-UITestSeed` it is seeded afresh; without, it opens as left;
     ///   with `-UITestDatabaseRemove YES` it is deleted. Nothing connects either way.
@@ -55,7 +56,9 @@
             let model = AppModel(
                 database: database, services: services, settings: settings, calls: calls,
                 idle: idle, commands: storeOnly ? StoreOnlyCommands(database: database) : nil)
-            if let count = UITestLaunch.seedCount {
+            if UITestLaunch.seedsStore {
+                try StoreSample.seed(in: database)
+            } else if let count = UITestLaunch.seedCount {
                 try seedChats(in: database)
                 try seedExtras(in: database)
                 model.isSeeding = true

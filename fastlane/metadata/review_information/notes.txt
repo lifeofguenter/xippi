@@ -1,0 +1,10 @@
+Sign in: Add account, then enter the address and password above. The contact and the room are set up. Calls and replies come from a second account, signed in on another device during the review.
+
+Blocking and reporting (guideline 1.2). Every Block and Report asks first; Report also blocks.
+- One-to-one chat: right-click the chat in the sidebar > Block, or Report spam. Or View > Show inspector (⌥⌘I) > Contact > Block, or Report spam.
+- Any message from someone else, in a chat, a room or a channel: right-click the message > Block sender, or Report spam.
+- Room or channel member: View > Show inspector (⌥⌘I) > Members > the member's Actions button > Block, or Report spam.
+- Contact requests and room invitations: in the sidebar's Requests, Block and Report spam beside Decline.
+- Blocked people: Xippi > Settings (⌘,) > Accounts > the account > Blocked, each with Unblock.
+
+Terms of use, which do not allow abuse: https://xippi.eu/terms

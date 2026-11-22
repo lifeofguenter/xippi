@@ -6,10 +6,7 @@
 </p>
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="screenshot-dark.png">
-    <img src="screenshot.png" width="800" alt="A channel in Xippi">
-  </picture>
+  <img src="screenshot.png" width="800" alt="Xippi with a group chat open: the chat list on the left, messages with photos and reactions on the right">
 </p>
 
 Xippi is an open-source, native macOS client for the XMPP/Jabber chat protocol.

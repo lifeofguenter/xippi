@@ -298,24 +298,36 @@
         func rollback() async throws {}
 
         @MainActor func makeLocalVideoView() -> NSView {
-            FakeVideoView(colors: [.systemTeal, .systemIndigo], figure: .systemYellow)
+            FakeVideoView(
+                colors: [.systemTeal, .systemIndigo], figure: .systemYellow,
+                photo: Self.storePhoto("books"))
         }
 
         @MainActor func makeRemoteVideoView() -> NSView {
-            FakeVideoView(colors: [.systemOrange, .systemPurple], figure: .systemBrown)
+            FakeVideoView(
+                colors: [.systemOrange, .systemPurple], figure: .systemBrown,
+                photo: Self.storePhoto("kayak"))
+        }
+
+        /// The App Store screenshots' frame of video, on their seed only.
+        @MainActor private static func storePhoto(_ name: String) -> NSImage? {
+            guard UITestLaunch.seedsStore, let url = StoreSample.photo(name) else { return nil }
+            return NSImage(contentsOf: url)
         }
 
         func close() {}
     }
 
-    /// A still "video frame": a backdrop and a person's outline.
+    /// A still "video frame": a backdrop and a person's outline, or a photo filling the view.
     final class FakeVideoView: NSView {
         private let colors: [NSColor]
         private let figure: NSColor
+        private let photo: NSImage?
 
-        init(colors: [NSColor], figure: NSColor) {
+        init(colors: [NSColor], figure: NSColor, photo: NSImage? = nil) {
             self.colors = colors
             self.figure = figure
+            self.photo = photo
             super.init(frame: .zero)
         }
 
@@ -325,6 +337,17 @@
         }
 
         override func draw(_ dirtyRect: NSRect) {
+            if let photo, photo.size.width > 0, photo.size.height > 0 {
+                let scale = max(
+                    bounds.width / photo.size.width, bounds.height / photo.size.height)
+                let size = NSSize(
+                    width: photo.size.width * scale, height: photo.size.height * scale)
+                photo.draw(
+                    in: NSRect(
+                        x: bounds.midX - size.width / 2, y: bounds.midY - size.height / 2,
+                        width: size.width, height: size.height))
+                return
+            }
             NSGradient(colors: colors)?.draw(in: bounds, angle: 60)
             let unit = min(bounds.width, bounds.height)
             let center = NSPoint(x: bounds.midX, y: bounds.minY)

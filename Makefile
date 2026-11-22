@@ -77,8 +77,9 @@ test-perf: ## UI performance tests in the Performance configuration (needs UI au
 	xcodebuild -project Xippi.xcodeproj -scheme "Xippi Performance" -destination 'platform=macOS' -allowProvisioningUpdates test
 
 .PHONY: lint
-lint: ## swift format in strict mode, and no fixed toolbar ids
-	swift format lint --strict -r Packages App AppTests AppUITests
+lint: ## swift format in strict mode, no fixed toolbar ids, and the App Store text
+	swift format lint --strict -r Packages App AppTests AppUITests scripts/screenshots
+	python3 scripts/store_text.py fastlane/metadata scripts/screenshots/scenes.json
 	@# A fixed id is for a toolbar the user customises: SwiftUI moving items between the
 	@# toolbar's sections can add one before removing it, and AppKit stops the app.
 	@if grep -rn 'ToolbarItem(id:' App --include='*.swift'; then \
@@ -89,6 +90,23 @@ lint: ## swift format in strict mode, and no fixed toolbar ids
 	@if grep -rn -E '@objc.*func perform\(' App --include='*.swift'; then \
 		echo "@objc func perform( found: name the action something else"; exit 1; \
 	fi
+
+.PHONY: test-scripts
+test-scripts: ## Tests of the release, App Store text and screenshot scripts
+	python3 -m unittest discover -s scripts/tests
+
+.PHONY: screenshots
+screenshots: ## App Store screenshots into fastlane/screenshots/en-US (2 min; the app opens and takes the keyboard 6 times: hands off)
+	$(MAKE) build CONFIGURATION=Debug
+	python3 scripts/screenshots/shoot.py
+
+.PHONY: release
+release: ## Build and upload the release a v* tag names, and submit a plain one for review (CI)
+	bundle exec fastlane tag
+
+.PHONY: release-notes
+release-notes: ## The release notes TAG=vX.Y.Z would get (needs OPENAI_API_KEY)
+	python3 scripts/release.py notes $(TAG)
 
 .PHONY: cover
 cover: ## Package tests with coverage and results: coverage/ and test-results/

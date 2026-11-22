@@ -284,3 +284,17 @@ func sleep(on clock: any Clock<Duration>, for duration: Duration) async throws {
 private func sleep<C: Clock<Duration>>(opened clock: C, for duration: Duration) async throws {
     try await clock.sleep(until: clock.now.advanced(by: duration), tolerance: nil)
 }
+
+#if DEBUG
+    extension StatusBoard {
+        /// What a session would report, for the app's screenshots of seeded accounts, which
+        /// never connect.
+        public func debugShow(_ state: ConnectionState, accountID: Int64) {
+            connection[accountID] = state
+        }
+
+        public func debugShow(_ summary: PresenceSummary, for key: PresenceKey) {
+            presence[key] = summary
+        }
+    }
+#endif

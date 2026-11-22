@@ -1,0 +1,1 @@
+xmpp,omemo,encrypted,e2ee,private,messaging,group,calls,open source,federated,decentralized,im
