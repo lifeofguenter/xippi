@@ -599,10 +599,12 @@ extension AppDatabase {
         return chat
     }
 
+    /// A newer message moves the chat's activity, and opens a chat the user closed; history
+    /// older than what the chat had leaves both alone.
     static func noteActivity(_ db: Database, chatID: Int64, at date: Date) throws {
         try db.execute(
             sql: """
-                UPDATE chat SET lastActivity = ?
+                UPDATE chat SET lastActivity = ?, closed = 0
                 WHERE id = ? AND (lastActivity IS NULL OR lastActivity < ?)
                 """,
             arguments: [date, chatID, date])

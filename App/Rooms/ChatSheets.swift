@@ -173,7 +173,9 @@ final class MenuAction: NSObject {
         self.handler = handler
     }
 
-    @MainActor @objc private func perform(_ sender: Any?) {
+    /// Not `perform(_:)`: `#selector` takes that for NSObject's `performSelector:`, which then
+    /// reads the clicked item as a selector, and no item of the menu ever ran.
+    @MainActor @objc private func runHandler(_ sender: Any?) {
         handler()
     }
 
@@ -183,7 +185,7 @@ final class MenuAction: NSObject {
     ) -> NSMenuItem {
         let action = MenuAction(handler)
         let item = NSMenuItem(
-            title: title, action: #selector(MenuAction.perform(_:)), keyEquivalent: "")
+            title: title, action: #selector(MenuAction.runHandler(_:)), keyEquivalent: "")
         item.target = action
         item.representedObject = action
         if destructive {

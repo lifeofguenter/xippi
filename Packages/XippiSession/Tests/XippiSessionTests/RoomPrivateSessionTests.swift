@@ -130,6 +130,37 @@ import XippiStore
         await harness.stop()
     }
 
+    /// No private chat with ourselves while the room is out either: the nick the room's chat
+    /// keeps is ours, whether we open the chat or a message to or from it arrives.
+    @Test func noPrivateChatWithOurStoredNick() async throws {
+        let harness = try await RoomMessageTests.harness(state: .notJoined)
+        try await harness.goOnline()
+        let roomID = try Self.roomChatID(harness)
+        await #expect(throws: SessionError.notAllowed) {
+            try await harness.session.openPrivateChat(roomChatID: roomID, occupantNick: "alice")
+        }
+        try harness.deliver(Self.privateMessage(from: "alice", id: "pm1", body: "me"))
+        try harness.deliver(Self.privateMessage(from: "carol", id: "pm2", body: "hi"))
+        try await waitUntil("carol's chat") { try harness.chat(Self.carol) != nil }
+        #expect(try harness.chat("\(Self.room)/alice") == nil)
+        await harness.stop()
+    }
+
+    /// Joined under another nick than the one stored, the room's answer counts: that nick is
+    /// ours, and whoever holds the stored one is someone else.
+    @Test func joinedTheOwnOccupantIsTheOneTheRoomGaveUs() async throws {
+        let harness = try await RoomMessageTests.harness(
+            own: RoomOccupant(jid: try JID("\(Self.room)/alice2"), occupantID: nil))
+        try await harness.goOnline()
+        try harness.deliver(Self.privateMessage(from: "alice2", id: "pm1", body: "me"))
+        try harness.deliver(Self.privateMessage(from: "alice", id: "pm2", body: "other"))
+        try await waitUntil("the other alice's chat") {
+            try harness.chat("\(Self.room)/alice") != nil
+        }
+        #expect(try harness.chat("\(Self.room)/alice2") == nil)
+        await harness.stop()
+    }
+
     /// While the room is out, nothing goes; a message left pending by a lost session goes
     /// with the room's next join.
     @Test func privateMessagesWaitForTheRoom() async throws {

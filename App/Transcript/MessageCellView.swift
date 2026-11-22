@@ -1,4 +1,5 @@
 import AppKit
+import SwiftUI
 import XippiSession
 import XippiStore
 
@@ -21,6 +22,8 @@ import XippiStore
     func save(_ attachment: AttachmentRecord, outgoing: Bool)
     /// Pictures' and videos' thumbnails.
     var thumbnails: AttachmentThumbnails { get }
+    /// Pictures shown as themselves in the messages.
+    var pictures: AttachmentThumbnails { get }
     /// Shows or hides the text of a message from a distrusted device.
     func setDistrustedTextShown(_ shown: Bool, messageID: Int64)
     /// Reply, edit and the like, for the message's context menu.
@@ -32,6 +35,12 @@ import XippiStore
     /// The message whose reaction picker is open.
     var reactingMessageID: Int64? { get }
     func showReactions(forMessage messageID: Int64, from view: NSView)
+    /// The account's own reaction with this emoji, added or taken back.
+    func toggleOwnReaction(_ emoji: String, messageID: Int64)
+    /// Every reaction to the message, with who gave it.
+    func givenReactions(forMessage messageID: Int64) -> [GivenReaction]
+    /// A picture from the window's avatar cache.
+    func avatarImage(for hash: String?) -> NSImage?
 }
 
 /// One message: optional name and time, a solid bubble with an optional reply quote, the text
@@ -93,6 +102,23 @@ final class MessageCellView: NSTableCellView {
         reactButton.wantsLayer = true
         reactButton.layer?.cornerRadius = ControlHeight.Transcript.reactionButton / 2
         reactButton.setAccessibilityIdentifier("add-reaction")
+        reactions.given = { [weak self] in
+            guard let self, let messageID = self.messageID else { return [] }
+            return self.actions?.givenReactions(forMessage: messageID) ?? []
+        }
+        reactions.avatarImage = { [weak self] hash in self?.actions?.avatarImage(for: hash) }
+        reactions.canChange = { [weak self] in
+            guard let self else { return false }
+            return self.canReact && self.actions?.reactionsAllowed == true
+        }
+        reactions.onRemove = { [weak self] emoji in
+            guard let self, let messageID = self.messageID else { return }
+            self.actions?.toggleOwnReaction(emoji, messageID: messageID)
+        }
+        reactions.onAdd = { [weak self] in
+            guard let self, let messageID = self.messageID else { return }
+            self.actions?.showReactions(forMessage: messageID, from: self.reactions)
+        }
         textView.cellActions = { [weak self] in self?.actions }
         textView.messageID = { [weak self] in self?.messageID }
         setAccessibilityElement(true)
@@ -110,6 +136,8 @@ final class MessageCellView: NSTableCellView {
     required init?(coder: NSCoder) { nil }
 
     func configure(_ model: MessageRowModel, layout: MessageLayout, fonts: TranscriptFonts) {
+        // A cell taken for another message lets go of the list over the last one's reactions.
+        if model.id != messageID { reactions.closePopover() }
         messageID = model.id
         messageLayout = layout
         let outgoing = model.isOutgoing
@@ -135,7 +163,9 @@ final class MessageCellView: NSTableCellView {
             headerTime.textColor = .secondaryLabelColor
         }
 
-        bubble.fill = outgoing ? TranscriptColors.outgoingBubble : TranscriptColors.incomingBubble
+        bubble.fill =
+            !layout.bubbleFilled
+            ? .clear : outgoing ? TranscriptColors.outgoingBubble : TranscriptColors.incomingBubble
         bubble.highlighted = model.highlighted
 
         let hasReply = layout.replyName != nil
@@ -181,13 +211,13 @@ final class MessageCellView: NSTableCellView {
                 outgoing: outgoing, fonts: fonts)
         }
 
-        configureAttachments(model, count: layout.attachments.count, fonts: fonts)
+        configureAttachments(model, layout: layout, fonts: fonts)
         canReact = !model.message.retracted && model.message.kind != .system
         updateReactButton()
 
         reactions.isHidden = layout.reactions == nil
-        if let summary = model.reactionSummary {
-            reactions.show(summary, font: fonts.body)
+        if model.reactionSummary != nil {
+            reactions.show(model.reactionEntries, font: fonts.body)
         }
         meta.isHidden = layout.meta == nil
         if let metaText = model.metaText {
@@ -210,10 +240,12 @@ final class MessageCellView: NSTableCellView {
         needsLayout = true
     }
 
-    /// A downloaded audio file shows as a player, anything else as a file row.
-    private func configureAttachments(_ model: MessageRowModel, count: Int, fonts: TranscriptFonts)
-    {
-        let attachments = model.item.attachments.prefix(count)
+    /// A downloaded audio file shows as a player, a picture that is here as itself, anything
+    /// else as a file row.
+    private func configureAttachments(
+        _ model: MessageRowModel, layout: MessageLayout, fonts: TranscriptFonts
+    ) {
+        let attachments = model.item.attachments.prefix(layout.attachments.count)
         attachmentKinds = attachments.map {
             $0.state == .local && $0.localPath != nil && AttachmentRowView.isAudio($0)
         }
@@ -231,7 +263,7 @@ final class MessageCellView: NSTableCellView {
         }
         var rowIndex = 0
         var playerIndex = 0
-        for (attachment, isAudio) in zip(attachments, attachmentKinds) {
+        for (index, (attachment, isAudio)) in zip(attachments, attachmentKinds).enumerated() {
             if isAudio {
                 voiceViews[playerIndex].show(
                     attachment, file: actions?.fileURL(of: attachment),
@@ -241,7 +273,13 @@ final class MessageCellView: NSTableCellView {
                 let view = attachmentViews[rowIndex]
                 view.fileURL = actions?.fileURL(of: attachment)
                 view.thumbnails = actions?.thumbnails
-                view.show(attachment, outgoing: model.isOutgoing, font: fonts.body)
+                view.pictures = actions?.pictures
+                let isPicture = index < layout.pictures.count && layout.pictures[index]
+                view.show(
+                    attachment, outgoing: model.isOutgoing, font: fonts.body,
+                    picture: isPicture ? layout.attachments[index].size : nil,
+                    pictureRadius: layout.bubbleFilled
+                        ? TranscriptMetrics.cardRadius : TranscriptMetrics.bubbleRadius)
                 view.onOpen = { [weak self] in self?.actions?.openAttachment(attachment) }
                 view.onDownload = { [weak self] in self?.actions?.downloadAttachment(attachment) }
                 view.onCancel = { [weak self] in self?.actions?.cancelTransfer(attachment) }
@@ -282,18 +320,40 @@ final class MessageCellView: NSTableCellView {
                 owner: self))
     }
 
+    /// The one message under the pointer. Messages that scroll past a resting pointer (opening
+    /// a chat scrolls to its end) are entered but not always exited: each new one ends the last.
+    private static weak var hovered: MessageCellView?
+
     override func mouseEntered(with event: NSEvent) {
+        guard let window,
+            bounds.contains(convert(window.mouseLocationOutsideOfEventStream, from: nil))
+        else { return }
+        becomeHovered()
+    }
+
+    /// This message is the one under the pointer; the one before it no longer is.
+    func becomeHovered() {
+        if let previous = Self.hovered, previous !== self {
+            previous.hovering = false
+            previous.updateReactButton()
+        }
+        Self.hovered = self
         hovering = true
         updateReactButton()
     }
 
+    /// Whether this message counts as under the pointer.
+    var isHovered: Bool { hovering }
+
     override func mouseExited(with event: NSEvent) {
+        if Self.hovered === self { Self.hovered = nil }
         hovering = false
         updateReactButton()
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
+        if Self.hovered === self { Self.hovered = nil }
         hovering = false
     }
 
@@ -331,12 +391,15 @@ final class MessageCellView: NSTableCellView {
         reactButton.isEnabled = allowed
         reactButton.set(
             symbol: "face.smiling", label: allowed ? Copy.addReaction : Copy.reactionsNeedOMEMO2,
-            tint: .secondaryLabelColor, pointSize: 16)
+            tint: .secondaryLabelColor, pointSize: 12)
         reactButton.layer?.backgroundColor = NSColor.quaternarySystemFill.cgColor
         needsLayout = true
     }
 
     #if DEBUG || UITEST_HOOKS
+        /// Opens the list of who reacted, as a click on the reactions does, for `DebugSnapshot`.
+        func debugShowReactors() { reactions.openList() }
+
         /// As if the pointer were over the message, for `DebugSnapshot`.
         func debugHover() {
             hovering = true
@@ -552,9 +615,27 @@ final class FillView: NSView {
     }
 }
 
-/// "👍 2  ❤️ 1" in a capsule under the bubble.
-final class ReactionsView: NSView {
+/// "👍 2  ❤️ 1" in a capsule under the bubble. A click lists who gave them, with their
+/// pictures; your own line there takes yours back.
+final class ReactionsView: NSView, NSPopoverDelegate {
+    /// Between two emoji in the pill.
+    static let separator = "  "
+
     private let label = CellLabel()
+    private var emojis: [String] = []
+    /// Every reaction to the message, with who gave it.
+    var given: (() -> [GivenReaction])?
+    /// A picture by hash, for the list.
+    var avatarImage: ((String?) -> NSImage?)?
+    /// Whether your reactions can change here: the list then takes yours back and adds more.
+    var canChange: () -> Bool = { false }
+    /// Your reaction with this emoji, taken back.
+    var onRemove: ((String) -> Void)?
+    /// The reaction picker, for another emoji.
+    var onAdd: (() -> Void)?
+    private var popover: NSPopover?
+    /// When the list last began to close: the click that closed it does not open it again.
+    private var closedAt: TimeInterval?
 
     override var wantsUpdateLayer: Bool { true }
 
@@ -568,11 +649,82 @@ final class ReactionsView: NSView {
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
 
-    func show(_ summary: String, font: NSFont) {
-        label.stringValue = summary
+    func show(_ entries: [(emoji: String, count: Int)], font: NSFont) {
+        emojis = entries.map(\.emoji)
+        label.stringValue = entries.map { Copy.reactions($0.emoji, $0.count) }
+            .joined(separator: Self.separator)
         label.font = font
         label.textColor = .labelColor
         needsLayout = true
+        window?.invalidateCursorRects(for: self)
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        guard given != nil, !emojis.isEmpty else {
+            super.mouseDown(with: event)
+            return
+        }
+        // A click on the pill while the list is open closes it, and only closes it.
+        if let closedAt, closedAt >= event.timestamp { return }
+        if popover != nil {
+            closePopover()
+        } else {
+            openList()
+        }
+    }
+
+    override func resetCursorRects() {
+        if given != nil, !emojis.isEmpty { addCursorRect(bounds, cursor: .pointingHand) }
+    }
+
+    override func viewWillMove(toWindow newWindow: NSWindow?) {
+        super.viewWillMove(toWindow: newWindow)
+        if newWindow == nil { closePopover() }
+    }
+
+    #if DEBUG || UITEST_HOOKS
+        var shownPopover: NSPopover? { popover }
+    #endif
+
+    func closePopover() {
+        popover?.close()
+        popover = nil
+    }
+
+    /// The list of who reacted, over the pill. Nothing while there is nobody to list.
+    func openList() {
+        let reactions = given?() ?? []
+        guard window != nil, !reactions.isEmpty else { return }
+        let changeable = canChange()
+        let list = ReactionsList(
+            reactions: reactions, emojis: emojis,
+            image: { [weak self] hash in self?.avatarImage?(hash) },
+            remove: changeable
+                ? { [weak self] emoji in
+                    self?.closePopover()
+                    self?.onRemove?(emoji)
+                } : nil,
+            add: changeable
+                ? { [weak self] in
+                    self?.closePopover()
+                    self?.onAdd?()
+                } : nil)
+        let popover = NSPopover()
+        popover.behavior = .transient
+        popover.animates = true
+        popover.delegate = self
+        let content = NSHostingController(rootView: list)
+        content.sizingOptions = .preferredContentSize
+        popover.contentViewController = content
+        self.popover = popover
+        popover.show(relativeTo: bounds, of: self, preferredEdge: .maxY)
+    }
+
+    nonisolated func popoverWillClose(_ notification: Notification) {
+        MainActor.assumeIsolated {
+            closedAt = ProcessInfo.processInfo.systemUptime
+            popover = nil
+        }
     }
 
     override func layout() {

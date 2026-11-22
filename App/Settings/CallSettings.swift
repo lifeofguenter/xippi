@@ -9,6 +9,10 @@ struct CallSettings: View {
             Section {
                 Toggle(Copy.publicSTUN, isOn: $settings.usePublicSTUN)
                     .pointerStyle(.link)
+            } footer: {
+                Text(Copy.publicSTUNHint)
+                    .font(.appBody)
+                    .foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)

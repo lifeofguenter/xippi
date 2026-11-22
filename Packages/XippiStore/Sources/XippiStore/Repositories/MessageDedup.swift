@@ -93,9 +93,18 @@ extension IncomingMessage {
             realJID: senderRealJID)
     }
 
-    /// Text without a body, and with nothing attached, shows nothing.
+    /// Text without a body, or only blank text, and with nothing attached, shows nothing.
     var hasContent: Bool {
-        kind != .text || retracted || !(body ?? "").isEmpty || !attachments.isEmpty
+        kind != .text || retracted || !(body ?? "").isBlank || !attachments.isEmpty
+    }
+}
+
+extension String {
+    /// Nothing a reader sees: spaces, line breaks and invisible characters only.
+    var isBlank: Bool {
+        unicodeScalars.allSatisfy {
+            $0.properties.isWhitespace || $0.properties.generalCategory == .format
+        }
     }
 }
 
@@ -149,6 +158,9 @@ struct IncomingBatch {
                     UPDATE chat SET
                         lastActivity = CASE WHEN lastActivity IS NULL OR lastActivity < ?1 THEN ?1
                             ELSE lastActivity END,
+                        -- A newer message opens a chat the user closed; history does not.
+                        closed = CASE WHEN lastActivity IS NULL OR lastActivity < ?1 THEN 0
+                            ELSE closed END,
                         unreadCount = max(unreadCount + ?2, 0),
                         mentionCount = max(mentionCount + ?3, 0)
                     WHERE id = ?4
@@ -369,9 +381,16 @@ struct IncomingBatch {
             if target.body == message.body { return .duplicate(target.id) }
             return try store(message, kind: kind)
         case .found(let target):
-            guard let body = message.body, !body.isEmpty else { return .ignored }
+            guard let body = message.body else { return .ignored }
             // Only an encrypted correction may replace encrypted text: the server can forge plaintext.
             if target.encryption != .none && message.encryption == .none { return .ignored }
+            // Text corrected to nothing is taken back: some clients delete a message this way.
+            if body.isBlank {
+                if target.retracted { return .duplicate(target.id) }
+                return .retracted(
+                    try AppDatabase.removeContent(
+                        db, messageID: target.id, moderatedBy: nil, reason: nil))
+            }
             // When the original arrived after this correction (catch-up fills in behind live
             // messages), the correction was kept as a message of its own; it is folded in now.
             let removedCopy = try removeCopy(of: message, kind: kind, keeping: target.id)

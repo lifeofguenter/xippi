@@ -32,6 +32,9 @@ import os
     func cancelTransfer(of attachment: AttachmentRecord) async
     /// Fetches a file the user asked for, whoever sent it.
     func download(attachmentID: Int64) async throws
+    /// A message from history shows: its files come by themselves where a live message's
+    /// would.
+    func fetchShownFiles(messageID: Int64) async
     /// Uploads a failed file message's file again; the message then goes out once (M13).
     func retryUpload(messageID: Int64) async throws
     /// Takes a file a contact offers over Jingle (XEP-0234, R79); it then downloads.
@@ -279,6 +282,13 @@ enum ChatCommandError: Error, Equatable, LocalizedError {
         }
     }
 
+    func fetchShownFiles(messageID: Int64) async {
+        guard let accountID = await Self.accountID(messageID: messageID, in: database),
+            let session = await sessions.session(for: accountID)
+        else { return }
+        await session.fetchShownAttachments(messageID: messageID)
+    }
+
     func retryUpload(messageID: Int64) async throws {
         guard let accountID = await Self.accountID(messageID: messageID, in: database) else {
             throw ChatCommandError.messageNotFound
@@ -460,6 +470,8 @@ enum ChatCommandError: Error, Equatable, LocalizedError {
         func download(attachmentID: Int64) async throws {
             throw ChatCommandError.notConnected
         }
+
+        func fetchShownFiles(messageID: Int64) async {}
 
         /// The row goes back to uploading, which is where it stays without a network.
         func retryUpload(messageID: Int64) async throws {

@@ -22,19 +22,18 @@ extension AppModel {
         return Copy.passwordNotKept(outcome)
     }
 
-    /// The error to show, or nil once saved (and the account connects again when needed).
+    /// The error to show, or nil once saved (and the account connects again when needed). The
+    /// server stays as it was: the domain names it, and only the test servers set one.
     func setConnectionOptions(
-        resource: String, priority: Int, server: String, accountID: Int64
+        resource: String, priority: Int, accountID: Int64
     ) async -> String? {
-        let address: ServerAddress?
-        do {
-            address = try ServerAddress.parse(server)
-        } catch {
-            return Copy.invalidServer
+        let account = accounts.first { $0.id == accountID }
+        let server = account?.hostOverride.map {
+            ServerAddress(host: $0, port: account?.portOverride)
         }
         do {
             try await sessions.setConnectionOptions(
-                resource: resource, priority: priority, server: address, accountID: accountID)
+                resource: resource, priority: priority, server: server, accountID: accountID)
         } catch {
             return Copy.connectionNotSaved(error)
         }

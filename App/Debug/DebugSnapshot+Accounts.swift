@@ -19,6 +19,7 @@
     ///   account; `csiactive`: client state active; `mark`: counts transcript redraws from
     ///   here (`bodies=` in the text).
     /// - `registerinvite <link> [server]`: the register sheet opened with an invite.
+    /// - `registeropen`: the register sheet as it opens; `registerother`: Other picked in it.
     /// - `fillform <username> <password>`: submits the register sheet's form with them.
     /// - `wait <seconds>`; `waitonline <seconds>`: until an account is online;
     ///   `waitsheet <seconds>`: until the sheet's login or form request is over.
@@ -45,6 +46,13 @@
                 flow.password = arguments.count > 1 ? arguments[1] : ""
                 flow.server = arguments.count > 2 ? arguments[2] : ""
                 flow.logIn()
+            case "registeropen":
+                // The register sheet as it opens: nothing is asked of a server.
+                registerFlow = nil
+                await present(.register(nil), on: model)
+                _ = await waitForFlow({ registerFlow })
+            case "registerother":
+                registerFlow?.choose(provider: nil)
             case "registerinvite":
                 // `registerinvite <link> [server]`: the sheet opened with an invite, as the
                 // `xmpp:` URI handler opens it.
@@ -67,6 +75,7 @@
                 registerFlow = nil
                 await present(.register(nil), on: model)
                 guard let flow = await waitForFlow({ registerFlow }) else { return }
+                flow.choose(provider: nil)
                 flow.domain = arguments.first ?? ""
                 flow.server = arguments.count > 1 ? arguments[1] : ""
                 flow.fetchForm()

@@ -324,6 +324,9 @@ public actor AccountSession {
     var roomMarkable: [Int64: String] = [:]
     /// The newest markable message received in each chat (XEP-0333), to mark displayed.
     var markable: [Int64: Markable] = [:]
+    /// Messages from history shown in a room before it was joined (at launch the chat shows
+    /// first), by room: their files come once it is.
+    var shownBeforeJoin: [Int64: Set<Int64>] = [:]
     var sentChatStates: [Int64: ChatState] = [:]
     /// Which contacts take chat state notifications (XEP-0085 5.1).
     var chatStateSupport = ChatStateSupport()

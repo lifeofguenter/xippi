@@ -90,7 +90,12 @@ private struct IdentityRow: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                 Spacer(minLength: 4)
-                if !identity.isThisDevice { TrustLabel(trust: identity.trust) }
+                if !identity.isThisDevice {
+                    // "Verified" on one line: the device ids give way first.
+                    TrustLabel(trust: identity.trust)
+                        .fixedSize()
+                        .layoutPriority(1)
+                }
             }
             if identity.fingerprint == nil, fetchingKey, !identity.isThisDevice {
                 Text(Copy.fetchingKey)

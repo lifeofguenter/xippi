@@ -1,6 +1,7 @@
 #if DEBUG || UITEST_HOOKS
     import AppKit
     import QuickLookUI
+    import ScreenCaptureKit
     import SwiftUI
     import XippiStore
     import os
@@ -11,7 +12,13 @@
     /// - `-UITestOpenChat <name>`: the chat to open first.
     /// - `-UITestAction <actions>`, separated by ";": `quickswitcher`, `inspector`, `reply`, `edit`, `search <text>`,
     ///   `scrollup`, `type <text>`, `settings <tab>` (also saves `<name>.settings-<tab>.png` of the Settings
-    ///   window), `menubar` (saves `<name>.menubar.png`, the menu bar item).
+    ///   window), `menubar` (saves `<name>.menubar.png`, the menu bar item),
+    ///   `appearance <system|light|dark>` (the setting, as the Settings picker sets it),
+    ///   `appearanceclick <segment>` (a click on that picker with the Settings window in front,
+    ///   saving frames of both windows just after), `settingsshot <suffix>` (saves the Settings
+    ///   and main windows as they show), `titlebar <on|off>` (as the pointer over the chat's
+    ///   title bar or off it), `titlebarstate` (notes whether it is taken to be there),
+    ///   `titledump` (the title bar's views and their frames), `about` (`<name>.about.png`).
     /// - `-UITestSnapshotDelay <seconds>`: how long to wait for seeding (default 3).
     /// - `-UITestAppearance light|dark`: the appearance, instead of the system's.
     /// - Calls and data forms: see `DebugSnapshot+Calls.swift`; accounts and onboarding:
@@ -29,7 +36,7 @@
     @MainActor enum DebugSnapshot {
         static weak var transcript: TranscriptController?
         static weak var composer: ComposerModel?
-        private static var benchmarks = ""
+        static var benchmarks = ""
 
         /// Times the steps of opening a chat on their own, off the main thread.
         @concurrent private static func benchmark(chatID: Int64, database: AppDatabase) async
@@ -58,6 +65,8 @@
         }
 
         static weak var model: AppModel?
+        /// The app's settings, for steps that change them as the Settings window does.
+        static weak var settings: AppSettings?
 
         static func scheduleIfRequested(model: AppModel) {
             self.model = model
@@ -85,6 +94,16 @@
                 try? await Task.sleep(for: .seconds(1.2))
                 let url = FileManager.default.temporaryDirectory.appending(
                     path: (path as NSString).lastPathComponent)
+                await captureWindow(
+                    to: url.deletingPathExtension().appendingPathExtension("window.png"))
+                // A popover is a window of its own, captured as it shows, frame and all.
+                if let popover = NSApp.windows.first(where: {
+                    $0.isVisible && String(describing: type(of: $0)).contains("Popover")
+                }) {
+                    await captureRegion(
+                        around: popover,
+                        to: url.deletingPathExtension().appendingPathExtension("popover.png"))
+                }
                 capture(to: url, model: model)
                 renderRows(
                     model: model, to: url.deletingPathExtension().appendingPathExtension("rows.png")
@@ -108,9 +127,22 @@
                 NSApp.windows.first { $0.isVisible }?.makeKeyAndOrderFront(nil)
             case "quickswitcher": model.quickSwitcherVisible = true
             case "inspector": model.inspectorVisible = true
+            case "inspector-off": model.inspectorVisible = false
+            case "inspector-tab":
+                model.inspectorTab = InspectorTab(rawValue: parts.last ?? "") ?? .info
+            case "deselect": model.selection = nil
+            case "inspector-toggle": withAnimation { model.inspectorVisible.toggle() }
             case "search": model.searchText = parts.count > 1 ? parts[1] : ""
             case "find": model.findInChatVisible = true
             case "filter": model.sidebarFilter = SidebarFilter(rawValue: parts.last ?? "") ?? .all
+            case "pin", "unpin":
+                // Pins or unpins the named chat the way its menu does.
+                if let chat = model.chats.first(where: { $0.displayName == parts.last }) {
+                    model.setPinned(parts.first == "pin", chatID: chat.id)
+                }
+            case "sidebar-end":
+                sidebarController()?.debugScrollToEnd()
+                sidebarStates.append("end " + (sidebarController()?.debugState ?? ""))
             case "sidebar-scroll":
                 // Scrolls the chat list down by this many points, and notes where it is.
                 sidebarController()?.debugScroll(to: CGFloat(Double(parts.last ?? "") ?? 0))
@@ -118,6 +150,17 @@
             case "touch":
                 // A message arrives in this chat now, so it moves to the top of its section.
                 touch(parts.last ?? "", model: model)
+            case "wheel":
+                // A trackpad scroll gesture over the transcript, as real events: `wheel <dy> <dx>`
+                // in points per step, five steps with began, changed and ended phases.
+                let values = (parts.count > 1 ? parts[1] : "").split(separator: " ").compactMap {
+                    Int32($0)
+                }
+                wheel(dy: values.first ?? 40, dx: values.count > 1 ? values[1] : 0)
+            case "state":
+                // What the window shows now, for checking what an action changed.
+                sidebarStates.append(
+                    "inspector=\(model.inspectorVisible)")
             case "sidebar-state":
                 sidebarStates.append(sidebarController()?.debugState ?? "")
             case "select-next":
@@ -126,6 +169,14 @@
                 let next = (model.chats.map(\.id).max() ?? 0) + 1
                 model.selection = next
                 sidebarStates.append("pending \(next)")
+            case "openprivate":
+                // A private chat with a room's occupant (`room@service/nick`), selected at once.
+                if let account = model.chats.first?.chat.accountID,
+                    let chat = try? model.database.ensureChat(
+                        accountID: account, jid: parts.last ?? "", kind: .roomPrivate)
+                {
+                    model.selection = chat.id
+                }
             case "addchat":
                 // Makes a chat without selecting it; its row comes with the next chat list.
                 if let account = model.chats.first?.chat.accountID,
@@ -146,6 +197,7 @@
                     sidebarStates.append("new \(id)")
                 }
             case "reply": transcript?.debugReplyToNewestIncoming()
+            case "reactors": transcript?.debugShowReactors()
             case "edit": _ = transcript?.editLastOwnMessage()
             case "type": composer?.text = parts.count > 1 ? parts[1] : ""
             case "send":
@@ -162,6 +214,92 @@
                 }
             case "settings":
                 await showSettings(tab: parts.last ?? "", model: model)
+            case "settingsshot":
+                // The Settings window as it shows now, title bar and all, and the main window.
+                let title = SettingsNavigation.shared.tab.title
+                if let window = NSApp.windows.first(where: { $0.isVisible && $0.title == title }) {
+                    await captureWindow(
+                        to: outputURL.deletingPathExtension().appendingPathExtension(
+                            "settings-\(parts.last ?? "").png"), window: window)
+                }
+                await captureWindow(
+                    to: outputURL.deletingPathExtension().appendingPathExtension(
+                        "main-\(parts.last ?? "").png"))
+            case "titlebar":
+                // As the pointer over the open chat's title bar (`on`) or off it, in the front
+                // window: `<name>.main-titlebar-<on|off>.png` shows it.
+                NSApp.activate()
+                NSApp.windows.first { $0.isVisible && $0.isMainWindow }?.makeKeyAndOrderFront(nil)
+                model.titleBarHovered = parts.last == "on"
+                try? await Task.sleep(for: .milliseconds(300))
+                await captureWindow(
+                    to: outputURL.deletingPathExtension().appendingPathExtension(
+                        "main-titlebar-\(parts.last ?? "").png"))
+            case "about":
+                // The About window, as the app menu opens it: `<name>.about.png`.
+                AboutPanel.show()
+                try? await Task.sleep(for: .milliseconds(500))
+                if let window = NSApp.windows.first(where: {
+                    $0.identifier == AboutPanel.identifier
+                }) {
+                    await captureWindow(
+                        to: outputURL.deletingPathExtension().appendingPathExtension("about.png"),
+                        window: window)
+                }
+            case "titledump":
+                // The views in the middle of the title bar, with their frames in the window.
+                if let window = NSApp.windows.filter({ $0.isVisible })
+                    .max(by: { $0.frame.width < $1.frame.width }),
+                    let root = window.contentView?.superview
+                {
+                    func dump(_ view: NSView, _ depth: Int) {
+                        let frame = view.convert(view.bounds, to: nil)
+                        let top = window.frame.height - frame.maxY
+                        if top < 70, frame.height < 80, frame.width < 700 {
+                            sidebarStates.append(
+                                "\(String(repeating: " ", count: depth))\(type(of: view)) top=\(Int(top)) h=\(Int(frame.height)) x=\(Int(frame.minX)) w=\(Int(frame.width))"
+                            )
+                        }
+                        for child in view.subviews { dump(child, depth + 1) }
+                    }
+                    dump(root, 0)
+                }
+            case "titlebarstate":
+                // Whether the pointer is taken to be over the chat's title bar.
+                sidebarStates.append("titleBarHovered=\(model.titleBarHovered)")
+            case "appearanceclick":
+                // As a click on the Settings window's picker: the window in front and focused.
+                let title = SettingsNavigation.shared.tab.title
+                guard
+                    let window = NSApp.windows.first(where: { $0.isVisible && $0.title == title }),
+                    let index = Int(parts.last ?? ""),
+                    let picker = segmented(in: window.contentView?.superview)
+                else { return }
+                NSApp.activate()
+                window.makeKeyAndOrderFront(nil)
+                picker.selectedSegment = index
+                if let action = picker.action {
+                    NSApp.sendAction(action, to: picker.target, from: picker)
+                }
+                // Frames while the windows change over, and which window has the focus.
+                for (frame, wait) in [0.03, 0.1, 0.25, 0.5].enumerated() {
+                    try? await Task.sleep(for: .seconds(wait))
+                    let name = "flip\(index)-\(frame)"
+                    await captureWindow(
+                        to: outputURL.deletingPathExtension().appendingPathExtension(
+                            "settings-\(name).png"), window: window)
+                    await captureWindow(
+                        to: outputURL.deletingPathExtension().appendingPathExtension(
+                            "main-\(name).png"))
+                    appLog.notice(
+                        "flip \(name, privacy: .public) active=\(NSApp.isActive) key=\(NSApp.keyWindow?.title ?? "none", privacy: .public) settingsLook=\(window.effectiveAppearance.name.rawValue, privacy: .public) windowLook=\(window.appearance?.name.rawValue ?? "nil", privacy: .public)"
+                    )
+                }
+            case "appearance":
+                // As the Settings window's picker sets it.
+                if let look = AppSettings.Appearance(rawValue: parts.last ?? "") {
+                    settings?.appearance = look
+                }
             case "menubar":
                 renderMenuBar(
                     to: outputURL.deletingPathExtension().appendingPathExtension("menubar.png"))
@@ -175,6 +313,16 @@
             default:
                 await performCallOrForm(parts)
             }
+        }
+
+        /// The first segmented control in a view's tree.
+        private static func segmented(in view: NSView?) -> NSSegmentedControl? {
+            guard let view else { return nil }
+            if let control = view as? NSSegmentedControl { return control }
+            for child in view.subviews {
+                if let found = segmented(in: child) { return found }
+            }
+            return nil
         }
 
         /// Where the main snapshot goes; other captures sit beside it.
@@ -255,6 +403,74 @@
                 to: url)
         }
 
+        /// The window as it shows, glass and materials included. An app may capture its own
+        /// windows without the screen recording permission.
+        /// The screen around a popover, with the app's windows under it, as it shows.
+        private static func captureRegion(around popover: NSWindow, to url: URL) async {
+            do {
+                let content = try await SCShareableContent.currentProcess
+                let ours = content.windows.filter { $0.isOnScreen }
+                guard let screen = popover.screen ?? NSScreen.main,
+                    let display = content.displays.first(where: {
+                        $0.displayID
+                            == screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")]
+                            as? CGDirectDisplayID
+                    })
+                else { return }
+                let filter = SCContentFilter(display: display, including: ours)
+                let configuration = SCStreamConfiguration()
+                let around = popover.frame.insetBy(dx: -160, dy: -100)
+                configuration.sourceRect = CGRect(
+                    x: around.minX - screen.frame.minX, y: screen.frame.maxY - around.maxY,
+                    width: around.width, height: around.height)
+                let scale = screen.backingScaleFactor
+                configuration.width = Int(around.width * scale)
+                configuration.height = Int(around.height * scale)
+                configuration.showsCursor = false
+                let image = try await SCScreenshotManager.captureImage(
+                    contentFilter: filter, configuration: configuration)
+                write(
+                    NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]),
+                    to: url)
+            } catch {
+                appLog.error(
+                    "Popover capture failed: \(String(describing: error), privacy: .public)")
+            }
+        }
+
+        /// The window as it shows on screen; the largest visible one (the main window, not a
+        /// popover over it) when none is named.
+        private static func captureWindow(to url: URL, window named: NSWindow? = nil) async {
+            guard
+                let window = named
+                    ?? NSApp.windows.filter({ $0.isVisible && $0.contentView != nil })
+                    .max(by: { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }
+                    )
+            else { return }
+            do {
+                let content = try await SCShareableContent.currentProcess
+                guard
+                    let shown = content.windows.first(where: {
+                        $0.windowID == CGWindowID(window.windowNumber)
+                    })
+                else { return }
+                let filter = SCContentFilter(desktopIndependentWindow: shown)
+                let configuration = SCStreamConfiguration()
+                let scale = CGFloat(filter.pointPixelScale)
+                configuration.width = Int(filter.contentRect.width * scale)
+                configuration.height = Int(filter.contentRect.height * scale)
+                configuration.showsCursor = false
+                let image = try await SCScreenshotManager.captureImage(
+                    contentFilter: filter, configuration: configuration)
+                write(
+                    NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]),
+                    to: url)
+            } catch {
+                appLog.error(
+                    "Window capture failed: \(String(describing: error), privacy: .public)")
+            }
+        }
+
         private static func capture(to url: URL, model: AppModel) {
             guard
                 let window = NSApp.windows.first(where: { $0.isVisible && $0.contentView != nil }),
@@ -303,6 +519,29 @@
 
         /// What the sidebar steps noted, in order.
         static var sidebarStates: [String] = []
+
+        /// Sends a trackpad scroll gesture to the main window, over its transcript.
+        private static func wheel(dy: Int32, dx: Int32) {
+            guard let window = NSApp.windows.first(where: { $0.isVisible && $0.title != "" }),
+                let content = window.contentView
+            else { return }
+            let point = NSPoint(x: content.bounds.midX + 120, y: content.bounds.midY)
+            let screen = window.convertPoint(toScreen: point)
+            let flipped = CGPoint(
+                x: screen.x, y: (NSScreen.screens.first?.frame.height ?? 0) - screen.y)
+            let phases: [Int64] = [1, 2, 2, 2, 4]  // began, changed x3, ended
+            for phase in phases {
+                guard
+                    let event = CGEvent(
+                        scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 2,
+                        wheel1: phase == 4 ? 0 : dy, wheel2: phase == 4 ? 0 : dx, wheel3: 0)
+                else { continue }
+                event.location = flipped
+                event.setIntegerValueField(.scrollWheelEventScrollPhase, value: phase)
+                event.setIntegerValueField(.scrollWheelEventIsContinuous, value: 1)
+                if let ns = NSEvent(cgEvent: event) { window.sendEvent(ns) }
+            }
+        }
 
         /// The sidebar table's controller, from the window.
         static func sidebarController() -> SidebarTableController? {

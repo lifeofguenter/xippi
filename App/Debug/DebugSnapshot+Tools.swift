@@ -285,7 +285,7 @@
                     VStack(alignment: .leading, spacing: ControlHeight.Inspector.sectionSpacing) {
                         InspectorHeader(info: info)
                         ChannelDetails(
-                            model: model, info: info, media: [], sheets: ChatSheets(),
+                            model: model, info: info, sheets: ChatSheets(),
                             context: OpenChatContext())
                     }
                     .padding(ControlHeight.Inspector.margin)

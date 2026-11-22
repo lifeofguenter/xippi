@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 import XMPPCore
 import XippiSession
@@ -12,6 +13,8 @@ import XippiStore
 struct MemberList: View {
     let members: [RoomMember]
     let details: RoomDetails
+    /// The avatars the room's occupants named, by nick.
+    var avatars: [String: String] = [:]
     var busy = false
     let onAction: (RoomMemberAction, RoomMember) -> Void
     /// Opens the member's OMEMO devices; nil where the room is not set up for OMEMO.
@@ -21,6 +24,9 @@ struct MemberList: View {
     /// Block (or Ignore this nickname in this room), Unblock and Report spam on a member (App
     /// Review guideline 1.2, R72); nil where nothing can be blocked.
     var safety: MemberSafety<RoomMember>?
+    /// A taking-away action waiting for its confirmation, with whom it was picked for: one
+    /// dialog for the list, not one on every row.
+    @State private var pending: (action: RoomMemberAction, member: RoomMember)?
 
     var body: some View {
         let groups = Self.groups(members)
@@ -32,9 +38,10 @@ struct MemberList: View {
                     .padding(.top, 6)
                 ForEach(group.members) { member in
                     MemberRow(
-                        member: member,
+                        member: member, avatarHash: avatars[member.nick],
                         actions: RoomPermissions.actions(on: member, by: details), busy: busy,
                         onAction: onAction,
+                        confirm: { pending = ($0, member) },
                         onDevices: member.realJID == nil || member.isSelf ? nil : onDevices,
                         onMessagePrivately: member.isSelf ? nil : onMessagePrivately,
                         safety: safety)
@@ -43,6 +50,23 @@ struct MemberList: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("members")
+        .confirmationDialog(
+            pending.map { action, member in
+                member.realJID.map {
+                    Copy.confirmAddressAction(action, member.nick, $0.description)
+                } ?? Copy.confirmMemberAction(action, member.nick)
+            } ?? "",
+            isPresented: Binding(get: { pending != nil }, set: { if !$0 { pending = nil } }),
+            presenting: pending
+        ) { pending in
+            Button(Copy.memberAction(pending.action), role: .destructive) {
+                onAction(pending.action, pending.member)
+            }
+            Button(Copy.cancel, role: .cancel) {}
+                .keyboardShortcut(.defaultAction)
+        } message: { pending in
+            if let detail = Copy.memberActionDetail(pending.action) { Text(detail) }
+        }
     }
 
     struct Group {
@@ -64,24 +88,27 @@ struct MemberList: View {
     }
 }
 
-/// One member: presence, nick, affiliation and address, and the actions menu.
-private struct MemberRow: View {
+/// One member: presence, nick, affiliation and address, and the actions menu. No AppKit view
+/// of its own (a SwiftUI Menu, selectable text): each one added while the list scrolled made
+/// the window lay out its key view loop again, and scrolling a big room stuttered.
+struct MemberRow: View {
     let member: RoomMember
+    let avatarHash: String?
     let actions: [RoomMemberAction]
     let busy: Bool
     let onAction: (RoomMemberAction, RoomMember) -> Void
+    /// Asks before a taking-away action.
+    let confirm: (RoomMemberAction) -> Void
     let onDevices: ((RoomMember) -> Void)?
     let onMessagePrivately: ((RoomMember) -> Void)?
     let safety: MemberSafety<RoomMember>?
-
-    @State private var pending: RoomMemberAction?
 
     var body: some View {
         HStack(spacing: 8) {
             ZStack(alignment: .bottomTrailing) {
                 AvatarView(
                     name: member.nick, identifier: member.realJID?.description ?? member.nick,
-                    size: ControlHeight.Inspector.memberAvatar)
+                    size: ControlHeight.Inspector.memberAvatar, hash: avatarHash)
                 Circle()
                     .fill(Self.color(member.show))
                     .frame(width: ControlHeight.Inspector.dot, height: ControlHeight.Inspector.dot)
@@ -105,7 +132,6 @@ private struct MemberRow: View {
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .truncationMode(.middle)
-                        .textSelection(.enabled)
                 }
                 if let status = member.status {
                     Text(status)
@@ -116,44 +142,13 @@ private struct MemberRow: View {
             }
             Spacer(minLength: 4)
             let target = safety?.target(member)
-            if !actions.isEmpty || onDevices != nil || onMessagePrivately != nil || target != nil {
-                Menu {
-                    if let onMessagePrivately {
-                        Button(Copy.messagePrivately) { onMessagePrivately(member) }
-                    }
-                    if let onDevices {
-                        Button(Copy.memberDevices) { onDevices(member) }
-                    }
-                    if let safety, let target {
-                        MemberSafetyItems(
-                            target: target, isBlocked: safety.isBlocked(target), ask: safety.ask,
-                            unblock: safety.unblock)
-                        if !actions.isEmpty { Divider() }
-                    }
-                    ForEach(actions) { action in
-                        Button(
-                            Copy.memberAction(action),
-                            role: action.isDestructive ? .destructive : nil
-                        ) {
-                            if action.isDestructive {
-                                pending = action
-                            } else {
-                                onAction(action, member)
-                            }
-                        }
-                    }
-                } label: {
-                    Label(Copy.memberActions, systemImage: "ellipsis.circle")
-                        .labelStyle(.iconOnly)
+            if !actions.isEmpty || onDevices != nil || onMessagePrivately != nil || target != nil
+                || member.realJID != nil
+            {
+                MemberMenuButton(identifier: "member-actions-\(member.nick)") {
+                    menu(target: target)
                 }
-                .menuStyle(.button)
-                .buttonStyle(.borderless)
-                .menuIndicator(.hidden)
-                .fixedSize()
-                .pointerStyle(.link)
-                .help(Copy.memberActions)
                 .disabled(busy)
-                .accessibilityIdentifier("member-actions-\(member.nick)")
             }
         }
         .padding(.vertical, 3)
@@ -162,21 +157,38 @@ private struct MemberRow: View {
         .accessibilityLabel(member.nick)
         .accessibilityValue(Copy.presenceShow(member.show))
         .accessibilityIdentifier("member-\(member.nick)")
-        .confirmationDialog(
-            pending.map { action in
-                member.realJID.map {
-                    Copy.confirmAddressAction(action, member.nick, $0.description)
-                } ?? Copy.confirmMemberAction(action, member.nick)
-            } ?? "",
-            isPresented: Binding(get: { pending != nil }, set: { if !$0 { pending = nil } }),
-            presenting: pending
-        ) { action in
-            Button(Copy.memberAction(action), role: .destructive) { onAction(action, member) }
-            Button(Copy.cancel, role: .cancel) {}
-                .keyboardShortcut(.defaultAction)
-        } message: { action in
-            if let detail = Copy.memberActionDetail(action) { Text(detail) }
+    }
+
+    /// The actions menu, made when it opens.
+    private func menu(target: SafetyTarget?) -> [MemberMenuEntry] {
+        var entries: [MemberMenuEntry] = []
+        if let onMessagePrivately {
+            entries.append(.item(Copy.messagePrivately) { onMessagePrivately(member) })
         }
+        if let onDevices {
+            entries.append(.item(Copy.memberDevices) { onDevices(member) })
+        }
+        if let jid = member.realJID {
+            entries.append(.item(Copy.copyAddress) { MemberMenuButton.copy(jid.description) })
+        }
+        if let safety, let target {
+            if !entries.isEmpty { entries.append(.divider) }
+            entries += safety.entries(for: target)
+        }
+        if !actions.isEmpty {
+            if !entries.isEmpty { entries.append(.divider) }
+            for action in actions {
+                entries.append(
+                    .item(Copy.memberAction(action), destructive: action.isDestructive) {
+                        if action.isDestructive {
+                            confirm(action)
+                        } else {
+                            onAction(action, member)
+                        }
+                    })
+            }
+        }
+        return entries
     }
 
     static func color(_ show: Presence.Show?) -> Color {
@@ -273,22 +285,19 @@ private struct MemberRow: View {
     }
 }
 
-/// Block or Unblock, and Report spam, for one member: the start of a member's actions menu.
-struct MemberSafetyItems: View {
-    let target: SafetyTarget
-    let isBlocked: Bool
-    let ask: (SafetyRequest.Kind, SafetyTarget) -> Void
-    let unblock: (SafetyTarget) -> Void
-
-    var body: some View {
-        if isBlocked {
-            Button(Self.unblockLabel(target)) { unblock(target) }
-        } else {
-            Button(SafetyRequest.blockLabel(for: target), role: .destructive) {
-                ask(.block, target)
-            }
-        }
-        Button(Copy.reportSpam, role: .destructive) { ask(.report, target) }
+extension MemberSafety {
+    /// Block or Unblock, and Report spam, for one member, in a member's actions menu.
+    func entries(for target: SafetyTarget) -> [MemberMenuEntry] {
+        let ask = ask
+        let unblock = unblock
+        return [
+            isBlocked(target)
+                ? .item(Self.unblockLabel(target)) { unblock(target) }
+                : .item(SafetyRequest.blockLabel(for: target), destructive: true) {
+                    ask(.block, target)
+                },
+            .item(Copy.reportSpam, destructive: true) { ask(.report, target) },
+        ]
     }
 
     /// "Stop ignoring" for a nickname, else "Unblock".
@@ -297,5 +306,102 @@ struct MemberSafetyItems: View {
             return Copy.stopIgnoring
         }
         return Copy.unblockContact
+    }
+}
+
+/// One line of a member's actions menu.
+enum MemberMenuEntry {
+    case action(String, destructive: Bool, run: () -> Void)
+    case divider
+
+    static func item(_ title: String, destructive: Bool = false, _ run: @escaping () -> Void)
+        -> MemberMenuEntry
+    {
+        .action(title, destructive: destructive, run: run)
+    }
+}
+
+/// A member row's "...": makes the menu when it is clicked and opens it under the pointer. A
+/// SwiftUI Menu put an AppKit pop-up button in every row as it scrolled into view.
+struct MemberMenuButton: View {
+    let identifier: String
+    let entries: () -> [MemberMenuEntry]
+
+    var body: some View {
+        // A tap on an image rather than a Button: a Button in each row took 3 ms more on
+        // every frame a 300-member room scrolled.
+        Image(systemName: "ellipsis.circle")
+            .font(.appBody)
+            .foregroundStyle(.secondary)
+            .frame(
+                width: ControlHeight.Inspector.memberMenu,
+                height: ControlHeight.Inspector.memberMenu
+            )
+            .contentShape(.rect)
+            .onTapGesture { Self.open(entries()) }
+            .pointerStyle(.link)
+            .help(Copy.memberActions)
+            .accessibilityElement()
+            .accessibilityLabel(Copy.memberActions)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction { Self.open(entries()) }
+            .accessibilityIdentifier(identifier)
+    }
+
+    /// The menu, at the click that asked for it; at the pointer when a key or VoiceOver did.
+    static func open(_ entries: [MemberMenuEntry]) {
+        let menu = menu(entries)
+        if let event = NSApp.currentEvent, let view = event.window?.contentView,
+            event.type == .leftMouseUp || event.type == .leftMouseDown
+        {
+            menu.popUp(
+                positioning: nil, at: view.convert(event.locationInWindow, from: nil), in: view)
+        } else {
+            menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
+        }
+    }
+
+    static func menu(_ entries: [MemberMenuEntry]) -> NSMenu {
+        let menu = NSMenu()
+        menu.autoenablesItems = false
+        for entry in entries {
+            switch entry {
+            case .divider: menu.addItem(.separator())
+            case .action(let title, let destructive, let run):
+                menu.addItem(ActionMenuItem(title: title, destructive: destructive, run: run))
+            }
+        }
+        return menu
+    }
+
+    static func copy(_ text: String) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+    }
+}
+
+/// A menu item that runs a closure.
+final class ActionMenuItem: NSMenuItem {
+    private let run: () -> Void
+
+    init(title: String, destructive: Bool, run: @escaping () -> Void) {
+        self.run = run
+        super.init(title: title, action: #selector(runAction), keyEquivalent: "")
+        target = self
+        if destructive {
+            attributedTitle = NSAttributedString(
+                string: title,
+                attributes: [
+                    .foregroundColor: NSColor.systemRed, .font: NSFont.menuFont(ofSize: 0),
+                ])
+        }
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) is not used")
+    }
+
+    @objc private func runAction() {
+        run()
     }
 }

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Xippi chat background, Confetti (light), seamless 120 x 120 tile</title>
+  <rect width="120" height="120" fill="#FBF4EF"/>
+  <!-- Half strength: at full strength the shapes competed with the messages over them. -->
+  <g opacity="0.5">
+  <g fill="none" stroke-width="2.4" stroke-linecap="round">
+    <path transform="translate(18 22) rotate(15)" stroke="#F1C4B2" d="M-4 -4L4 4M4 -4L-4 4"/>
+    <path transform="translate(74 14) rotate(-20) scale(0.7)" stroke="#EFC0D0" d="M-4 -4L4 4M4 -4L-4 4"/>
+    <path transform="translate(102 58) rotate(30) scale(1.2)" stroke="#F1C4B2" d="M-4 -4L4 4M4 -4L-4 4"/>
+    <path transform="translate(46 64) scale(0.8)" stroke="#EFC0D0" d="M-4 -4L4 4M4 -4L-4 4"/>
+    <path transform="translate(20 98) rotate(-10) scale(1.1)" stroke="#EFC0D0" d="M-4 -4L4 4M4 -4L-4 4"/>
+    <path transform="translate(84 100) rotate(22) scale(0.75)" stroke="#F1C4B2" d="M-4 -4L4 4M4 -4L-4 4"/>
+    <path transform="translate(36 44) rotate(40)" stroke="#EFC0D0" d="M-3 0H3"/>
+    <path transform="translate(92 82) rotate(-30)" stroke="#F1C4B2" d="M-3 0H3"/>
+  </g>
+  <circle cx="50" cy="30" r="1.8" fill="#F1C4B2"/>
+  <circle cx="100" cy="30" r="1.4" fill="#EFC0D0"/>
+  <circle cx="14" cy="60" r="1.6" fill="#EFC0D0"/>
+  <circle cx="72" cy="80" r="1.8" fill="#F1C4B2"/>
+  <circle cx="50" cy="108" r="1.4" fill="#F1C4B2"/>
+  <circle cx="110" cy="112" r="1.6" fill="#EFC0D0"/>
+  </g>
+</svg>

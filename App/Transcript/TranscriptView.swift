@@ -29,6 +29,98 @@ struct TranscriptView: NSViewRepresentable, Equatable {
     }
 }
 
+/// The transcript's scroll view, with the blur under the title bar at its top. The blur sits
+/// in the scroll view, beside the messages: placed from SwiftUI over the transcript, it did
+/// not blur them.
+final class TranscriptScrollView: NSScrollView {
+    let titleBarBand = TitleBarBlurView()
+    /// The height of the title bar over the transcript's top.
+    var titleBarHeight: CGFloat = 0 {
+        didSet { if titleBarHeight != oldValue { tile() } }
+    }
+
+    /// Brings the blur in, or takes it out. Off, it leaves the view tree: hidden or clear, it
+    /// still drew.
+    func showTitleBarBand(_ shown: Bool) {
+        if shown, titleBarBand.superview == nil {
+            addSubview(titleBarBand, positioned: .above, relativeTo: contentView)
+            tile()
+        }
+        titleBarBand.show(shown) { [weak self] in
+            guard let self, !titleBarBand.shown else { return }
+            titleBarBand.removeFromSuperview()
+        }
+    }
+
+    override func tile() {
+        super.tile()
+        titleBarBand.frame = NSRect(
+            x: 0, y: isFlipped ? 0 : bounds.height - titleBarHeight, width: bounds.width,
+            height: titleBarHeight)
+    }
+}
+
+/// A light blur of what lies under it, so messages still show through it, as in Messages,
+/// under a wash of the window's colour so the bar reads. The system materials blur so far
+/// that over dark messages they drew a flat band.
+final class TitleBarBlurView: NSView {
+    static let blurRadius: CGFloat = 8
+    /// The blur as it comes in and goes out: at none it drew the messages at the wrong size.
+    static let fadedRadius: CGFloat = 1
+    /// How much of the window's colour lies over the blur.
+    static let tint: CGFloat = 0.35
+    /// The blur's key path on the layer, to change its strength.
+    static let radiusKeyPath = "backgroundFilters.blur.\(kCIInputRadiusKey)"
+    private(set) var shown = false
+
+    override init(frame: NSRect) {
+        super.init(frame: frame)
+        wantsLayer = true
+        layerUsesCoreImageFilters = true
+        let blur = CIFilter(name: "CIGaussianBlur")
+        blur?.name = "blur"
+        blur?.setValue(Self.fadedRadius, forKey: kCIInputRadiusKey)
+        // The edge pixels repeat past the window's top, which would otherwise blur into it dark.
+        // Unset, the clamp also shrinks what it gets to four tenths.
+        let clamp = CIFilter(name: "CIAffineClamp")
+        clamp?.setValue(NSAffineTransform(), forKey: kCIInputTransformKey)
+        backgroundFilters = [clamp, blur].compactMap { $0 }
+        // Without it the blur reaches over the whole window.
+        layer?.masksToBounds = true
+        alphaValue = 0
+    }
+
+    required init?(coder: NSCoder) { nil }
+
+    /// Brings the blur and the wash in or takes them out together, then calls `done`.
+    func show(_ shown: Bool, done: @escaping @MainActor () -> Void) {
+        self.shown = shown
+        let radius = shown ? Self.blurRadius : Self.fadedRadius
+        if let layer {
+            let change = CABasicAnimation(keyPath: Self.radiusKeyPath)
+            change.fromValue = layer.presentation()?.value(forKeyPath: Self.radiusKeyPath)
+            change.toValue = radius
+            change.duration = 0.2
+            layer.setValue(radius, forKeyPath: Self.radiusKeyPath)
+            layer.add(change, forKey: "radius")
+        }
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.2
+            animator().alphaValue = shown ? 1 : 0
+        } completionHandler: {
+            MainActor.assumeIsolated { done() }
+        }
+    }
+
+    override var wantsUpdateLayer: Bool { true }
+
+    override func updateLayer() {
+        layer?.backgroundColor = NSColor.windowBackgroundColor.withAlphaComponent(Self.tint).cgColor
+    }
+
+    override func hitTest(_ point: NSPoint) -> NSView? { nil }
+}
+
 /// The transcript's table: hands Quick Look the attachment that was clicked, and tells the
 /// controller when a live resize ends so it can measure the rows it skipped.
 final class TranscriptTableView: NSTableView {

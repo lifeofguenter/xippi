@@ -1,8 +1,8 @@
 import SwiftUI
 import XippiSession
 
-/// Registers a new account (XEP-0077): the domain, an invite link (XEP-0401) and the server
-/// first, then the server's own form, CAPTCHA included. The new account is logged in and kept.
+/// Registers a new account (XEP-0077): the provider and an invite link (XEP-0401) first,
+/// then the server's own form, CAPTCHA included. The new account is logged in and kept.
 struct RegisterAccountSheet: View {
     @Bindable var flow: RegisterAccountFlow
     let onCancel: () -> Void
@@ -59,25 +59,41 @@ struct RegisterAccountSheet: View {
     }
 }
 
-/// Where to register.
+/// Where to register: a provider from the list, xippi.eu first, or any other domain.
 private struct ServerStep: View {
     @Bindable var flow: RegisterAccountFlow
     let onCancel: () -> Void
     let onAddExisting: () -> Void
+    private let providers = ProviderDirectory.shared
+    /// The picker's tag for a domain typed in: no domain is empty.
+    private static let other = ""
 
     var body: some View {
         VStack(spacing: 0) {
             Form {
                 Section {
-                    TextField(Copy.domain, text: $flow.domain, prompt: Text(Copy.domainPrompt))
-                        .autocorrectionDisabled()
-                        .accessibilityIdentifier("register-domain")
+                    Picker(
+                        Copy.provider,
+                        selection: Binding(
+                            get: { flow.customDomain ? Self.other : flow.domain },
+                            set: { flow.choose(provider: $0 == Self.other ? nil : $0) })
+                    ) {
+                        ForEach(providers.domains, id: \.self) { domain in
+                            Text(verbatim: domain).tag(domain)
+                        }
+                        Divider()
+                        Text(Copy.otherProvider).tag(Self.other)
+                    }
+                    .pointerStyle(.link)
+                    .accessibilityIdentifier("register-provider")
+                    if flow.customDomain {
+                        TextField(Copy.domain, text: $flow.domain, prompt: Text(Copy.domainPrompt))
+                            .autocorrectionDisabled()
+                            .accessibilityIdentifier("register-domain")
+                    }
                     TextField(Copy.inviteLink, text: $flow.invite, prompt: Text(Copy.optional))
                         .autocorrectionDisabled()
                         .accessibilityIdentifier("register-invite")
-                    TextField(Copy.server, text: $flow.server, prompt: Text(Copy.serverPrompt))
-                        .autocorrectionDisabled()
-                        .accessibilityIdentifier("register-server")
                 } header: {
                     Text(Copy.newAccount)
                         .font(.appTitle)
@@ -93,6 +109,7 @@ private struct ServerStep: View {
             }
             .formStyle(.grouped)
             .disabled(flow.busy)
+            .task { await providers.load() }
             Divider()
             HStack(spacing: 10) {
                 Button(Copy.addAccount, action: onAddExisting)

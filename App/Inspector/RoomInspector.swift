@@ -4,7 +4,7 @@ import XippiSession
 import XippiStore
 
 /// A room's details: its state, subject (editable for moderators), encryption, members by
-/// role with moderation, shared media, and invite, settings (owners), leave and forget.
+/// role with moderation, and invite, settings (owners), leave and forget.
 struct RoomInspector: View {
     let model: AppModel
     let info: OpenChatInfo
@@ -12,13 +12,14 @@ struct RoomInspector: View {
     let sheets: ChatSheets
     /// The open chat's account and whom it ignores, for the members' Block.
     let context: OpenChatContext
-    let media: [SharedMediaItem]
 
     @State private var editingSubject = false
     @State private var subjectDraft = ""
     @State private var editingNick = false
     @State private var nickDraft = ""
     @State private var confirmForget = false
+    /// The occupants' avatars, by nick, as they arrive.
+    @State private var occupantAvatars: [String: String] = [:]
 
     var body: some View {
         let details = room.snapshot?.details ?? RoomDetails()
@@ -26,56 +27,68 @@ struct RoomInspector: View {
         VStack(alignment: .leading, spacing: ControlHeight.Inspector.sectionSpacing) {
             status(state)
             subject(details, joined: state == .joined)
-            InspectorSection(title: Copy.encryption, identifier: "inspector-encryption") {
-                // Without a session the room's setup is not known: a chat set to OMEMO can
-                // still be turned off, and nothing wrong is said.
-                if details.allowsOMEMO || (room.snapshot == nil && info.encrypted) {
-                    EncryptionToggle(model: model, chatID: info.id)
-                } else if room.snapshot != nil {
-                    Text(Copy.omemoNeeds)
-                        .font(.appBody)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
+            // Without a session the room's setup is not known: a chat set to OMEMO can still be
+            // turned off, and nothing wrong is said. With nothing to show, no empty heading.
+            if Self.showsEncryption(
+                allowsOMEMO: details.allowsOMEMO, known: room.snapshot != nil,
+                encrypted: info.encrypted)
+            {
+                InspectorSection(title: Copy.encryption, identifier: "inspector-encryption") {
+                    if details.allowsOMEMO || (room.snapshot == nil && info.encrypted) {
+                        EncryptionToggle(model: model, chatID: info.id)
+                    } else {
+                        Text(Copy.omemoNeeds)
+                            .font(.appBody)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
             }
             InspectorSection(title: Copy.notifications, identifier: "inspector-notifications") {
                 ChatNotificationSettings(model: model, chatID: info.id)
             }
-            InspectorSection(
-                title: room.snapshot.map { Copy.membersCount($0.members.count) } ?? Copy.members,
-                identifier: "inspector-members"
-            ) {
-                MemberList(
-                    members: room.snapshot?.members ?? [], details: details, busy: room.busy,
-                    onAction: { action, member in room.perform(action, on: member) },
-                    onDevices: details.allowsOMEMO
-                        ? { member in
-                            guard let jid = member.realJID else { return }
-                            sheets.sheet = .memberDevices(
-                                accountID: info.accountID, jid: jid.description,
-                                name: member.nick)
-                        } : nil,
-                    onMessagePrivately: { member in
-                        let show = context.showError
-                        Task {
-                            if let error = await model.openPrivateChat(
-                                roomChatID: info.id, accountID: info.accountID, nick: member.nick)
-                            {
-                                show?(error)
+            // The members are known once the room is joined; the status above says it is not.
+            if let snapshot = room.snapshot {
+                InspectorSection(
+                    title: Copy.membersCount(snapshot.members.count),
+                    identifier: "inspector-members"
+                ) {
+                    MemberList(
+                        members: snapshot.members, details: details, avatars: occupantAvatars,
+                        busy: room.busy,
+                        onAction: { action, member in room.perform(action, on: member) },
+                        onDevices: details.allowsOMEMO
+                            ? { member in
+                                guard let jid = member.realJID else { return }
+                                sheets.sheet = .memberDevices(
+                                    accountID: info.accountID, jid: jid.description,
+                                    name: member.nick)
+                            } : nil,
+                        onMessagePrivately: { member in
+                            let show = context.showError
+                            Task {
+                                if let error = await model.openPrivateChat(
+                                    roomChatID: info.id, accountID: info.accountID,
+                                    nick: member.nick)
+                                {
+                                    show?(error)
+                                }
                             }
-                        }
-                    },
-                    safety: memberSafety)
-            }
-            InspectorSection(title: Copy.sharedMedia, identifier: "inspector-media") {
-                SharedMediaView(items: media) { item in
-                    model.open(chatID: info.id, revealing: item.messageID)
+                        },
+                        safety: memberSafety)
                 }
             }
             InspectorSection(title: Copy.roomSection, identifier: "inspector-room") {
                 nickname(joined: state == .joined)
                 actions(details, state: state)
                 InspectorError(text: room.error)
+            }
+        }
+        .task(id: info.id) {
+            for await avatars in model.database.occupantAvatarUpdates(
+                accountID: info.accountID, room: info.jid)
+            {
+                occupantAvatars = avatars
             }
         }
     }
@@ -227,6 +240,13 @@ struct RoomInspector: View {
             }
         }
         .disabled(room.busy)
+    }
+
+    /// Whether the Encryption section has anything to show: the room allows OMEMO, its setup
+    /// is known (and then says OMEMO needs another kind of room), or the chat is set to OMEMO
+    /// and can be turned off. Otherwise no heading over nothing.
+    static func showsEncryption(allowsOMEMO: Bool, known: Bool, encrypted: Bool) -> Bool {
+        allowsOMEMO || known || encrypted
     }
 
     /// The account's user name, when the chat keeps no nick.

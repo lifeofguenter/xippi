@@ -664,6 +664,17 @@ extension AccountSession {
         await credentials.store(nil, for: jid)
     }
 
+    /// Deletes the account on its own server (XEP-0077 section 3.2), with what the server
+    /// keeps for it. The server ends the stream after it answers; the app then removes the
+    /// account here.
+    public func deleteFromServer() async throws(SessionError) {
+        do {
+            try await Registration.cancel(via: connection)
+        } catch {
+            throw SessionError(error)
+        }
+    }
+
     /// The registration form of a service (XEP-0077), such as a gateway.
     public func requestRegistration(with service: JID) async throws(SessionError)
         -> RegistrationForm

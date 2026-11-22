@@ -70,6 +70,8 @@ extension AppDatabase {
             if chat.password != before.password { columns.append("password") }
             if chat.autojoin != before.autojoin { columns.append("autojoin") }
             if chat.avatarHash != before.avatarHash { columns.append("avatarHash") }
+            if chat.closed != before.closed { columns.append("closed") }
+            if chat.background != before.background { columns.append("background") }
             guard !columns.isEmpty else { return }
             try chat.update(db, columns: columns)
             if chat.encryption != before.encryption { try Self.settleEncryption(db, chatID: id) }

@@ -20,6 +20,7 @@ final class OnboardingUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments += [
             "-UITestDatabase", "memory", "-ApplePersistenceIgnoreState", "YES",
+            "-UITestServer", "localhost",
         ]
         if trustingTestCA {
             app.launchArguments += ["-UITestCA", Self.testCA]
@@ -38,9 +39,6 @@ final class OnboardingUITests: XCTestCase {
         let secret = app.secureTextFields["add-account-password"]
         secret.click()
         secret.typeText(password)
-        let server = app.textFields["add-account-server"]
-        server.click()
-        server.typeText("localhost")
         app.buttons["add-account-login"].click()
     }
 
@@ -93,12 +91,12 @@ final class OnboardingUITests: XCTestCase {
         let newAccount = app.buttons["add-account-register"]
         XCTAssertTrue(newAccount.waitForExistence(timeout: 10))
         newAccount.click()
+        // xippi.eu is picked first: another domain is typed under Other.
+        app.popUpButtons["register-provider"].click()
+        app.menuItems["Other"].click()
         let domain = app.textFields["register-domain"]
         domain.click()
         domain.typeText("prosody.test")
-        let server = app.textFields["register-server"]
-        server.click()
-        server.typeText("localhost")
         app.buttons["register-continue"].click()
         XCTAssertTrue(
             app.descendants(matching: .any)["form-field:username"].waitForExistence(timeout: 10))

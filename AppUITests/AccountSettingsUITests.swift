@@ -22,7 +22,7 @@ final class AccountSettingsUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments += [
             "-UITestDatabase", "memory", "-ApplePersistenceIgnoreState", "YES",
-            "-UITestCA", Self.testCA,
+            "-UITestCA", Self.testCA, "-UITestServer", "localhost",
         ]
         app.launch()
         let address = app.textFields["add-account-address"]
@@ -32,9 +32,6 @@ final class AccountSettingsUITests: XCTestCase {
         let secret = app.secureTextFields["add-account-password"]
         secret.click()
         secret.typeText(Self.password)
-        let server = app.textFields["add-account-server"]
-        server.click()
-        server.typeText("localhost")
         app.buttons["add-account-login"].click()
         let footer = app.descendants(matching: .any)["account-status"]
         XCTAssertTrue(footer.waitForValue("Online", timeout: 15), "footer: \(footer.stringValue)")

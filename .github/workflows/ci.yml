@@ -101,3 +101,14 @@ jobs:
 
       - name: Build UI tests
         run: make build-tests CONFIGURATION=Debug
+
+      - name: App unit tests
+        run: make test-app CONFIGURATION=Debug
+
+      # The result bundle, with the window captures the look tests attach.
+      - name: Keep test results
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-test-results
+          path: test-results/

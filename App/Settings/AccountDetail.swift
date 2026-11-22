@@ -41,7 +41,18 @@ struct AccountDetail: View {
         let status = model.status(of: account)
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                StatusDot(status: status)
+                // The picture is changed in Profile: a click goes there.
+                Button {
+                    pane = .profile
+                } label: {
+                    OwnAvatar(
+                        model: model, account: account, size: ControlHeight.Settings.headerAvatar)
+                }
+                .buttonStyle(.plain)
+                .pointerStyle(.link)
+                .help(Copy.changePicture)
+                .accessibilityLabel(Copy.changePicture)
+                .accessibilityIdentifier("account-avatar")
                 VStack(alignment: .leading, spacing: 2) {
                     Text(account.jid)
                         .font(.appEmphasized)
@@ -108,7 +119,6 @@ private struct AccountConnectionPane: View {
     let open: (AccountSheet) -> Void
     @State private var resource = ""
     @State private var priority = 0
-    @State private var server = ""
     @State private var saving = false
     @State private var error: String?
 
@@ -147,8 +157,6 @@ private struct AccountConnectionPane: View {
                             .accessibilityIdentifier("account-priority")
                     }
                 }
-                TextField(Copy.server, text: $server, prompt: Text(Copy.serverPrompt))
-                    .accessibilityIdentifier("account-server")
                 if let error {
                     Text(error)
                         .foregroundStyle(.red)
@@ -191,14 +199,24 @@ private struct AccountConnectionPane: View {
                 }
             }
             Section {
-                Button(role: .destructive) {
-                    open(.remove(account))
-                } label: {
-                    Text(Copy.removeAccount)
-                        .foregroundStyle(.red)
+                HStack(spacing: 8) {
+                    Button(role: .destructive) {
+                        open(.remove(account))
+                    } label: {
+                        Text(Copy.removeAccount)
+                            .foregroundStyle(.red)
+                    }
+                    .accessibilityIdentifier("remove-account:\(account.jid)")
+                    Button(role: .destructive) {
+                        open(.delete(account))
+                    } label: {
+                        Text(Copy.deleteAccount)
+                            .foregroundStyle(.red)
+                    }
+                    .disabled(status != .online)
+                    .accessibilityIdentifier("delete-account:\(account.jid)")
                 }
                 .pointerStyle(.link)
-                .accessibilityIdentifier("remove-account:\(account.jid)")
             }
         }
         .formStyle(.grouped)
@@ -207,26 +225,13 @@ private struct AccountConnectionPane: View {
         .onChange(of: AccountConnectionOptions(account)) { load() }
     }
 
-    private var current: (resource: String, priority: Int, server: String) {
-        let host = account.hostOverride ?? ""
-        var server = host.contains(":") && !host.hasPrefix("[") ? "[\(host)]" : host
-        if !host.isEmpty, let port = account.portOverride {
-            server += ":\(port)"
-        }
-        return (account.resource, account.priority, server)
-    }
-
     private var changed: Bool {
-        let current = self.current
-        return resource != current.resource || priority != current.priority
-            || server.trimmingCharacters(in: .whitespaces) != current.server
+        resource != account.resource || priority != account.priority
     }
 
     private func load() {
-        let current = self.current
-        resource = current.resource
-        priority = current.priority
-        server = current.server
+        resource = account.resource
+        priority = account.priority
         error = nil
     }
 
@@ -234,10 +239,10 @@ private struct AccountConnectionPane: View {
         guard let id = account.id, !saving else { return }
         saving = true
         error = nil
-        let (resource, priority, server) = (resource, priority, server)
+        let (resource, priority) = (resource, priority)
         Task {
             error = await model.setConnectionOptions(
-                resource: resource, priority: priority, server: server, accountID: id)
+                resource: resource, priority: priority, accountID: id)
             saving = false
         }
     }

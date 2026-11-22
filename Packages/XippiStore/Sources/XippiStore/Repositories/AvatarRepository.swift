@@ -64,6 +64,24 @@ extension AppDatabase {
                 WHERE accountID = ? AND jid = ? AND avatarHash IS NOT ?
                 """,
             arguments: [hash, owner.accountID, owner.jid, hash])
+        // An occupant of a room (room/nick): named for that nick, which the member list and the
+        // room's messages show. Contacts and the account are bare JIDs.
+        if !owner.own, let slash = owner.jid.firstIndex(of: "/") {
+            let room = String(owner.jid[..<slash])
+            let nick = String(owner.jid[owner.jid.index(after: slash)...])
+            if let hash {
+                try db.execute(
+                    sql: """
+                        INSERT INTO occupantAvatar (accountID, room, nick, hash) VALUES (?, ?, ?, ?)
+                        ON CONFLICT (accountID, room, nick) DO UPDATE SET hash = excluded.hash
+                        """,
+                    arguments: [owner.accountID, room, nick, hash])
+            } else {
+                try db.execute(
+                    sql: "DELETE FROM occupantAvatar WHERE accountID = ? AND room = ? AND nick = ?",
+                    arguments: [owner.accountID, room, nick])
+            }
+        }
         guard owner.own else { return }
         try db.execute(
             sql: """
@@ -86,6 +104,7 @@ extension AppDatabase {
                     SELECT avatarHash FROM chat WHERE avatarHash IS NOT NULL
                     UNION SELECT avatarHash FROM rosterItem WHERE avatarHash IS NOT NULL
                     UNION SELECT avatarHash FROM profile WHERE avatarHash IS NOT NULL
+                    UNION SELECT hash FROM occupantAvatar
                     """))
     }
 
@@ -151,6 +170,21 @@ extension AppDatabase {
                     """,
                 arguments: [accountID, jid, fullName, nickname, data])
         }
+    }
+
+    /// The avatars of a room's occupants, by nick, followed as they change.
+    public func occupantAvatarUpdates(accountID: Int64, room: String) -> AsyncStream<
+        [String: String]
+    > {
+        let observation = ValueObservation.trackingConstantRegion { db -> [String: String] in
+            let rows = try Row.fetchAll(
+                db, sql: "SELECT nick, hash FROM occupantAvatar WHERE accountID = ? AND room = ?",
+                arguments: [accountID, room])
+            return Dictionary(rows.map { ($0["nick"] as String, $0["hash"] as String) }) { a, _ in a
+            }
+        }
+        .removeDuplicates()
+        return Self.updates(of: observation, in: reader)
     }
 
     /// The account's own profile row, followed as it changes; nil while there is none.

@@ -369,7 +369,7 @@ extension SASLSelector {
     /// string, which keeps code points unassigned in Unicode 3.2 (an existing password with an
     /// emoji) and refuses prohibited characters, mixed directions and a password that maps to
     /// nothing. Check a password typed for an existing account with it.
-    public static func canLogIn(withPassword password: String) -> Bool {
+    public static func canAuthenticate(withPassword password: String) -> Bool {
         guard let prepared = SASLPrep.prepare(password, mode: .query) else { return false }
         return !prepared.isEmpty
     }

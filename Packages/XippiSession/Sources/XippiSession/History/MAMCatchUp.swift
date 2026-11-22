@@ -345,6 +345,31 @@ actor MAMCatchUp: ArchiveCatchUp {
 
     private var roomContexts: [String: RoomArchive] = [:]
 
+    /// At most this many archives page at once. Each room joined starts a run, and a burst of
+    /// queries at login made everything else the account asked for wait behind them at the
+    /// server: opening a room's settings took 10 to 20 seconds.
+    static let maxRunsAtOnce = 3
+    private var runsPaging = 0
+    private var runsWaiting: [CheckedContinuation<Void, Never>] = []
+
+    /// A turn to page; waits while `maxRunsAtOnce` runs page.
+    private func takeTurn() async {
+        if runsPaging < Self.maxRunsAtOnce {
+            runsPaging += 1
+            return
+        }
+        // The turn is handed over by `endTurn`, without counting it again.
+        await withCheckedContinuation { runsWaiting.append($0) }
+    }
+
+    private func endTurn() {
+        if runsWaiting.isEmpty {
+            runsPaging -= 1
+        } else {
+            runsWaiting.removeFirst().resume()
+        }
+    }
+
     /// Starts a run of the archive `key`. `join`: the room's join it runs for, which its end
     /// binds the live position to; it starts after that join was made, so its last page
     /// covers what the room said before it.
@@ -358,7 +383,9 @@ actor MAMCatchUp: ArchiveCatchUp {
         caughtUp[key] = nil
         let task = Task { [weak self] in
             guard let self else { return }
+            await self.takeTurn()
             let end = await work(self)
+            await self.endTurn()
             await self.finished(
                 key, token: token, end: end, resumed: resumed, join: join, work: work)
         }
@@ -955,9 +982,8 @@ actor MAMCatchUp: ArchiveCatchUp {
             ?? ReplyQuote.received(content.quote)
     }
 
-    /// The direct chat with `peer`, made when missing; nil when the JID is a room's.
     /// The private chat with an occupant of one of the account's rooms, made when missing; nil
-    /// for any other address.
+    /// for any other address, and for the account's own occupant (no chat with oneself).
     private func privateChat(_ occupant: JID) -> Int64? {
         let key = occupant.description
         guard occupant.resourcepart != nil else { return nil }
@@ -968,7 +994,7 @@ actor MAMCatchUp: ArchiveCatchUp {
             ?? ((try? database.chat(accountID: accountID, jid: bare))?.map { $0.kind == .room }
                 ?? false)
         roomJIDs[bare] = isRoom
-        guard isRoom,
+        guard isRoom, !isOwnOccupant(occupant),
             let chat = try? database.ensureChat(
                 accountID: accountID, jid: key, kind: .roomPrivate),
             chat.kind == .roomPrivate, let id = chat.id
@@ -977,6 +1003,18 @@ actor MAMCatchUp: ArchiveCatchUp {
         return id
     }
 
+    /// The account's own occupant in its room: the one the join reported, else the nick the
+    /// room's chat keeps.
+    private func isOwnOccupant(_ occupant: JID) -> Bool {
+        let bare = occupant.bare.description
+        if let own = roomContexts[bare]?.ownOccupant { return own.jid == occupant }
+        guard let room = (try? database.chat(accountID: accountID, jid: bare)) ?? nil else {
+            return false
+        }
+        return AccountSession.isStoredNick(occupant, of: room)
+    }
+
+    /// The direct chat with `peer`, made when missing; nil when the JID is a room's.
     private func directChat(_ peer: JID) -> Int64? {
         let key = peer.description
         if let id = chatIDs[key] { return id }

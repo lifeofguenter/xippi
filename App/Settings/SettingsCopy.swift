@@ -15,7 +15,31 @@ extension Copy {
     static let accountPane = String(localized: "Account section")
     static let save = String(localized: "Save")
     static let notConnected = String(localized: "Not connected")
-    static let removeAccount = String(localized: "Remove account")
+    static let removeAccount = String(localized: "Remove from this Mac")
+    static let deleteAccount = String(localized: "Delete account")
+    static let delete = String(localized: "Delete")
+
+    static func deleteAccountTitle(_ jid: String) -> String {
+        String(localized: "Delete \(jid)?")
+    }
+
+    static func deleteAccountDetail(_ domain: String) -> String {
+        String(
+            localized: """
+                The account is deleted on \(domain) with what the server keeps for it, and its \
+                chats and messages on this Mac. This cannot be undone.
+                """)
+    }
+
+    static func accountNotDeleted(_ error: SessionError) -> String {
+        switch error {
+        case .notConnected, .stopped: notConnected
+        case .timeout: String(localized: "Timed out")
+        case .refused(let error):
+            String(localized: "Refused: \(words(error.condition.rawValue))")
+        default: String(localized: "Account not deleted")
+        }
+    }
 
     // MARK: Password
 

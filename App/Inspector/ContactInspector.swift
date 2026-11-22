@@ -3,14 +3,13 @@ import XippiSession
 import XippiStore
 import os
 
-/// A direct chat's details: presence and status, encryption and devices, shared media, and the
+/// A direct chat's details: presence and status, encryption and devices, and the
 /// contact itself (name, roster, blocking, spam reports).
 struct ContactInspector: View {
     let model: AppModel
     let info: OpenChatInfo
     let contact: ContactInspectorModel
     let sheets: ChatSheets
-    let media: [SharedMediaItem]
 
     @State private var confirmRemove = false
     @State private var confirmBlock = false
@@ -33,11 +32,6 @@ struct ContactInspector: View {
             }
             InspectorSection(title: Copy.notifications, identifier: "inspector-notifications") {
                 ChatNotificationSettings(model: model, chatID: info.id)
-            }
-            InspectorSection(title: Copy.sharedMedia, identifier: "inspector-media") {
-                SharedMediaView(items: media) { item in
-                    model.open(chatID: info.id, revealing: item.messageID)
-                }
             }
             if let profile = contact.profile {
                 InspectorSection(title: Copy.profile, identifier: "inspector-profile") {

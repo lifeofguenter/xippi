@@ -83,13 +83,13 @@ import Testing
     /// A password to log in with: one SCRAM and PLAIN can prepare, as a query string, so an
     /// account whose password has an emoji can be added.
     @Test func loginPasswordsAreThoseSCRAMCanPrepareAsAQuery() {
-        #expect(SASLSelector.canLogIn(withPassword: "correct horse"))
-        #expect(SASLSelector.canLogIn(withPassword: "pw\u{1F511}"))
-        #expect(SASLSelector.canLogIn(withPassword: "\u{1F600}"))
-        #expect(!SASLSelector.canLogIn(withPassword: ""))
-        #expect(!SASLSelector.canLogIn(withPassword: "\u{AD}"), "maps to nothing")
-        #expect(!SASLSelector.canLogIn(withPassword: "pw\u{7}"), "a control character")
-        #expect(!SASLSelector.canLogIn(withPassword: "\u{5D0}a\u{5D0}"), "mixed directions")
+        #expect(SASLSelector.canAuthenticate(withPassword: "correct horse"))
+        #expect(SASLSelector.canAuthenticate(withPassword: "pw\u{1F511}"))
+        #expect(SASLSelector.canAuthenticate(withPassword: "\u{1F600}"))
+        #expect(!SASLSelector.canAuthenticate(withPassword: ""))
+        #expect(!SASLSelector.canAuthenticate(withPassword: "\u{AD}"), "maps to nothing")
+        #expect(!SASLSelector.canAuthenticate(withPassword: "pw\u{7}"), "a control character")
+        #expect(!SASLSelector.canAuthenticate(withPassword: "\u{5D0}a\u{5D0}"), "mixed directions")
     }
 
     @Test func storedStringsRefuseUnassignedCodePoints() {

@@ -4,8 +4,9 @@ import XippiSession
 import XippiStore
 
 /// An attachment inside a bubble: the file's icon (a thumbnail for a picture or video here),
-/// name and size. Clicking a downloaded file opens it in Quick Look, clicking one not fetched
-/// yet downloads it; a file that can be saved can be dragged out, under the name Save As
+/// name and size; a picture that is here shows as itself instead, filling the row, and an
+/// animated GIF plays. Clicking a downloaded file opens it in Quick Look, clicking one not
+/// fetched yet downloads it; a file that can be saved can be dragged out, under the name Save As
 /// gives it. A file going up or down shows its progress and a cancel control; one that did
 /// not come shows why, and can be fetched again. A file a contact offers over Jingle (R79)
 /// shows Accept and Decline.
@@ -30,6 +31,10 @@ final class AttachmentRowView: NSView, NSDraggingSource {
     var dragSource: SaveAs.Source?
     /// The file's thumbnail, once made.
     var thumbnails: AttachmentThumbnails?
+    /// The picture at the row's size, when the row shows the picture itself.
+    var pictures: AttachmentThumbnails?
+    /// The size the picture shows at; nil for a file row.
+    private var pictureSize: CGSize?
 
     private let icon = NSImageView()
     private let name = CellLabel()
@@ -73,9 +78,21 @@ final class AttachmentRowView: NSView, NSDraggingSource {
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
 
-    func show(_ attachment: AttachmentRecord, outgoing: Bool, font: NSFont) {
+    func show(
+        _ attachment: AttachmentRecord, outgoing: Bool, font: NSFont, picture: CGSize? = nil,
+        pictureRadius: CGFloat = TranscriptMetrics.cardRadius
+    ) {
         let fileName = attachment.fileName ?? attachment.remoteURL.flatMap(Self.lastPathComponent)
         name.stringValue = fileName ?? Copy.file
+        pictureSize = picture
+        let type = Self.type(of: attachment, fileName: fileName)
+        if let picture {
+            showPicture(attachment, type: type, size: picture, radius: pictureRadius)
+            return
+        }
+        name.isHidden = false
+        icon.layer?.cornerRadius = 4
+        icon.layer?.backgroundColor = nil
         name.font = font
         name.textColor = outgoing ? TranscriptColors.outgoingText : .labelColor
         name.lineBreakMode = .byTruncatingMiddle
@@ -87,7 +104,6 @@ final class AttachmentRowView: NSView, NSDraggingSource {
         detail.font = font
         detail.textColor = secondary
         detail.stringValue = size
-        let type = Self.type(of: attachment, fileName: fileName)
         showIcon(type: type, file: fileURL)
         progress.colors(outgoing: outgoing)
         let tint = outgoing ? TranscriptColors.outgoingText : NSColor.secondaryLabelColor
@@ -184,6 +200,55 @@ final class AttachmentRowView: NSView, NSDraggingSource {
         return actions
     }
 
+    /// The picture itself, rounded, at `size`: grey until it is read. A click opens it in
+    /// Quick Look; it drags out and saves as the file row does.
+    private func showPicture(
+        _ attachment: AttachmentRecord, type: UTType, size: CGSize, radius: CGFloat
+    ) {
+        for view in [name, detail, progress, action, decline] as [NSView] { view.isHidden = true }
+        actionRetries = false
+        actionAccepts = false
+        click = .open
+        icon.layer?.cornerRadius = radius
+        icon.layer?.cornerCurve = .continuous
+        icon.layer?.backgroundColor = NSColor.quaternaryLabelColor.cgColor
+        let key = fileURL.map { "\($0.path)#\(Int(size.width))x\(Int(size.height))" }
+        thumbnailKey = key
+        icon.image = nil
+        if let file = fileURL, let key, let pictures {
+            if let image = pictures.cached(key) {
+                showPictureImage(image)
+            } else {
+                pictures.make(for: file, key: key, type: type, size: size, animated: true) {
+                    [weak self] image in
+                    guard let self, self.thumbnailKey == key, let image else { return }
+                    self.showPictureImage(image)
+                }
+            }
+        }
+        let size =
+            attachment.byteSize.map {
+                ByteCountFormatter.string(fromByteCount: $0, countStyle: .file)
+            } ?? Copy.unknownSize
+        setAccessibilityLabel([name.stringValue, size].joined(separator: ", "))
+        updateAccessibilityActions()
+        setAccessibilityEnabled(true)
+        window?.invalidateCursorRects(for: self)
+        needsLayout = true
+    }
+
+    private func showPictureImage(_ image: NSImage) {
+        icon.image = image
+        icon.layer?.backgroundColor = nil
+    }
+
+    #if DEBUG || UITEST_HOOKS
+        /// The picture or thumbnail shown, once read.
+        var shownImage: NSImage? { icon.image }
+        /// Whether an animated picture plays.
+        var playsPicture: Bool { icon.animates }
+    #endif
+
     /// A picture or video here shows its thumbnail once made; anything else its type's icon.
     private func showIcon(type: UTType, file: URL?) {
         let key = file.map { "\($0.path)" }
@@ -195,7 +260,7 @@ final class AttachmentRowView: NSView, NSDraggingSource {
                 return
             }
             icon.image = NSWorkspace.shared.icon(for: type)
-            thumbnails.make(for: file, key: key) { [weak self] image in
+            thumbnails.make(for: file, key: key, type: type) { [weak self] image in
                 guard let self, self.thumbnailKey == key, let image else { return }
                 self.icon.image = image
             }
@@ -206,6 +271,10 @@ final class AttachmentRowView: NSView, NSDraggingSource {
 
     override func layout() {
         super.layout()
+        if pictureSize != nil {
+            icon.frame = bounds
+            return
+        }
         let iconSize = ControlHeight.Transcript.attachmentIcon
         icon.frame = CGRect(
             x: 0, y: (bounds.height - iconSize) / 2, width: iconSize, height: iconSize)
@@ -245,7 +314,8 @@ final class AttachmentRowView: NSView, NSDraggingSource {
     override var focusRingMaskBounds: NSRect { bounds }
 
     override func drawFocusRingMask() {
-        NSBezierPath(roundedRect: bounds, xRadius: 6, yRadius: 6).fill()
+        let radius = pictureSize == nil ? 6 : icon.layer?.cornerRadius ?? 6
+        NSBezierPath(roundedRect: bounds, xRadius: radius, yRadius: radius).fill()
     }
 
     override func keyDown(with event: NSEvent) {
@@ -333,17 +403,7 @@ final class AttachmentRowView: NSView, NSDraggingSource {
     /// By the declared type, else by the name's extension: an encrypted file is declared
     /// `application/octet-stream` (that is what went up), so its name tells more.
     static func type(of attachment: AttachmentRecord, fileName: String?) -> UTType {
-        if let mime = attachment.mimeType, mime.lowercased() != "application/octet-stream",
-            let type = UTType(mimeType: mime)
-        {
-            return type
-        }
-        if let ext = fileName.map({ ($0 as NSString).pathExtension }), !ext.isEmpty,
-            let type = UTType(filenameExtension: ext)
-        {
-            return type
-        }
-        return .data
+        PreviewFile.declaredType(of: attachment, fileName: fileName)
     }
 
     /// A voice message or other audio the player can show: by its declared or sniffed type,

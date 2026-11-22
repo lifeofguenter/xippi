@@ -59,6 +59,8 @@ enum TranscriptPreparation {
         /// History missing from the chat's archive, and the gaps being loaded.
         var gaps: [ArchiveGap] = []
         var loadingGaps: Set<Int64> = []
+        /// Where stored files are found, for the pictures that show as themselves.
+        var media: MediaLibrary?
     }
 
     struct Output: Sendable {
@@ -154,7 +156,8 @@ enum TranscriptPreparation {
             locationDisplay: { message in
                 guard let trust = input.trust else { return .coordinates }
                 return LocationTrust.display(for: message, in: trust.chat, roster: trust.roster)
-            }, revealed: input.revealed, gaps: input.gaps, loadingGaps: input.loadingGaps)
+            }, revealed: input.revealed, gaps: input.gaps, loadingGaps: input.loadingGaps,
+            pictureSize: { InlinePicture.pixelSize(of: $0, media: input.media) })
 
         var layouts: [Int64: CachedLayout] = [:]
         var eventHeights: [Int64: CachedHeight] = [:]

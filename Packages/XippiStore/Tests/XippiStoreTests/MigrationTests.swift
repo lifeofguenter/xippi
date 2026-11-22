@@ -22,7 +22,10 @@ import Testing
             try String.fetchAll($0, sql: "SELECT identifier FROM grdb_migrations")
         }
         #expect(
-            applied == ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11", "v12"])
+            applied == [
+                "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11", "v12", "v13",
+                "v14", "v15",
+            ])
     }
 
     @Test func v2IndexesMessagesStoredUnderV1() throws {
@@ -91,7 +94,10 @@ import Testing
             try String.fetchAll($0, sql: "SELECT identifier FROM grdb_migrations")
         }
         #expect(
-            applied == ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11", "v12"])
+            applied == [
+                "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11", "v12", "v13",
+                "v14", "v15",
+            ])
         #expect(try db.search("grusse").map(\.body) == ["Liebe Grüße"])
     }
 

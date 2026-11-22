@@ -300,6 +300,9 @@ import Testing
         let f = try StoreFixture()
         #expect(try f.db.upsertIncoming(f.fromBob(nil, originID: "o-empty")) == .ignored)
         #expect(try f.db.upsertIncoming(f.fromBob("", originID: "o-empty")) == .ignored)
+        // Text that is only spaces, or invisible, shows nothing either.
+        #expect(try f.db.upsertIncoming(f.fromBob(" \n", originID: "o-blank")) == .ignored)
+        #expect(try f.db.upsertIncoming(f.fromBob("\u{200B}", originID: "o-zwsp")) == .ignored)
         var file = f.fromBob(nil, originID: "o-file")
         file.kind = .file
         file.attachments = [AttachmentDraft(remoteURL: "https://x/f.png", mimeType: "image/png")]
@@ -529,6 +532,78 @@ import Testing
         #expect(try f.db.upsertIncoming(fix) == .duplicate(id))
         #expect(try f.message(id).body == nil)
         #expect(try f.messages().count == 1)
+    }
+
+    /// Some clients delete a message by correcting it to blank text: it shows as removed, never
+    /// as an empty bubble marked edited.
+    @Test func aCorrectionToBlankTextRemovesTheMessage() throws {
+        let f = try StoreFixture()
+        for (index, blank) in [" ", "\n\t", "\u{200B}", "\u{00A0}"].enumerated() {
+            let at = TimeInterval(index * 10)
+            let id = try f.db.upsertIncoming(
+                f.fromBob("words", at: at, originID: "m-blank-\(index)")
+            ).id()
+            var fix = f.fromBob(blank, at: at + 1, originID: "c-blank-\(index)")
+            fix.correctionOf = "m-blank-\(index)"
+            #expect(
+                try f.db.upsertIncoming(fix)
+                    == .retracted(RemovedContent(messageID: id, localFiles: [])))
+            let row = try f.message(id)
+            #expect(row.retracted)
+            #expect(row.body == nil)
+        }
+        // Blank text with nothing to take back is not a message of its own.
+        var stray = f.fromBob(" ", at: 100, originID: "c-stray")
+        stray.correctionOf = "nothing"
+        #expect(try f.db.upsertIncoming(stray) == .ignored)
+        #expect(try f.messages().count == 4)
+
+        // The server could blank an encrypted message in plaintext: it stays.
+        var secret = f.fromBob("encrypted words", at: 200, originID: "m-secret")
+        secret.encryption = .omemo
+        let kept = try f.db.upsertIncoming(secret).id()
+        var plain = f.fromBob(" ", at: 201, originID: "c-secret")
+        plain.correctionOf = "m-secret"
+        #expect(try f.db.upsertIncoming(plain) == .ignored)
+        #expect(try f.message(kept).body == "encrypted words")
+        #expect(try !f.message(kept).retracted)
+    }
+
+    /// v15: a message corrected to blank text before this version reads as removed.
+    @Test func v15RemovesMessagesCorrectedToBlankText() throws {
+        let queue = try DatabaseQueue()
+        try AppDatabase.migrator.migrate(queue, upTo: "v14")
+        try queue.write { d in
+            try d.execute(
+                sql: """
+                    INSERT INTO account (id, jid, enabled, resource, clientID, pinnedCertSHA256, createdAt)
+                        VALUES (1, 'a@x', 1, 'mac', 'cid', '[]', '2026-01-01 00:00:00.000');
+                    INSERT INTO chat (id, accountID, jid, kind, pinned, muted, notify, encryption,
+                        autojoin, unreadCount, mentionCount)
+                        VALUES (1, 1, 'room@x', 'room', 0, 0, 'all', 'none', 0, 0, 0);
+                    INSERT INTO message (id, accountID, chatID, direction, body, timestamp,
+                        receivedAt, state, encryption, retracted, kind, editedAt)
+                        VALUES
+                        (1, 1, 1, 'incoming', ' ', '2026-01-01 00:00:00.000',
+                            '2026-01-01 00:00:00.000', 'sent', 'none', 0, 'text',
+                            '2026-01-01 00:01:00.000'),
+                        (2, 1, 1, 'incoming', 'fixed', '2026-01-01 00:00:00.000',
+                            '2026-01-01 00:00:00.000', 'sent', 'none', 0, 'text',
+                            '2026-01-01 00:01:00.000'),
+                        (3, 1, 1, 'incoming', 'plain', '2026-01-01 00:00:00.000',
+                            '2026-01-01 00:00:00.000', 'sent', 'none', 0, 'text', NULL);
+                    INSERT INTO attachment (id, messageID, remoteURL, localPath, state)
+                        VALUES (1, 1, 'https://x/f.png', '/media/f', 'local');
+                    """)
+        }
+        try AppDatabase.migrator.migrate(queue)
+
+        let rows = try queue.read {
+            try MessageRecord.fetchAll($0, sql: "SELECT * FROM message ORDER BY id")
+        }
+        #expect(rows.map(\.retracted) == [true, false, false])
+        #expect(rows.map(\.body) == [nil, "fixed", "plain"])
+        #expect(try queue.read { try AttachmentRecord.fetchCount($0) } == 0)
     }
 
     // MARK: - Retractions (XEP-0424) and moderation (XEP-0425)

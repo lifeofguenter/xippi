@@ -75,8 +75,8 @@ struct OnboardingSheet: View {
     }
 }
 
-/// Logs in with an existing account: address, password and, when the domain does not say
-/// where its server is, the server. The account is kept once the login worked.
+/// Logs in with an existing account: address and password. The address's domain says where
+/// its server is. The account is kept once the login worked.
 struct AddAccountSheet: View {
     @Bindable var flow: AddAccountFlow
     let onCancel: () -> Void
@@ -96,9 +96,6 @@ struct AddAccountSheet: View {
                     SecureField(Copy.password, text: $flow.password)
                         .textContentType(.password)
                         .accessibilityIdentifier("add-account-password")
-                    TextField(Copy.server, text: $flow.server, prompt: Text(Copy.serverPrompt))
-                        .autocorrectionDisabled()
-                        .accessibilityIdentifier("add-account-server")
                 } header: {
                     Text(Copy.addAccount)
                         .font(.appTitle)

@@ -408,6 +408,32 @@ extension AccountSession {
         await media.downloads?.cancel(attachmentID: attachmentID)
     }
 
+    /// A message from history shows in its chat: its files come as a live message's do, from
+    /// roster contacts and joined rooms, below the size limit. Only live messages fetched them,
+    /// so a picture that arrived while the app was away stayed a file to click.
+    public func fetchShownAttachments(messageID: Int64) async {
+        guard let message = try? database.message(id: messageID), message.accountID == accountID,
+            message.direction == .incoming, let chat = try? database.chat(id: message.chatID),
+            let chatID = chat.id
+        else { return }
+        if chat.kind == .room || chat.kind == .channel, await roomState(chatID) != .joined {
+            shownBeforeJoin[chatID, default: []].insert(messageID)
+            return
+        }
+        await fetchAttachments(messageID: messageID, chat: chat, sender: message.senderJID)
+    }
+
+    /// The room is joined: the files of its messages shown before come now.
+    func fetchShownBeforeJoin(chatID: Int64) async {
+        guard let shown = shownBeforeJoin.removeValue(forKey: chatID),
+            let chat = try? database.chat(id: chatID)
+        else { return }
+        for messageID in shown.sorted() {
+            let sender = (try? database.message(id: messageID))?.senderJID
+            await fetchAttachments(messageID: messageID, chat: chat, sender: sender)
+        }
+    }
+
     /// A live message with files was stored: they come automatically from roster contacts
     /// and joined rooms (spec 11), below the size limit.
     func fetchAttachments(messageID: Int64, chat: ChatRecord, sender: String?) async {

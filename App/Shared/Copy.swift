@@ -6,6 +6,20 @@ import XippiSession
 /// terse, sentence case, no trailing full stop on labels, never narrates, no em or en dash.
 enum Copy {
     static let appName = "Xippi"
+    static let aboutApp = String(localized: "About Xippi")
+    static func aboutVersion(_ version: String, build: String) -> String {
+        String(localized: "Version \(version) (\(build))")
+    }
+    static let aboutLicence = String(
+        localized: """
+            Free software under the GNU General Public License, version 3, with a permission \
+            for app stores.
+            """)
+    static let sourceCode = String(localized: "Source code")
+    static let license = String(localized: "License")
+    static let privacy = String(localized: "Privacy")
+    static let terms = String(localized: "Terms")
+    static let acknowledgements = String(localized: "Acknowledgements")
 
     // MARK: Startup
 
@@ -115,8 +129,16 @@ enum Copy {
     static let editMessage = String(localized: "Edit message")
     static let messageField = String(localized: "Message")
 
-    static func messagePlaceholder(_ name: String) -> String {
-        String(localized: "Message \(name)")
+    static func messagePlaceholder(_ name: String, as identity: String? = nil) -> String {
+        guard let identity else { return String(localized: "Message \(name)") }
+        return String(localized: "Message \(name) \(identity)")
+    }
+
+    /// Who the account is in a chat: "as alice@example.org", or in a room "as alice ·
+    /// alice@example.org".
+    static func chattingAs(account: String, nick: String?) -> String {
+        guard let nick, !nick.isEmpty else { return String(localized: "as \(account)") }
+        return String(localized: "as \(nick) · \(account)")
     }
 
     static func replyTo(_ name: String) -> String {
@@ -183,6 +205,20 @@ enum Copy {
     // MARK: Settings
 
     static let settings = String(localized: "Settings")
+    static let closeChat = String(localized: "Close")
+    static let changePicture = String(localized: "Change picture")
+    static let someone = String(localized: "Someone")
+
+    /// The title of the list of who reacted.
+    static func reactionCount(_ count: Int) -> String {
+        count == 1
+            ? String(localized: "1 reaction") : String(localized: "\(count) reactions")
+    }
+    /// The tab of the list that shows every reaction.
+    static func reactionsAll(_ count: Int) -> String {
+        String(localized: "All \(count)")
+    }
+    static let clickToRemove = String(localized: "Click to remove")
     static let tabAccounts = String(localized: "Accounts")
     static let tabGeneral = String(localized: "General")
     static let tabNotifications = String(localized: "Notifications")
@@ -233,7 +269,18 @@ enum Copy {
     static let notifyAll = String(localized: "All messages")
     static let notifyMentions = String(localized: "Mentions and keywords")
     static let notifyNone = String(localized: "Nothing")
+    static let notifyAllShort = String(localized: "All")
+    static let notifyMentionsShort = String(localized: "Mentions")
+    static let notifyNoneShort = String(localized: "None")
+    static let inspectorInfo = String(localized: "Info")
+    static let inspectorBackground = String(localized: "Background")
+    static let inspectorMedia = String(localized: "Media")
+    static let inspectorWidth = String(localized: "Inspector width")
+    static let backgroundConfetti = String(localized: "Confetti")
+    static let backgroundPlain = String(localized: "Plain")
     static let unknownSenders = String(localized: "Notify for unknown senders")
+    static let notificationsOff = String(localized: "Notifications are off")
+    static let notificationSettings = String(localized: "Notification settings")
     static let keywords = String(localized: "Keywords")
     static let keywordPrompt = String(localized: "New keyword")
     static let addKeyword = String(localized: "Add keyword")
@@ -261,6 +308,11 @@ enum Copy {
     }
 
     static let publicSTUN = String(localized: "Use public STUN server")
+    static let publicSTUNHint = String(
+        localized: """
+            Calls use the STUN and TURN servers your server offers. This adds Google's, for a \
+            server that offers none. Google then sees your IP address on every call.
+            """)
     static let advancedFeatures = String(localized: "Show advanced XMPP features")
 
     // MARK: Calls
@@ -382,6 +434,8 @@ enum Copy {
     static let back = String(localized: "Back")
     static let createAccount = String(localized: "Create account")
     static let domain = String(localized: "Domain")
+    static let provider = String(localized: "Provider")
+    static let otherProvider = String(localized: "Other")
     static let domainPrompt = "example.org"
     static let inviteLink = String(localized: "Invite link")
     static let optional = String(localized: "Optional")

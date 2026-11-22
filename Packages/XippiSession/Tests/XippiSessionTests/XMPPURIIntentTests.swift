@@ -249,13 +249,14 @@ struct XMPPURIIntentTests {
                 chats: chats, lastUsed: 1) == .ask([1, 2], preselected: 2))
     }
 
-    /// Opening a chat only one account has needs no question.
-    @Test func existingChatOfOneAccountOpensDirectly() throws {
+    /// With several accounts every link asks, a chat only one account has included: acting as
+    /// the wrong account tells the other side who is behind it. That account comes first.
+    @Test func existingChatOfOneAccountStillAsks() throws {
         let chats = [chat(account: 2, jid: "romeo@montague.net", active: 20)]
         #expect(
             try choice(
                 "xmpp:romeo@montague.net", accounts: [account(1), account(2)], chats: chats,
-                lastUsed: 1) == .use(2))
+                lastUsed: 1) == .ask([1, 2], preselected: 2))
         // Joining still asks: the sheet is the confirmation.
         #expect(
             try choice(

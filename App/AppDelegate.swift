@@ -14,6 +14,10 @@ import XippiSession
 
     static let quitLimit: Duration = .seconds(2)
 
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        SidebarShortcut.removeFromMenus()
+    }
+
     /// `xmpp:` links from the browser or another app (the app's URL type).
     func application(_ application: NSApplication, open urls: [URL]) {
         for url in urls { Self.links?.open(url) }
