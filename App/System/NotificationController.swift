@@ -38,6 +38,10 @@ import os
     /// The most notifications remembered for taking back; older ones stay where they are.
     static let deliveredLimit = 500
 
+    /// What the app asks the system for. Without the badge, macOS keeps "Badge application
+    /// icon" off and the Dock never shows the unread count the app sets.
+    static let authorization: UNAuthorizationOptions = [.alert, .sound, .badge]
+
     enum Category {
         static let message = "message"
         static let audioCall = "call-audio"
@@ -79,7 +83,7 @@ import os
             tasks.append(
                 Task { [center] in
                     do {
-                        if try await !center.requestAuthorization(options: [.alert, .sound]) {
+                        if try await !center.requestAuthorization(options: Self.authorization) {
                             appLog.notice("Notifications not authorised")
                         }
                     } catch {

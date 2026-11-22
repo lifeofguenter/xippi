@@ -152,6 +152,13 @@ import UserNotifications
         #expect(url.hasSuffix("?id=eu.xippi.Xippi"))
     }
 
+    /// The app asks for the badge with alerts and sounds: asked for only those two, macOS kept
+    /// "Badge application icon" off and the Dock showed no unread count.
+    @Test func theAppAsksToBadgeItsIcon() {
+        #expect(NotificationController.authorization.contains(.badge))
+        #expect(NotificationController.authorization.isSuperset(of: [.alert, .sound]))
+    }
+
     /// About says what the app is licensed under, where its source is, links the site's
     /// privacy and terms pages, and carries the notices the shipped libraries' licenses require
     /// in the app, with the owner's copyright. Nothing about what the App Store price pays for.

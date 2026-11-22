@@ -63,7 +63,9 @@ import XippiStore
     }
 
     /// The main window as it is drawn, in `appearance` when one is given, once it has stopped
-    /// changing. `shown` picks it by its title, which an open chat changes.
+    /// changing. `shown` picks it by its title, which an open chat changes. The appearance is
+    /// chosen as in Settings: set on the window itself, behind SwiftUI, it turned only the
+    /// sidebar dark on a light Mac (CI's) and left the chat side blank white.
     static func captureMainWindow(
         _ appearance: NSAppearance.Name? = nil,
         where shown: (NSWindow) -> Bool = { $0.title == Copy.appName }
@@ -77,17 +79,16 @@ import XippiStore
         let main = try #require(window, "the main window")
         // The test host has no account: its add-account overlay dims the window.
         DebugSnapshot.model?.onboarding = nil
-        let previous = main.appearance
-        defer { main.appearance = previous }
-        if let appearance { main.appearance = NSAppearance(named: appearance) }
+        let settings = try #require(DebugSnapshot.settings)
+        let previous = settings.appearance
+        defer { settings.appearance = previous }
+        if let appearance { settings.appearance = appearance == .darkAqua ? .dark : .light }
         main.orderFront(nil)
         return try await settled(main)
     }
 
-    /// The window once two captures 300 ms apart match, attached to the test. A change of appearance or of the open
-    /// chat took longer than the fixed 800 ms wait to redraw on a loaded machine (CI's three
-    /// cores), and the test after one that switched to dark measured the switch. Gives up after
-    /// 8 seconds with the last capture.
+    /// The window once two captures 300 ms apart match, attached to the test, so a failure on
+    /// CI shows what it measured. Gives up after 8 seconds with the last capture.
     static func settled(_ window: NSWindow) async throws -> CGImage {
         try await Task.sleep(for: .milliseconds(800))
         var last = try await SettingsLookTests.capture(window)
@@ -142,6 +143,24 @@ import XippiStore
             }
         }
         return (0..<3).map { high[$0] - low[$0] }.max() ?? 0
+    }
+
+    /// Light or Dark chosen in Settings reaches the whole window, the chat side as well as the
+    /// sidebar. Asked for the look the Mac is not in, since choosing the one it is in changes
+    /// nothing. Measured on the empty list and on the chat side, clear of their placeholders.
+    @Test func theChosenLookReachesTheWholeWindow() async throws {
+        // Dark on a light Mac, light on a dark one.
+        let dark = NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .aqua
+        let image = try await Self.captureMainWindow(dark ? .darkAqua : .aqua)
+        let points = [
+            (20, Int(Double(image.height) * 0.3)),
+            (image.width * 7 / 8, Int(Double(image.height) * 0.3)),
+        ]
+        for (x, y) in points {
+            let colour = SettingsLookTests.colour(image, x: x, y: y)
+            let fits = dark ? (colour.max() ?? 255) < 100 : (colour.min() ?? 0) > 180
+            #expect(fits, "\(colour) at \(x), \(y) in \(dark ? "dark" : "light")")
+        }
     }
 
     /// The sidebar shows the chat's background from the top of the window to the bottom: the
