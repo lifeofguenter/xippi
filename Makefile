@@ -63,8 +63,10 @@ build-tests: ## Build the app and its UI tests without running them
 	$(XCODEBUILD) build-for-testing
 
 .PHONY: test-app
-test-app: ## App unit tests, hosted by the app on an empty database in memory
-	$(XCODEBUILD) test -only-testing:XippiTests
+test-app: ## App unit tests, hosted by the app on an empty database in memory: results in test-results/
+	rm -rf test-results/XippiTests.xcresult
+	mkdir -p test-results
+	$(XCODEBUILD) test -only-testing:XippiTests -resultBundlePath test-results/XippiTests.xcresult
 
 .PHONY: test-ui
 test-ui: ## UI tests

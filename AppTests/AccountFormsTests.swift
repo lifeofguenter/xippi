@@ -77,24 +77,4 @@ import XMPPCore
         #expect(Copy.accountNotDeleted(.refused(refusal)) == "Refused: not allowed")
     }
 
-    /// The sidebar has no "..." menu beside the accounts: it held only Settings, which the app
-    /// menu has. Where its round button sat, at the footer's right end, the footer is plain.
-    @Test func theSidebarHasNoMoreMenu() async throws {
-        let image = try await BackgroundLookTests.captureMainWindow(.darkAqua)
-        let window = try #require(
-            NSApp.windows.filter { $0.isVisible && $0.title == Copy.appName }
-                .max { $0.frame.width < $1.frame.width })
-        func splitViews(_ view: NSView) -> [NSSplitView] {
-            (view as? NSSplitView).map { [$0] } ?? view.subviews.flatMap(splitViews)
-        }
-        let split = try #require(window.contentView.map(splitViews)?.first)
-        let sidebar = try #require(split.arrangedSubviews.first)
-        let scale = CGFloat(image.width) / window.frame.width
-        let right = Int((sidebar.frame.maxX - 8) * scale)
-        let left = Int((sidebar.frame.maxX - 48) * scale)
-        let spread = BackgroundLookTests.spread(
-            image, x: left..<right,
-            y: (image.height - Int(52 * scale))..<(image.height - Int(8 * scale)))
-        #expect(spread <= 12, "colours at the footer's right end differ by up to \(spread)")
-    }
 }

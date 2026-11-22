@@ -1,5 +1,6 @@
 import AppKit
 import Testing
+import XippiStore
 
 @testable import Xippi
 
@@ -61,11 +62,15 @@ import Testing
         #expect(visible, "the pattern still shows")
     }
 
-    /// The main window as it is drawn, in `appearance` when one is given.
-    static func captureMainWindow(_ appearance: NSAppearance.Name? = nil) async throws -> CGImage {
+    /// The main window as it is drawn, in `appearance` when one is given, once it has stopped
+    /// changing. `shown` picks it by its title, which an open chat changes.
+    static func captureMainWindow(
+        _ appearance: NSAppearance.Name? = nil,
+        where shown: (NSWindow) -> Bool = { $0.title == Copy.appName }
+    ) async throws -> CGImage {
         var window: NSWindow?
         for _ in 0..<50 where window == nil {
-            window = NSApp.windows.filter { $0.isVisible && $0.title == Copy.appName }
+            window = NSApp.windows.filter { $0.isVisible && shown($0) }
                 .max { $0.frame.width < $1.frame.width }
             if window == nil { try await Task.sleep(for: .milliseconds(100)) }
         }
@@ -76,8 +81,47 @@ import Testing
         defer { main.appearance = previous }
         if let appearance { main.appearance = NSAppearance(named: appearance) }
         main.orderFront(nil)
+        return try await settled(main)
+    }
+
+    /// The window once two captures 300 ms apart match, attached to the test. A change of appearance or of the open
+    /// chat took longer than the fixed 800 ms wait to redraw on a loaded machine (CI's three
+    /// cores), and the test after one that switched to dark measured the switch. Gives up after
+    /// 8 seconds with the last capture.
+    static func settled(_ window: NSWindow) async throws -> CGImage {
         try await Task.sleep(for: .milliseconds(800))
-        return try await SettingsLookTests.capture(main)
+        var last = try await SettingsLookTests.capture(window)
+        let deadline = ContinuousClock.now + .seconds(8)
+        while ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(300))
+            let next = try await SettingsLookTests.capture(window)
+            let changed = changedPoints(last, next)
+            last = next
+            if changed <= 40 { break }
+        }
+        // Kept with the test's results, to see what a failure on CI measured.
+        Attachment.record(last, named: "\(window.title).png")
+        return last
+    }
+
+    /// How many points of a grid over two captures of one window differ visibly. A blinking
+    /// caret changes a few.
+    static func changedPoints(_ a: CGImage, _ b: CGImage) -> Int {
+        guard a.width == b.width, a.height == b.height, a.bitsPerPixel == 32,
+            b.bitsPerPixel == 32, a.bytesPerRow == b.bytesPerRow,
+            let first = a.dataProvider?.data, let second = b.dataProvider?.data,
+            let x = CFDataGetBytePtr(first), let y = CFDataGetBytePtr(second)
+        else { return .max }
+        var changed = 0
+        for row in stride(from: 0, to: a.height, by: 6) {
+            for column in stride(from: 0, to: a.width, by: 6) {
+                let offset = row * a.bytesPerRow + column * 4
+                if (0..<3).contains(where: { abs(Int(x[offset + $0]) - Int(y[offset + $0])) > 6 }) {
+                    changed += 1
+                }
+            }
+        }
+        return changed
     }
 
     /// How far apart the colours in a rectangle are: the largest spread of any channel.
@@ -110,9 +154,16 @@ import Testing
         func near(_ a: [Int], _ b: [Int], _ tolerance: Int) -> Bool {
             zip(a, b).allSatisfy { abs($0 - $1) <= tolerance }
         }
-        // Down the sidebar's left edge: the title bar, the search, the list, the accounts.
-        let top = [0.04, 0.09].map {
-            SettingsLookTests.colour(image, x: 20, y: Int(Double(image.height) * $0))
+        let window = try #require(
+            NSApp.windows.filter { $0.isVisible && $0.title == Copy.appName }
+                .max { $0.frame.width < $1.frame.width })
+        let scale = CGFloat(image.width) / window.frame.width
+        // Down the sidebar's left edge: the title bar, the list, the accounts. The title bar
+        // is measured in points from the top, above and below the window's buttons: a share
+        // of the height met a button or the search field in a smaller window (CI's, which
+        // has none saved).
+        let top = [8.0, 44.0].map {
+            SettingsLookTests.colour(image, x: 20, y: Int($0 * scale))
         }
         let middle = [0.3, 0.5, 0.7].map {
             SettingsLookTests.colour(image, x: 20, y: Int(Double(image.height) * $0))
@@ -161,5 +212,64 @@ import Testing
         #expect(
             zip(underToolbar, below).allSatisfy { abs($0 - $1) <= 2 },
             "under the toolbar \(underToolbar), below it \(below)")
+    }
+
+    /// The sidebar has no "..." menu beside the accounts: it held only Settings, which the app
+    /// menu has. Where its round button sat, at the footer's right end, the footer is plain.
+    @Test func theSidebarHasNoMoreMenu() async throws {
+        let image = try await Self.captureMainWindow(.darkAqua)
+        let window = try #require(
+            NSApp.windows.filter { $0.isVisible && $0.title == Copy.appName }
+                .max { $0.frame.width < $1.frame.width })
+        func splitViews(_ view: NSView) -> [NSSplitView] {
+            (view as? NSSplitView).map { [$0] } ?? view.subviews.flatMap(splitViews)
+        }
+        let split = try #require(window.contentView.map(splitViews)?.first)
+        let sidebar = try #require(split.arrangedSubviews.first)
+        let scale = CGFloat(image.width) / window.frame.width
+        let right = Int((sidebar.frame.maxX - 8) * scale)
+        let left = Int((sidebar.frame.maxX - 48) * scale)
+        let spread = Self.spread(
+            image, x: left..<right,
+            y: (image.height - Int(52 * scale))..<(image.height - Int(8 * scale)))
+        #expect(spread <= 12, "colours at the footer's right end differ by up to \(spread)")
+    }
+
+    /// The chat's picture sits in the middle of the title's glass: as far from its top as from
+    /// its bottom. The toolbar lays the glass out where a 36-point item's would start, so the
+    /// 44-point pill hung below its content: 4 points of glass over the picture, 12 under it.
+    @Test func theTitlesPictureSitsInTheMiddleOfItsGlass() async throws {
+        let name = "pill-\(UUID().uuidString.prefix(6))"
+        let (model, item) = try ChatMenuTests.room("\(name)@muc.example.org")
+        model.selection = item.id
+        defer { model.selection = nil }
+        // The open chat names the window.
+        let image = try await Self.captureMainWindow(.darkAqua) { $0.title.hasPrefix(name) }
+        let window = try #require(
+            NSApp.windows.first { $0.isVisible && $0.title.hasPrefix(name) })
+        let sizes = ControlHeight.Transcript.self
+        func platters(_ view: NSView) -> [NSView] {
+            let own = String(describing: type(of: view)) == "NSToolbarPlatterView" ? [view] : []
+            return own + view.subviews.flatMap(platters)
+        }
+        let glass = try #require(
+            window.contentView?.superview.map(platters)?.first {
+                abs($0.frame.height - sizes.titlePill) < 1
+            }, "the title's glass")
+        let frame = glass.convert(glass.bounds, to: nil)
+        let scale = CGFloat(image.width) / window.frame.width
+        let top = Int((window.frame.height - frame.maxY) * scale)
+        let bottom = Int((window.frame.height - frame.minY) * scale)
+        // Down the picture's left part, clear of its letter.
+        let x = Int((frame.minX + sizes.titleAvatarInset + sizes.titleAvatar * 0.22) * scale)
+        let rows = (top..<bottom).filter { y in
+            let colour = SettingsLookTests.colour(image, x: x, y: y)
+            return (colour.max() ?? 0) - (colour.min() ?? 0) > 50
+        }
+        let first = try #require(rows.first, "the picture in the glass")
+        let last = try #require(rows.last)
+        let above = CGFloat(first - top) / scale
+        let below = CGFloat(bottom - 1 - last) / scale
+        #expect(abs(above - below) <= 1.5, "\(above) points above the picture, \(below) below")
     }
 }

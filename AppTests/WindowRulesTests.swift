@@ -3,7 +3,6 @@ import CoreImage
 import Security
 import Testing
 import UserNotifications
-import XippiStore
 
 @testable import Xippi
 
@@ -137,50 +136,6 @@ import XippiStore
             + layout.defaultLineHeight(for: Typography.body())
         #expect(sizes.titleTextVerticalInset >= 4)
         #expect(lines + 2 * sizes.titleTextVerticalInset <= sizes.titlePill)
-    }
-
-    /// The chat's picture sits in the middle of the title's glass: as far from its top as from
-    /// its bottom. The toolbar lays the glass out where a 36-point item's would start, so the
-    /// 44-point pill hung below its content: 4 points of glass over the picture, 12 under it.
-    @Test func theTitlesPictureSitsInTheMiddleOfItsGlass() async throws {
-        let (model, item) = try ChatMenuTests.room(
-            "pill-\(UUID().uuidString.prefix(6))@muc.example.org")
-        model.selection = item.id
-        defer { model.selection = nil }
-        // The window takes the chat's name as its title.
-        let window = try #require(
-            NSApp.windows.filter { $0.isVisible }.max { $0.frame.width < $1.frame.width })
-        model.onboarding = nil
-        let previous = window.appearance
-        defer { window.appearance = previous }
-        window.appearance = NSAppearance(named: .darkAqua)
-        window.orderFront(nil)
-        try await Task.sleep(for: .milliseconds(900))
-        let image = try await SettingsLookTests.capture(window)
-        let sizes = ControlHeight.Transcript.self
-        func platters(_ view: NSView) -> [NSView] {
-            let own = String(describing: type(of: view)) == "NSToolbarPlatterView" ? [view] : []
-            return own + view.subviews.flatMap(platters)
-        }
-        let glass = try #require(
-            window.contentView?.superview.map(platters)?.first {
-                abs($0.frame.height - sizes.titlePill) < 1
-            }, "the title's glass")
-        let frame = glass.convert(glass.bounds, to: nil)
-        let scale = CGFloat(image.width) / window.frame.width
-        let top = Int((window.frame.height - frame.maxY) * scale)
-        let bottom = Int((window.frame.height - frame.minY) * scale)
-        // Down the picture's left part, clear of its letter.
-        let x = Int((frame.minX + sizes.titleAvatarInset + sizes.titleAvatar * 0.22) * scale)
-        let rows = (top..<bottom).filter { y in
-            let colour = SettingsLookTests.colour(image, x: x, y: y)
-            return (colour.max() ?? 0) - (colour.min() ?? 0) > 50
-        }
-        let first = try #require(rows.first, "the picture in the glass")
-        let last = try #require(rows.last)
-        let above = CGFloat(first - top) / scale
-        let below = CGFloat(bottom - 1 - last) / scale
-        #expect(abs(above - below) <= 1.5, "\(above) points above the picture, \(below) below")
     }
 
     /// Notifications turned off in System Settings showed nothing, and nothing in the app said
