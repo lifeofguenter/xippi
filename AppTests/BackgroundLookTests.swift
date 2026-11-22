@@ -62,6 +62,16 @@ import XippiStore
         #expect(visible, "the pattern still shows")
     }
 
+    /// Not in a virtual machine. CI's runner is one: there the window's title bar captures
+    /// black (`[0, 0, 0]` above a list of `[33, 31, 36]`), and RenderBox, which draws its
+    /// glass, finds no shaders for the virtual graphics card ("unable to find air64_v27
+    /// slice"). Tests that measure the title bar run on a real Mac only.
+    nonisolated static let drawsTheTitleBar: Bool = {
+        var present: Int32 = 0
+        var size = MemoryLayout<Int32>.size
+        return sysctlbyname("kern.hv_vmm_present", &present, &size, nil, 0) != 0 || present == 0
+    }()
+
     /// The main window as it is drawn, in `appearance` when one is given, once it has stopped
     /// changing. `shown` picks it by its title, which an open chat changes. The appearance is
     /// chosen as in Settings: set on the window itself, behind SwiftUI, it turned only the
@@ -168,7 +178,8 @@ import XippiStore
     /// bars drew their own grey over it), and not the window's plain background. Colours are
     /// compared with each other: the test host's window is never the active one, which tints
     /// a sidebar slightly.
-    @Test func theBackgroundFillsTheSidebar() async throws {
+    @Test(.enabled(if: Self.drawsTheTitleBar, "a virtual machine draws the title bar black"))
+    func theBackgroundFillsTheSidebar() async throws {
         let image = try await Self.captureMainWindow()
         func near(_ a: [Int], _ b: [Int], _ tolerance: Int) -> Bool {
             zip(a, b).allSatisfy { abs($0 - $1) <= tolerance }
@@ -214,7 +225,8 @@ import XippiStore
     /// Its background lay lighter across the chat and the inspector, and Messages has none.
     /// Measured just right of the sidebar, clear of the title in the middle of the bar: a
     /// fixed share of the window's width met the title in a wide window.
-    @Test func noBandRunsUnderTheToolbar() async throws {
+    @Test(.enabled(if: Self.drawsTheTitleBar, "a virtual machine draws the title bar black"))
+    func noBandRunsUnderTheToolbar() async throws {
         let image = try await Self.captureMainWindow(.darkAqua)
         let window = try #require(
             NSApp.windows.filter { $0.isVisible && $0.title == Copy.appName }
@@ -257,7 +269,8 @@ import XippiStore
     /// The chat's picture sits in the middle of the title's glass: as far from its top as from
     /// its bottom. The toolbar lays the glass out where a 36-point item's would start, so the
     /// 44-point pill hung below its content: 4 points of glass over the picture, 12 under it.
-    @Test func theTitlesPictureSitsInTheMiddleOfItsGlass() async throws {
+    @Test(.enabled(if: Self.drawsTheTitleBar, "a virtual machine draws the title bar black"))
+    func theTitlesPictureSitsInTheMiddleOfItsGlass() async throws {
         let name = "pill-\(UUID().uuidString.prefix(6))"
         let (model, item) = try ChatMenuTests.room("\(name)@muc.example.org")
         model.selection = item.id
