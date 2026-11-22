@@ -4,9 +4,11 @@ import ImageIO
 
 /// Preparing an image as an avatar (ruling R36): small enough to publish on any server.
 extension Avatars {
-    /// The largest avatar published: 96 KiB. Base64 makes it 128 KiB, which fits the 256 KiB
-    /// stanza limit of Prosody's and ejabberd's defaults with room to spare.
-    public static let maxPublishBytes = 98_304
+    /// The largest avatar published: 20 KiB. Base64 makes it about 27 KiB to send: about 3
+    /// seconds at the 10,240 bytes a second Prosody reads from a client unless set otherwise,
+    /// and about 9 on a server set to 3,000, a third of the request timeout. On xippi.eu, set
+    /// to 3,000 at the time, 96 KiB took about 40 and timed out.
+    public static let maxPublishBytes = 20_480
     /// The longest side of a published avatar, in pixels.
     public static let maxPublishSide = 256
 
@@ -21,15 +23,18 @@ extension Avatars {
         public let sha1: String
     }
 
-    /// The longest sides tried, largest first, until the PNG fits `maxPublishBytes`.
-    static let publishSides = [256, 192, 128, 96, 64]
+    /// The longest sides tried, largest first, until the PNG fits `maxPublishBytes`. Close
+    /// together, so a picture keeps the most pixels that fit: most photos fit at 144 or 160 in
+    /// 256 colours.
+    static let publishSides = [256, 224, 192, 160, 144, 128, 112, 96, 80, 64]
 
     /// `imageData` (any format ImageIO reads) encoded again as a PNG avatar (ruling R37:
     /// XEP-0084 4.1 keeps the data node to PNG):
     /// - scaled down to fit `maxPublishSide` on its longest side, never up, and turned upright
     ///   as its orientation says;
-    /// - made smaller still (192, 128, 96, then 64 pixels) until the PNG fits
-    ///   `maxPublishBytes`. `.tooLarge` when even 64 pixels does not fit.
+    /// - at each step down `publishSides`, in full colour when that fits `maxPublishBytes`,
+    ///   else, when it is opaque, in 256 colours (`AvatarPalette`) when that fits.
+    ///   `.tooLarge` when neither fits at 64 pixels.
     ///
     /// Nothing of the original file's metadata (location, camera) is carried over.
     public static func prepareForPublishing(imageData: Data) throws(AvatarError) -> Prepared {
@@ -43,6 +48,7 @@ extension Avatars {
         guard let source = CGImageSourceCreateWithData(imageData as CFData, nil),
             CGImageSourceGetCount(source) > 0
         else { throw .unreadableImage }
+        var palette: AvatarPalette?
         for side in publishSides {
             let options: [CFString: Any] = [
                 kCGImageSourceCreateThumbnailFromImageAlways: true,
@@ -59,6 +65,17 @@ extension Avatars {
                 return Prepared(
                     data: png, type: "image/png", width: image.width, height: image.height,
                     sha1: sha1(png))
+            }
+            // The palette comes from the largest picture and serves every smaller one.
+            guard let pixels = opaquePixels(of: image) else { continue }
+            let colors = palette ?? AvatarPalette(pixels: pixels)
+            palette = colors
+            if let fewer = palettePNG(pixels: pixels, width: image.width, palette: colors),
+                fewer.count <= maxBytes
+            {
+                return Prepared(
+                    data: fewer, type: "image/png", width: image.width, height: image.height,
+                    sha1: sha1(fewer))
             }
         }
         throw .tooLarge

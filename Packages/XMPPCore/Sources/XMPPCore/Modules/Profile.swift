@@ -57,7 +57,7 @@ public struct Profile: Sendable, Hashable {
     }
 
     /// Whether the profile can be published: a new embedded photo must fit
-    /// `Avatars.maxPublishBytes` (ruling R36), or the stanza would exceed the server's limit.
+    /// `Avatars.maxPublishBytes` (ruling R36), or it would take too long to send.
     /// A photo the source vCard already had (read back by `read`) is kept as it was.
     func photoFits(readingSourceWith read: (Element) -> Profile?) -> Bool {
         guard case .data(let data, _) = avatar, data.count > Avatars.maxPublishBytes else {

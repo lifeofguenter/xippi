@@ -67,6 +67,15 @@ class GuardTests(unittest.TestCase):
         path.write_bytes(plistlib.dumps(values))
         return path
 
+    def test_no_build_without_an_encryption_answer(self):
+        problem = release.compliance_problem(self.plist({}))
+        self.assertIn("no ITSAppUsesNonExemptEncryption", problem)
+
+    def test_no_documents_needed_ships(self):
+        self.assertIsNone(
+            release.compliance_problem(self.plist({"ITSAppUsesNonExemptEncryption": False}))
+        )
+
     def test_no_build_without_the_export_compliance_code(self):
         problem = release.compliance_problem(self.plist({"ITSAppUsesNonExemptEncryption": True}))
         self.assertIn("ITSEncryptionExportComplianceCode", problem)

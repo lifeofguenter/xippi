@@ -7,6 +7,7 @@ require "base64"
 require "json"
 require "securerandom"
 require "tmpdir"
+require_relative "store_setup"
 
 default_platform(:mac)
 skip_docs
@@ -46,6 +47,13 @@ platform :mac do
       issuer_id: env!("ASC_ISSUER_ID"),
       key_content: env!("ASC_KEY_P8"),
       is_key_content_base64: true
+    )
+    app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
+    app = Spaceship::ConnectAPI::App.find(app_identifier)
+    UI.user_error!("No app #{app_identifier} in App Store Connect: create it first") unless app
+    StoreSetup.prepare(
+      app, Spaceship::ConnectAPI.client.tunes_request_client,
+      ->(outcome, text) { outcome == :done ? UI.success(text) : UI.important(text) }
     )
 
     # The two certificates and the profile, from secrets, in a keychain of the run's own.
@@ -127,7 +135,8 @@ platform :mac do
 
     next if prerelease
 
-    # Store text, screenshots and "What's New" (not on a first version), then App Review.
+    # Store text, screenshots, age rating and "What's New" (not on a first version), then
+    # App Review.
     deliver(
       api_key: api_key,
       platform: "osx",
@@ -137,6 +146,7 @@ platform :mac do
       metadata_path: File.join(ROOT, "fastlane", "metadata"),
       screenshots_path: File.join(ROOT, "fastlane", "screenshots"),
       overwrite_screenshots: true,
+      app_rating_config_path: File.join(ROOT, "fastlane", "age_rating.json"),
       app_review_information: {
         first_name: env!("REVIEW_FIRST_NAME"),
         last_name: env!("REVIEW_LAST_NAME"),
@@ -144,6 +154,8 @@ platform :mac do
         demo_user: env!("REVIEW_DEMO_USER"),
         demo_password: env!("REVIEW_DEMO_PASSWORD")
       },
+      # Other people's messages, pictures and links: third-party content.
+      submission_information: { content_rights_contains_third_party_content: true },
       precheck_include_in_app_purchases: false,
       submit_for_review: true,
       automatic_release: true,

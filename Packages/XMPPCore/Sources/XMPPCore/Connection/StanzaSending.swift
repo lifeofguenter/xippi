@@ -10,7 +10,8 @@ public protocol StanzaSending: Sendable {
     /// Sends an IQ `get` or `set` (an `id` is added when it has none) and returns the `result`
     /// that answers it, from the entity it was sent to.
     ///
-    /// Throws `.error` with the stanza error of an `error` answer, `.timeout` after `timeout`,
+    /// Throws `.error` with the stanza error of an `error` answer, `.timeout` after `timeout`
+    /// (and a second more per 1,000 bytes of the request, while a slow server reads it),
     /// `.sessionEnded` as soon as the session ends with the request open, and `.notConnected`
     /// when no session is online. A request longer than the server takes (XEP-0478, R81) is
     /// not sent: `.error` with `policy-violation` and the text "Too long to send", the answer

@@ -94,6 +94,7 @@ lint: ## swift format in strict mode, no fixed toolbar ids, and the App Store te
 .PHONY: test-scripts
 test-scripts: ## Tests of the release, App Store text and screenshot scripts
 	python3 -m unittest discover -s scripts/tests
+	ruby fastlane/test/store_setup_test.rb
 
 .PHONY: screenshots
 screenshots: ## App Store screenshots into fastlane/screenshots/en-US (2 min; the app opens and takes the keyboard 6 times: hands off)

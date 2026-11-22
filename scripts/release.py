@@ -98,17 +98,23 @@ def on_branch(commit: str, branch: str, cwd: pathlib.Path = ROOT) -> bool:
 
 
 def compliance_problem(plist: pathlib.Path) -> str | None:
-    """Why the app cannot ship yet, as far as export compliance goes; None when it can."""
+    """Why a build would wait for export compliance answers in App Store Connect; None when
+    it would not."""
     values = plistlib.loads(plist.read_bytes())
-    if values.get("ITSAppUsesNonExemptEncryption") and not values.get(
-        "ITSEncryptionExportComplianceCode"
-    ):
+    where = plist.relative_to(ROOT) if plist.is_relative_to(ROOT) else plist
+    uses = values.get("ITSAppUsesNonExemptEncryption")
+    if uses is None:
         return (
-            f"{plist.relative_to(ROOT) if plist.is_relative_to(ROOT) else plist}: no "
-            "ITSEncryptionExportComplianceCode. Apple has to approve the encryption "
-            "documentation first (App Store Connect > the app > App Encryption "
-            "Documentation); until its code is here, testers cannot install a build and "
-            "App Review refuses it."
+            f"{where}: no ITSAppUsesNonExemptEncryption. Without it every build waits for the "
+            "export compliance questions in App Store Connect."
+        )
+    if uses and not values.get("ITSEncryptionExportComplianceCode"):
+        return (
+            f"{where}: ITSAppUsesNonExemptEncryption is YES without an "
+            "ITSEncryptionExportComplianceCode, so every build stops at Missing Compliance. "
+            "Add the code Apple gives when it approves the encryption documentation, or set "
+            "the key to NO if no documents are needed (standard algorithms only, not sold in "
+            "France)."
         )
     return None
 

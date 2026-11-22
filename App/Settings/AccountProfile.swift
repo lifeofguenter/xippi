@@ -28,6 +28,9 @@ struct AccountProfilePane: View {
     @State private var choosing = false
     @State private var crop: PictureToCrop?
     @State private var busy = false
+    /// The picture on its way to the server: shown with a progress bar until it is there or
+    /// failed.
+    @State private var uploading: NSImage?
     @State private var error: String?
 
     var body: some View {
@@ -36,8 +39,8 @@ struct AccountProfilePane: View {
             Section(Copy.picture) {
                 HStack(spacing: 16) {
                     Group {
-                        if let avatar {
-                            Image(nsImage: avatar)
+                        if let shown = uploading ?? avatar {
+                            Image(nsImage: shown)
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 72, height: 72)
@@ -49,18 +52,26 @@ struct AccountProfilePane: View {
                         }
                     }
                     .accessibilityHidden(true)
-                    VStack(alignment: .leading, spacing: 8) {
-                        Button(Copy.choosePicture) { choosing = true }
-                            .accessibilityIdentifier("choose-picture")
-                        Button(role: .destructive, action: removePicture) {
-                            Text(Copy.removePicture)
-                                .foregroundStyle(.red)
+                    if uploading != nil {
+                        // The server's answer is the only sign of how far it is: no percentage.
+                        ProgressView(Copy.uploading(nil))
+                            .progressViewStyle(.linear)
+                            .frame(maxWidth: 180)
+                            .accessibilityIdentifier("picture-uploading")
+                    } else {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Button(Copy.choosePicture) { choosing = true }
+                                .accessibilityIdentifier("choose-picture")
+                            Button(role: .destructive, action: removePicture) {
+                                Text(Copy.removePicture)
+                                    .foregroundStyle(.red)
+                            }
+                            .disabled(avatar == nil)
+                            .accessibilityIdentifier("remove-picture")
                         }
-                        .disabled(avatar == nil)
-                        .accessibilityIdentifier("remove-picture")
+                        .pointerStyle(.link)
+                        .disabled(!online || busy || chosenVisibility == nil)
                     }
-                    .pointerStyle(.link)
-                    .disabled(!online || busy || chosenVisibility == nil)
                 }
             }
             Section(Copy.paneProfile) {
@@ -135,7 +146,7 @@ struct AccountProfilePane: View {
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
-                    if busy {
+                    if busy, uploading == nil {
                         ProgressView()
                             .controlSize(.small)
                     }
@@ -229,12 +240,17 @@ struct AccountProfilePane: View {
 
     private func publish(_ png: Data) {
         crop = nil
-        guard let id = account.id, let visibility = chosenVisibility else { return }
+        guard let id = account.id, let visibility = chosenVisibility, !busy else { return }
+        let picture = NSImage(data: png)
+        uploading = picture
         run(id) { session throws(SessionError) in
             try await session.publishAvatar(imageData: png, visibility: visibility)
+            // Until the stored copy replaces it, so the old picture does not flash back.
+            avatar = picture
         } failure: {
             Copy.pictureNotPublished($0)
         } then: {
+            uploading = nil
             await readAudience()
         }
     }

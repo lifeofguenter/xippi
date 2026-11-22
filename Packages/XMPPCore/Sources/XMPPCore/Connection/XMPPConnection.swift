@@ -369,6 +369,14 @@ public actor XMPPConnection: StanzaSending {
         sm.willSend(stanza)
     }
 
+    /// How slowly a server may read a request: 1,000 bytes a second. Prosody reads 10,240 by
+    /// default, and some servers set 3,000.
+    static let slowestRead = 1_000
+
+    /// The time a request of `bytes` gets on top of its timeout, while the server may still be
+    /// reading it: a second per `slowestRead` bytes, none below.
+    static func readingTime(bytes: Int) -> Duration { .seconds(bytes / slowestRead) }
+
     public func request(_ iq: Element, timeout: Duration) async throws(IQError) -> Element {
         guard iq.name == "iq",
             iq.type == IQType.get.rawValue || iq.type == IQType.set.rawValue
@@ -392,7 +400,7 @@ public actor XMPPConnection: StanzaSending {
         let outcome = await withCheckedContinuation {
             (waiter: CheckedContinuation<Result<Element, IQError>, Never>) in
             _ = requests.register(id: id, to: to, waiter: waiter)
-            arm(.request(id), after: timeout)
+            arm(.request(id), after: timeout + Self.readingTime(bytes: data.count))
             sm.willSend(outgoing)
             write(outgoing, data: data, acknowledgeOnWrite: !sm.isEnabled)
             requestAck()
