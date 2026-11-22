@@ -1,4 +1,5 @@
 import SwiftUI
+import XMPPCore
 import XippiSession
 import XippiStore
 
@@ -67,6 +68,8 @@ struct AccountsSettings: View {
                     Task { await model.removeAccount(account) }
                 },
                 onCancel: { self.sheet = nil })
+        case .delete(let account):
+            DeleteAccountSheet(model: model, account: account) { self.sheet = nil }
         case .password(let account):
             ChangePasswordSheet(model: model, account: account) { self.sheet = nil }
         case .enterPassword(let account):
@@ -83,31 +86,50 @@ private struct AccountList: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            List(selection: $selection) {
-                ForEach(model.accounts, id: \.jid) { account in
-                    let status = model.status(of: account)
-                    HStack(spacing: 10) {
-                        StatusDot(status: status)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(account.jid)
-                                .font(.appEmphasized)
-                                .lineLimit(1)
-                                .truncationMode(.middle)
-                            Text(Copy.statusLine(status))
-                                .foregroundStyle(.secondary)
-                                .lineLimit(1)
+            // A scroll view of rows rather than a List: the List's own band showed under the
+            // window's title and tabs in a lighter grey.
+            ScrollView {
+                LazyVStack(spacing: 2) {
+                    ForEach(model.accounts, id: \.jid) { account in
+                        let status = model.status(of: account)
+                        let selected = selection == account.jid
+                        Button {
+                            selection = account.jid
+                        } label: {
+                            HStack(spacing: 10) {
+                                OwnAvatar(model: model, account: account)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(account.jid)
+                                        .font(.appEmphasized)
+                                        .lineLimit(1)
+                                        .truncationMode(.middle)
+                                    Text(Copy.statusLine(status))
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(1)
+                                }
+                                Spacer(minLength: 0)
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background {
+                                if selected {
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(Color.primary.opacity(0.1))
+                                }
+                            }
+                            .contentShape(.rect)
                         }
+                        .buttonStyle(.plain)
+                        .pointerStyle(.link)
+                        .accessibilityElement(children: .combine)
+                        .accessibilityAddTraits(selected ? .isSelected : [])
+                        .accessibilityIdentifier("account-row:\(account.jid)")
                     }
-                    .padding(.vertical, 4)
-                    .contentShape(.rect)
-                    .pointerStyle(.link)
-                    .tag(account.jid)
-                    .accessibilityElement(children: .combine)
-                    .accessibilityIdentifier("account-row:\(account.jid)")
                 }
+                .padding(10)
             }
-            .listStyle(.inset)
             .font(.appBody)
+            .scrollEdgeEffectHidden(true, for: .top)
             Divider()
             Button(Copy.addAccount, action: add)
                 .controlSize(.large)
@@ -123,6 +145,7 @@ private struct AccountList: View {
 enum AccountSheet: Identifiable {
     case add
     case remove(AccountRecord)
+    case delete(AccountRecord)
     case password(AccountRecord)
     case enterPassword(AccountRecord)
 
@@ -130,6 +153,7 @@ enum AccountSheet: Identifiable {
         switch self {
         case .add: "add"
         case .remove(let account): "remove:\(account.jid)"
+        case .delete(let account): "delete:\(account.jid)"
         case .password(let account): "password:\(account.jid)"
         case .enterPassword(let account): "enter-password:\(account.jid)"
         }
@@ -168,6 +192,68 @@ struct RemoveAccountSheet: View {
         .padding(24)
         .frame(width: 420)
         .onExitCommand(perform: onCancel)
+    }
+}
+
+/// Asks before the account is deleted on its server, then deletes it there and here. Delete
+/// is red and never the default; Cancel is. The sheet stays open with the reason when the
+/// server did not delete it.
+struct DeleteAccountSheet: View {
+    let model: AppModel
+    let account: AccountRecord
+    let close: () -> Void
+    @State private var busy = false
+    @State private var error: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text(Copy.deleteAccountTitle(account.jid))
+                .font(.appTitle)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(Copy.deleteAccountDetail((try? JID(account.jid))?.domainpart ?? account.jid))
+                .fixedSize(horizontal: false, vertical: true)
+            if let error {
+                Text(error)
+                    .foregroundStyle(.red)
+                    .accessibilityIdentifier("delete-account-error")
+            }
+            HStack(spacing: 10) {
+                Spacer()
+                if busy {
+                    ProgressView()
+                        .controlSize(.small)
+                }
+                Button(role: .destructive, action: delete) {
+                    Text(Copy.delete)
+                        .foregroundStyle(.red)
+                }
+                .disabled(busy)
+                .accessibilityIdentifier("delete-account-confirm")
+                Button(Copy.cancel, action: close)
+                    .keyboardShortcut(.defaultAction)
+                    .disabled(busy)
+                    .accessibilityIdentifier("delete-account-cancel")
+            }
+            .controlSize(.large)
+            .pointerStyle(.link)
+        }
+        .font(.appBody)
+        .padding(24)
+        .frame(width: 420)
+        .onExitCommand { if !busy { close() } }
+    }
+
+    private func delete() {
+        busy = true
+        error = nil
+        Task {
+            if let failure = await model.deleteAccount(account) {
+                error = failure
+                busy = false
+            } else {
+                close()
+            }
+        }
     }
 }
 

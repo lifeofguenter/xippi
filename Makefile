@@ -6,7 +6,7 @@ PKG ?=
 FILTER ?=
 CONFIGURATION ?= Debug
 # Extra xcodebuild arguments, e.g. CODE_SIGNING_ALLOWED=NO on CI runners without a team.
-XCODEBUILD_FLAGS ?= -allowProvisioningUpdates
+XCODEBUILD_FLAGS ?= -allowProvisioningUpdates -allowProvisioningDeviceRegistration
 
 XCODEBUILD := xcodebuild -project Xippi.xcodeproj -scheme Xippi -configuration $(CONFIGURATION) -destination 'platform=macOS' $(XCODEBUILD_FLAGS)
 
@@ -62,6 +62,10 @@ test-integration-disruptive: ## Integration tests that restart the test servers 
 build-tests: ## Build the app and its UI tests without running them
 	$(XCODEBUILD) build-for-testing
 
+.PHONY: test-app
+test-app: ## App unit tests, hosted by the app on an empty database in memory
+	$(XCODEBUILD) test -only-testing:XippiTests
+
 .PHONY: test-ui
 test-ui: ## UI tests
 	$(XCODEBUILD) test -only-testing:XippiUITests
@@ -71,8 +75,18 @@ test-perf: ## UI performance tests in the Performance configuration (needs UI au
 	xcodebuild -project Xippi.xcodeproj -scheme "Xippi Performance" -destination 'platform=macOS' -allowProvisioningUpdates test
 
 .PHONY: lint
-lint: ## swift format in strict mode
-	swift format lint --strict -r Packages App AppUITests
+lint: ## swift format in strict mode, and no fixed toolbar ids
+	swift format lint --strict -r Packages App AppTests AppUITests
+	@# A fixed id is for a toolbar the user customises: SwiftUI moving items between the
+	@# toolbar's sections can add one before removing it, and AppKit stops the app.
+	@if grep -rn 'ToolbarItem(id:' App --include='*.swift'; then \
+		echo "ToolbarItem(id:) found: give toolbar items no id"; exit 1; \
+	fi
+	@# #selector(X.perform(_:)) resolves to NSObject's performSelector:, which reads the
+	@# sender as a selector: the action never runs.
+	@if grep -rn -E '@objc.*func perform\(' App --include='*.swift'; then \
+		echo "@objc func perform( found: name the action something else"; exit 1; \
+	fi
 
 .PHONY: cover
 cover: ## Package tests with coverage and results: coverage/ and test-results/

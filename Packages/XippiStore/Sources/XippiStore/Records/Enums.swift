@@ -10,6 +10,10 @@ public enum NotifyLevel: String, Codable, Sendable, DatabaseValueConvertible {
     case all, mentions, none
 }
 public enum EncryptionMode: String, Codable, Sendable, DatabaseValueConvertible { case none, omemo }
+/// What shows behind a chat's messages. Nil on a chat: the app's default.
+public enum ChatBackground: String, Codable, Sendable, CaseIterable, DatabaseValueConvertible {
+    case confetti, plain
+}
 public enum MessageDirection: String, Codable, Sendable, DatabaseValueConvertible {
     case incoming, outgoing
 }

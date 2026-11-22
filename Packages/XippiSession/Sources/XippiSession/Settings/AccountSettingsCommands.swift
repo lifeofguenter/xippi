@@ -49,7 +49,7 @@ extension SessionManager {
     /// can log in with is taken (an emoji included); only a new password must be one that can
     /// be set (`isUsablePassword`).
     public func enterPassword(_ password: String, accountID: Int64) async -> PasswordEntryOutcome {
-        guard SASLSelector.canLogIn(withPassword: password) else { return .unusablePassword }
+        guard SASLSelector.canAuthenticate(withPassword: password) else { return .unusablePassword }
         let account: AccountRecord?
         do {
             account = try database.account(id: accountID)

@@ -24,6 +24,7 @@ final class ToolsUITests: XCTestCase {
         app.launchArguments += [
             "-UITestDatabase", "memory", "-ApplePersistenceIgnoreState", "YES",
             "-UITestCA", Self.testCA, "-eu.xippi.showAdvancedFeatures", "<true/>",
+            "-UITestServer", "localhost",
         ]
         app.launch()
         let address = app.textFields["add-account-address"]
@@ -33,9 +34,6 @@ final class ToolsUITests: XCTestCase {
         let secret = app.secureTextFields["add-account-password"]
         secret.click()
         secret.typeText("xippi-test")
-        let server = app.textFields["add-account-server"]
-        server.click()
-        server.typeText("localhost")
         app.buttons["add-account-login"].click()
         let footer = app.descendants(matching: .any)["account-status"]
         XCTAssertTrue(footer.waitForValue("Online", timeout: 15), "footer: \(footer.stringValue)")

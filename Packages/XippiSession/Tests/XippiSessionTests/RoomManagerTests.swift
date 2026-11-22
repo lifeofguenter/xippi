@@ -13,6 +13,11 @@ actor RecordingRoomOwner: RoomLifecycleOwner {
     private(set) var left: [Int64] = []
     private(set) var trust: [JID: RoomTrust] = [:]
     private(set) var nicks: [Int64: String] = [:]
+    private(set) var avatars: [JID: Presence.AvatarHash] = [:]
+
+    func avatarAnnounced(_ hash: Presence.AvatarHash, by jid: JID) {
+        avatars[jid] = hash
+    }
     private(set) var stopped: [Int64] = []
 
     func setRoomTrust(_ trust: RoomTrust?, for room: JID) {

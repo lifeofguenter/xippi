@@ -21,13 +21,19 @@ public struct ChatRecord: Codable, FetchableRecord, MutablePersistableRecord, Se
     public var mentionCount: Int
     public var lastReadMessageID: Int64?
     public var avatarHash: String?
+    /// Closed by the user: left out of the chat list until it is opened again or a new
+    /// message arrives. History and bookmark stay.
+    public var closed: Bool
+    /// The background behind the messages; nil for the app's default.
+    public var background: ChatBackground?
 
     public init(
         id: Int64? = nil, accountID: Int64, jid: String, kind: ChatKind, name: String?,
         pinned: Bool,
         muted: Bool, notify: NotifyLevel, draft: String?, encryption: EncryptionMode, nick: String?,
         password: String?, autojoin: Bool, lastActivity: Date?, unreadCount: Int, mentionCount: Int,
-        lastReadMessageID: Int64?, avatarHash: String?
+        lastReadMessageID: Int64?, avatarHash: String?, closed: Bool = false,
+        background: ChatBackground? = nil
     ) {
         self.id = id
         self.accountID = accountID
@@ -47,6 +53,8 @@ public struct ChatRecord: Codable, FetchableRecord, MutablePersistableRecord, Se
         self.mentionCount = mentionCount
         self.lastReadMessageID = lastReadMessageID
         self.avatarHash = avatarHash
+        self.closed = closed
+        self.background = background
     }
 
     public mutating func didInsert(_ inserted: InsertionSuccess) { id = inserted.rowID }

@@ -51,7 +51,7 @@ extension AppDatabase {
                 columns: [
                     "kind", "name", "pinned", "muted", "notify", "draft", "encryption", "nick",
                     "password",
-                    "autojoin", "avatarHash",
+                    "autojoin", "avatarHash", "closed", "background",
                 ])
             // Writing another encryption is a choice: it settles the default (R63).
             if let id = chat.id, let encryption, encryption != chat.encryption.rawValue {

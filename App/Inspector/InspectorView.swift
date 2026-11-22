@@ -17,7 +17,19 @@ struct InspectorView: View {
             if let info {
                 VStack(alignment: .leading, spacing: ControlHeight.Inspector.sectionSpacing) {
                     InspectorHeader(info: info)
-                    details(info)
+                    InspectorTabBar(
+                        selection: Binding(
+                            get: { model.inspectorTab }, set: { model.inspectorTab = $0 }))
+                    switch model.inspectorTab {
+                    case .info:
+                        details(info)
+                    case .background:
+                        ChatBackgroundPicker(model: model, chatID: info.id)
+                    case .media:
+                        SharedMediaView(items: media) { item in
+                            model.open(chatID: info.id, revealing: item.messageID)
+                        }
+                    }
                 }
                 .padding(ControlHeight.Inspector.margin)
                 .task(id: info.id) {
@@ -30,6 +42,8 @@ struct InspectorView: View {
                 }
             }
         }
+        // The panel's own colour reaches under the toolbar, with no blur band of its own.
+        .scrollEdgeEffectHidden(true, for: .top)
         .overlay {
             if info == nil {
                 ContentUnavailableView(Copy.noChatSelected, systemImage: "sidebar.trailing")
@@ -40,28 +54,19 @@ struct InspectorView: View {
 
     @ViewBuilder private func details(_ info: OpenChatInfo) -> some View {
         if let contact = context.contact, contact.chatID == info.id {
-            ContactInspector(
-                model: model, info: info, contact: contact, sheets: sheets, media: media)
+            ContactInspector(model: model, info: info, contact: contact, sheets: sheets)
         } else if let room = context.room, room.chatID == info.id {
             RoomInspector(
-                model: model, info: info, room: room, sheets: sheets, context: context,
-                media: media)
+                model: model, info: info, room: room, sheets: sheets, context: context)
         } else if info.kind == .channel {
-            // MIX channels (Task 26b): members, Join or Leave, and the shared media.
-            ChannelDetails(
-                model: model, info: info, media: media, sheets: sheets, context: context
-            )
-            .id(info.id)
+            // MIX channels (Task 26b): members, Join or Leave.
+            ChannelDetails(model: model, info: info, sheets: sheets, context: context)
+                .id(info.id)
         } else {
             // A private chat with a room occupant: plain text only (R80), so no encryption.
             if info.kind == .roomPrivate {
                 InspectorSection(title: Copy.notifications, identifier: "inspector-notifications") {
                     ChatNotificationSettings(model: model, chatID: info.id)
-                }
-            }
-            InspectorSection(title: Copy.sharedMedia, identifier: "inspector-media") {
-                SharedMediaView(items: media) { item in
-                    model.open(chatID: info.id, revealing: item.messageID)
                 }
             }
         }

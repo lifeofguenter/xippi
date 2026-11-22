@@ -11,6 +11,8 @@
     /// what a session would say:
     /// - `seedroom`: the open room's members (we own it, it supports moderation) and
     ///   `seedcontact`: the open contact's devices (one verified, one new and undecided).
+    /// - `seedbigroom <count>`: the open room with that many members; `inspectorscroll`
+    ///   scrolls the inspector down and up and puts the time each step took in `bench=`.
     /// - `seednotices <chat>`: three notices "not encrypted for this device" in a row and a
     ///   message under a changed identity, newest in the chat (by its name).
     /// - `inspectorshot <suffix>`: `<name>.inspector-<suffix>.png` of the open chat's inspector.
@@ -29,7 +31,7 @@
         static let inspectorSteps: Set<String> = [
             "seedroom", "seedcontact", "seednotices", "inspectorshot", "membersshot",
             "devicesshot", "requestsshot", "bannershot", "sheetshot", "menutext", "moderate",
-            "dialogtext", "moderatenow",
+            "dialogtext", "moderatenow", "seedbigroom", "inspectorscroll",
         ]
 
         /// `-UITestInspectorSamples 1`: the open chat's inspector shows the sample members
@@ -59,6 +61,14 @@
             switch parts.first {
             case "seedroom":
                 chatContext?.room?.debugSeed(InspectorSamples.roomSnapshot)
+            case "seedbigroom":
+                // `seedbigroom <count>`: a room as busy as the big public ones.
+                chatContext?.room?.debugSeed(
+                    InspectorSamples.bigRoom(Int(argument) ?? 300))
+            case "inspectorscroll":
+                // Scrolls the inspector down and up in steps, as a trackpad would, drawing each
+                // step: `bench=` in the text says how long the steps took.
+                benchmarks = await scrollInspector()
             case "seedcontact":
                 if let contact = chatContext?.contact {
                     contact.debugSeed(
@@ -262,8 +272,71 @@
         }
     }
 
+    extension DebugSnapshot {
+        /// The inspector's scroll view: the one at the window's right end.
+        static func scrollInspector() async -> String {
+            guard
+                let window = NSApp.windows.filter({ $0.isVisible })
+                    .max(by: { $0.frame.width < $1.frame.width }),
+                let content = window.contentView
+            else { return "no window" }
+            func scrollViews(_ view: NSView) -> [NSScrollView] {
+                (view as? NSScrollView).map { [$0] } ?? view.subviews.flatMap(scrollViews)
+            }
+            guard
+                let scroll = scrollViews(content)
+                    .filter({ $0.convert($0.bounds, to: nil).minX > window.frame.width * 0.6 })
+                    .max(by: {
+                        ($0.documentView?.frame.height ?? 0) < ($1.documentView?.frame.height ?? 0)
+                    })
+            else { return "no inspector" }
+            var steps: [Double] = []
+            let height = scroll.documentView?.frame.height ?? 0
+            let clip = scroll.contentView
+            for direction in [1.0, -1.0] {
+                for _ in 0..<120 {
+                    let start = ContinuousClock.now
+                    var origin = clip.bounds.origin
+                    origin.y = min(
+                        max(origin.y + 40 * direction, 0), max(height - clip.bounds.height, 0))
+                    clip.scroll(to: origin)
+                    scroll.reflectScrolledClipView(clip)
+                    window.contentView?.layoutSubtreeIfNeeded()
+                    window.displayIfNeeded()
+                    steps.append((ContinuousClock.now - start) / .milliseconds(1))
+                    try? await Task.sleep(for: .milliseconds(16))
+                }
+            }
+            let sorted = steps.sorted()
+            let total = steps.reduce(0, +)
+            return String(
+                format:
+                    "inspectorScroll height=%.0f steps=%d total=%.0fms mean=%.1fms p90=%.1fms max=%.1fms",
+                height, steps.count, total, total / Double(steps.count),
+                sorted[Int(Double(sorted.count) * 0.9)], sorted.last ?? 0)
+        }
+    }
+
     /// What the inspector's views show in the snapshots.
     enum InspectorSamples {
+        /// `count` members, mostly participants, as a big public room has them.
+        static func bigRoom(_ count: Int) -> RoomSnapshot {
+            let shows: [Presence.Show?] = [nil, nil, .away, .xa, .dnd, nil]
+            return RoomSnapshot(
+                details: roomSnapshot.details,
+                members: (0..<count).map { index in
+                    member(
+                        "user\(index)",
+                        role: index < 5 ? .moderator : (index % 9 == 0 ? .visitor : .participant),
+                        affiliation: index < 3
+                            ? .owner : (index % 4 == 0 ? .member : MUCPresence.Affiliation.none),
+                        jid: index % 2 == 0 ? "user\(index)@example\(index % 7).org" : nil,
+                        show: shows[index % shows.count],
+                        status: index % 5 == 0 ? "Status line of user \(index)" : nil,
+                        self: index == 0)
+                })
+        }
+
         static let roomSnapshot = RoomSnapshot(
             details: RoomDetails(
                 ownRole: .moderator, ownAffiliation: .owner, ownNick: "me",

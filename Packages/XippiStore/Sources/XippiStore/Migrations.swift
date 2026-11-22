@@ -454,6 +454,45 @@ extension AppDatabase {
                     CREATE INDEX occupantIdentity_realJID ON occupantIdentity(accountID, realJID);
                     """)
         }
+        migrator.registerMigration("v13") { db in
+            // A chat the user closed, out of the list until it opens again; and the background
+            // chosen for a chat (NULL: the app's default).
+            try db.execute(
+                sql: """
+                    ALTER TABLE chat ADD COLUMN closed BOOLEAN NOT NULL DEFAULT 0;
+                    ALTER TABLE chat ADD COLUMN background TEXT;
+                    """)
+        }
+        migrator.registerMigration("v14") { db in
+            // The avatar each room occupant's presence names, by nick: shown in the member
+            // list and on the room's messages, and kept by the avatar cleanup while named.
+            try db.execute(
+                sql: """
+                    CREATE TABLE occupantAvatar (
+                        accountID INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+                        room TEXT NOT NULL,
+                        nick TEXT NOT NULL,
+                        hash TEXT NOT NULL,
+                        PRIMARY KEY (accountID, room, nick)
+                    );
+                    """)
+        }
+        migrator.registerMigration("v15") { db in
+            // A message corrected to blank text was taken back by its sender; it was stored as
+            // an edit to nothing and showed as an empty bubble. Its files go with the next sweep.
+            let edited = try Row.fetchAll(
+                db,
+                sql: """
+                    SELECT id, body FROM message
+                    WHERE editedAt IS NOT NULL AND retracted = 0 AND body IS NOT NULL
+                    """)
+            for row in edited {
+                let body: String = row["body"]
+                guard body.isBlank else { continue }
+                _ = try AppDatabase.removeContent(
+                    db, messageID: row["id"], moderatedBy: nil, reason: nil)
+            }
+        }
         return migrator
     }
 

@@ -559,10 +559,16 @@ extension AccountSession {
         where ["https", "http", AESGCMFile.scheme].contains(link.url.scheme?.lowercased() ?? "")
             && !attachments.contains(where: { $0.remoteURL == link.url.absoluteString })
         {
+            // A link carries no type: its name's extension is the claim until the bytes are
+            // seen (the download sniffs them).
+            let name = fileName(of: link.url)
             attachments.append(
                 AttachmentDraft(
-                    remoteURL: link.url.absoluteString, fileName: fileName(of: link.url),
-                    state: .remote))
+                    remoteURL: link.url.absoluteString,
+                    mimeType: name.flatMap {
+                        MediaLibrary.mediaType(forExtension: ($0 as NSString).pathExtension)
+                    },
+                    fileName: name, state: .remote))
         }
         if attachments.isEmpty, let body,
             !body.trimmingCharacters(in: .whitespacesAndNewlines).contains(where: \.isWhitespace),

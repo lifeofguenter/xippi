@@ -9,8 +9,18 @@ struct SidebarView: View {
     @Environment(ChatSheets.self) private var sheets
 
     var body: some View {
+        fullSidebar
+            // The open chat's background reaches behind the sidebar, from the top of the window
+            // to the bottom, blurred.
+            .background {
+                PanelBackdrop(background: ChatBackdrop.resolved(model.openChatSettings?.background))
+                    .ignoresSafeArea()
+            }
+    }
+
+    private var fullSidebar: some View {
         let searching = !model.searchText.trimmingCharacters(in: .whitespaces).isEmpty
-        Group {
+        return Group {
             if searching {
                 SearchResultsView(model: model, query: model.searchText, chatID: nil)
             } else {
@@ -30,7 +40,11 @@ struct SidebarView: View {
         .safeAreaBar(edge: .bottom) {
             AccountStatusFooter(model: model)
         }
+        // The sidebar is always shown: it has no toggle.
+        .toolbar(removing: .sidebarToggle)
         .toolbar {
+            // New chat at the sidebar's right end.
+            ToolbarSpacer(.flexible)
             ToolbarItem {
                 NewChatMenu(sheets: sheets)
             }
@@ -38,9 +52,9 @@ struct SidebarView: View {
     }
 }
 
-/// The chat list. The open chat stays listed under every filter, so opening an unread chat
-/// with the Unread filter on does not make it vanish. Requests sit above the chats; the chats
-/// are an AppKit table (R73).
+/// The chat list. The open chat stays listed under the filter it was opened under, so opening
+/// an unread chat with the Unread filter on does not make it vanish; another filter lists it
+/// only where it belongs. Requests sit above the chats; the chats are an AppKit table (R73).
 private struct ChatList: View {
     @Bindable var model: AppModel
     @Environment(ChatSheets.self) private var sheets
@@ -50,17 +64,16 @@ private struct ChatList: View {
     var body: some View {
         let filter = model.sidebarFilter
         let selection = model.selection
-        let items = model.chats.filter { filter.includes($0) || $0.id == selection }
+        let items = SidebarFilter.listed(
+            model.chats, filter: filter, selection: selection, kept: model.keptInList)
         let rows = Self.rows(items, model: model, selection: selection)
         VStack(spacing: 0) {
             RequestsPanel(model: model, invitations: invitations)
-            GeometryReader { proxy in
-                SidebarTable(
-                    model: model, sheets: sheets, rows: rows, selection: selection,
-                    topInset: proxy.safeAreaInsets.top, bottomInset: proxy.safeAreaInsets.bottom
-                )
-                .ignoresSafeArea(.container, edges: [.top, .bottom])
-            }
+            // Between the bars, never under them: the bars are clear, so the chat's background
+            // runs from the top of the window to the bottom, and no row shows through them.
+            SidebarTable(
+                model: model, sheets: sheets, rows: rows, selection: selection, topInset: 0,
+                bottomInset: 0)
         }
         .task(id: SessionsKey(model)) { await invitations.follow(model) }
         .overlay {
@@ -171,8 +184,8 @@ private struct SidebarSearchField: View {
         }
         .task(id: focusRequest) {
             guard focusRequest > 0 else { return }
-            // A collapsed sidebar slides in first, and the window hands the focus around while
-            // it does: the field asks for it until the sidebar has settled.
+            // One request can be lost while the window hands the focus around: the field asks
+            // for it a few times.
             for _ in 0..<6 {
                 focused = true
                 try? await Task.sleep(for: .milliseconds(100))

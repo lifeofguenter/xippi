@@ -100,13 +100,9 @@
                 let saved = try? await session?.setArchivePreferences(preferences)
                 settingsResults.append("archive=\(saved?.default.rawValue ?? "not saved")")
             case "connopts":
-                // The server stays as it is: `host` or `host:port`, as the field shows it.
-                let server =
-                    (account.hostOverride ?? "")
-                    + (account.portOverride.map { ":\($0)" } ?? "")
                 let failure = await model.setConnectionOptions(
                     resource: words.first ?? "", priority: Int(words.last ?? "") ?? 0,
-                    server: server, accountID: id)
+                    accountID: id)
                 settingsResults.append("connopts=\(failure ?? "ok")")
             case "forgetpassword":
                 guard let jid = try? JID(account.jid) else { return }

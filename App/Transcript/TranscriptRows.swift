@@ -71,13 +71,15 @@ struct MessageRowModel: Equatable, Sendable {
     var distrusted = false
     /// The user showed that text.
     var revealed = false
+    /// Each attachment's picture size in pixels, in order: nil for one that shows as a file.
+    var pictureSizes: [CGSize?] = []
 
     var id: Int64 { item.id }
     var message: MessageRecord { item.message }
     var isOutgoing: Bool { item.message.direction == .outgoing }
 
-    /// "👍 2", one entry per emoji, in the order they were first given.
-    var reactionSummary: String? {
+    /// Each emoji given and how often, in the order they were first given.
+    var reactionEntries: [(emoji: String, count: Int)] {
         var counts: [String: Int] = [:]
         var order: [String] = []
         for reaction in item.reactions {
@@ -86,8 +88,15 @@ struct MessageRowModel: Equatable, Sendable {
                 counts[emoji, default: 0] += 1
             }
         }
-        guard !order.isEmpty else { return nil }
-        return order.map { Copy.reactions($0, counts[$0] ?? 0) }.joined(separator: "  ")
+        return order.map { ($0, counts[$0] ?? 0) }
+    }
+
+    /// "👍 2", one entry per emoji, in the order they were first given.
+    var reactionSummary: String? {
+        let entries = reactionEntries
+        guard !entries.isEmpty else { return nil }
+        return entries.map { Copy.reactions($0.emoji, $0.count) }
+            .joined(separator: ReactionsView.separator)
     }
 
     /// The meta line's part for a message from a device whose identity changed: shown in
@@ -131,6 +140,8 @@ struct TranscriptChat: Equatable, Sendable {
     var avatarHash: String? = nil
     /// The account's nick in a room, highlighted where others write it.
     var ownNick: String? = nil
+    /// The account's bare JID: its own reactions say "You".
+    var accountJID: String = ""
 }
 
 /// Turns messages (oldest first) into the rows the table shows. Which rows there are (day
@@ -142,7 +153,8 @@ enum TranscriptRowBuilder {
         unreadBefore: Int64?, highlighted: Int64?, calendar: Calendar,
         linkPreviews: [Int64: LinkPreview] = [:],
         locationDisplay: (MessageRecord) -> LocationDisplay = { _ in .coordinates },
-        revealed: Set<Int64> = [], gaps: [ArchiveGap] = [], loadingGaps: Set<Int64> = []
+        revealed: Set<Int64> = [], gaps: [ArchiveGap] = [], loadingGaps: Set<Int64> = [],
+        pictureSize: (AttachmentRecord) -> CGSize? = { _ in nil }
     ) -> [TranscriptRow] {
         let byID = Dictionary(items.map { ($0.id, $0) }) { first, _ in first }
         let receipts = chat.isRoom ? [:] : receipts(in: items)
@@ -198,7 +210,8 @@ enum TranscriptRowBuilder {
                         // A preview of a link the message no longer has (it was edited) goes.
                         linkPreview: linkPreviews[id].flatMap {
                             location == nil && $0.url == entry?.link ? $0 : nil
-                        }, receipt: receipts[id]))
+                        }, receipt: receipts[id],
+                        pictureSizes: message.retracted ? [] : item.attachments.map(pictureSize)))
             }
         }
         return withGaps(rows, gaps: gaps, loading: loadingGaps)

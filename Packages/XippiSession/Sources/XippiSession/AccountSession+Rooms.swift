@@ -381,10 +381,18 @@ extension AccountSession {
 /// What the room lifecycle tells the session. The session writes the chat rows and owns the
 /// room outboxes, so a leave the user asks for and a nick the room gives never race.
 extension AccountSession: RoomLifecycleOwner {
-    /// Sends the room's pending messages, then catches up its archive in the background,
-    /// bound to the join the room is in now: its run starts after that join was made.
+    /// A joined room's avatar or one of its occupants': fetched from the room's vCard, or the
+    /// occupant's through the room. The room knows the account is there already.
+    func avatarAnnounced(_ hash: Presence.AvatarHash, by jid: JID) async {
+        await avatars.roomHash(hash, from: jid)
+    }
+
+    /// Sends the room's pending messages and fetches the files of its messages shown before it
+    /// was joined, then catches up its archive in the background, bound to the join the room
+    /// is in now: its run starts after that join was made.
     func roomJoined(chatID: Int64, room: JID) async {
         await resendPending(chatID: chatID)
+        await fetchShownBeforeJoin(chatID: chatID)
         guard let archive, let chat = try? database.chat(id: chatID) else { return }
         let trust = roomTrust[room] ?? RoomTrust()
         let target = RoomArchive(

@@ -79,9 +79,14 @@ import os
             tasks.append(
                 Task { [center] in
                     do {
-                        _ = try await center.requestAuthorization(options: [.alert, .sound])
+                        if try await !center.requestAuthorization(options: [.alert, .sound]) {
+                            appLog.notice("Notifications not authorised")
+                        }
                     } catch {
-                        appLog.notice("Notifications not authorised")
+                        // Turned off in System Settings, among others.
+                        appLog.notice(
+                            "Notifications not authorised: \(String(describing: error), privacy: .public)"
+                        )
                     }
                 })
         }

@@ -35,6 +35,17 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "6F263F0930B11455005F982D"
+               BuildableName = "XippiTests.xctest"
+               BlueprintName = "XippiTests"
+               ReferencedContainer = "container:Xippi.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "D9DCD6FDFCFB7CE0A0AD3975"
                BuildableName = "XippiUITests.xctest"
                BlueprintName = "XippiUITests"

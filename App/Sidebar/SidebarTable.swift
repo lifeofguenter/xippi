@@ -78,6 +78,8 @@ final class SidebarTableController: NSObject, NSTableViewDataSource,
         let scrollView = NSScrollView()
         scrollView.hasVerticalScroller = true
         scrollView.hasHorizontalScroller = false
+        // Only while the list does not fit: a mouse's always-shown scroller otherwise stays.
+        scrollView.autohidesScrollers = true
         scrollView.drawsBackground = false
         scrollView.automaticallyAdjustsContentInsets = false
 
@@ -169,7 +171,10 @@ final class SidebarTableController: NSObject, NSTableViewDataSource,
         let atTop = scrollView.contentView.bounds.minY <= -insets.top + 1
         insets = new
         scrollView.contentInsets = new
-        scrollView.scrollerInsets = new
+        // AppKit already keeps the scroller's thumb clear of the content insets. Scroller
+        // insets on top of them counted the bars twice: the thumb started half way down and
+        // never reached the end of the list.
+        scrollView.scrollerInsets = NSEdgeInsets()
         if atTop {
             asOwnScroll {
                 scrollView.contentView.scroll(to: NSPoint(x: 0, y: -new.top))
@@ -193,15 +198,38 @@ final class SidebarTableController: NSObject, NSTableViewDataSource,
         select(selection, in: table)
     }
 
+    /// A list that came while another was being applied: AppKit lays the table out inside
+    /// `endUpdates`, and SwiftUI can hand over a newer list from there. It waits its turn, so
+    /// the table and `rows` never disagree mid-update (a crash switching All and Unread).
+    private var pendingRows: [SidebarRow]?
+    private var applying = false
+
     private func apply(_ new: [SidebarRow], to table: NSTableView) {
+        guard !applying else {
+            pendingRows = new
+            return
+        }
+        applying = true
+        defer { applying = false }
+        var next: [SidebarRow]? = new
+        while let target = next {
+            applyOnce(target, to: table)
+            next = pendingRows
+            pendingRows = nil
+        }
+    }
+
+    private func applyOnce(_ new: [SidebarRow], to table: NSTableView) {
         if new != rows {
             let old = rows
+            // Steps only fit a table that shows `old`: one still to load its rows reloads.
+            let inSync = table.numberOfRows == old.count
             let changes = ListChanges(from: old.map(\.identity), to: new.map(\.identity))
             rows = new
             applyingSelection = true
             // A first load, a different list, or ids that cannot be diffed (m-19) reload all;
             // `select` below puts the selection back by chat id.
-            if old.isEmpty
+            if old.isEmpty || !inSync
                 || changes.map({ Self.isDifferentList($0, old: old.count, new: new.count) }) ?? true
             {
                 table.reloadData()
@@ -267,9 +295,22 @@ final class SidebarTableController: NSObject, NSTableViewDataSource,
         /// For the snapshot hook: where the list is scrolled to, and which chat is selected.
         var debugState: String {
             let origin = scrollView?.contentView.bounds.origin.y ?? 0
-            let selected = table.map { $0.selectedRow >= 0 ? rows[$0.selectedRow].chatID : nil }
+            let selected = table.map { row($0.selectedRow)?.chatID }
+            let insets = scrollView?.contentInsets
             return
                 "origin=\(Int(origin)) selected=\(selected.flatMap { $0 }.map(String.init) ?? "none")"
+                + " frame=\(Int(scrollView?.frame.height ?? 0))"
+                + " insets=\(Int(insets?.top ?? 0))/\(Int(insets?.bottom ?? 0))"
+                + " document=\(Int(scrollView?.documentView?.frame.height ?? 0))"
+        }
+
+        /// Scrolls the list to its end, for the snapshot hook.
+        func debugScrollToEnd() {
+            guard let scrollView, let document = scrollView.documentView else { return }
+            let end =
+                document.frame.height - scrollView.contentView.bounds.height
+                + scrollView.contentInsets.bottom
+            debugScroll(to: max(end, -scrollView.contentInsets.top))
         }
 
         /// Scrolls the list to `y`, for the snapshot hook.
@@ -284,37 +325,43 @@ final class SidebarTableController: NSObject, NSTableViewDataSource,
 
     func numberOfRows(in tableView: NSTableView) -> Int { rows.count }
 
+    /// The row at `index`, nil past the end: a table asking about a row the list no longer has
+    /// gets an empty answer, never a crash.
+    private func row(_ index: Int) -> SidebarRow? {
+        rows.indices.contains(index) ? rows[index] : nil
+    }
+
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-        switch rows[row] {
-        case .header: SidebarMetrics.header
-        case .chat(let item, let stateLabel, _):
-            SidebarMetrics.rowHeight(
-                badge: item.chat.unreadCount > 0 || item.chat.mentionCount > 0,
-                state: stateLabel != nil)
+        switch self.row(row) {
+        case .header, nil: SidebarMetrics.header
+        case .chat(_, let stateLabel, _):
+            SidebarMetrics.rowHeight(state: stateLabel != nil)
         }
     }
 
     func tableView(_ tableView: NSTableView, shouldSelectRow row: Int) -> Bool {
-        rows[row].chatID != nil
+        self.row(row)?.chatID != nil
     }
 
     /// Section titles are group rows, so VoiceOver reads them as headers; they do not float.
     func tableView(_ tableView: NSTableView, isGroupRow row: Int) -> Bool {
-        rows[row].chatID == nil
+        guard let item = self.row(row) else { return false }
+        return item.chatID == nil
     }
 
     /// Typing a name selects the chat (m-10); section titles are skipped.
     func tableView(
         _ tableView: NSTableView, typeSelectStringFor tableColumn: NSTableColumn?, row: Int
     ) -> String? {
-        if case .chat(let item, _, _) = rows[row] { return item.displayName }
+        if case .chat(let item, _, _)? = self.row(row) { return item.displayName }
         return nil
     }
 
     func tableView(
         _ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int
     ) -> NSView? {
-        switch rows[row] {
+        guard let item = self.row(row) else { return nil }
+        switch item {
         case .header(let title):
             let cell =
                 tableView.makeView(withIdentifier: SidebarHeaderCell.identifier, owner: nil)
@@ -328,6 +375,8 @@ final class SidebarTableController: NSObject, NSTableViewDataSource,
             cell.configure(
                 item, stateLabel: stateLabel, showsDraft: showsDraft,
                 avatar: model.avatars.image(for: item.chat.avatarHash))
+            let chatID = item.id
+            cell.onClose = { [weak model] in model?.closeChat(chatID: chatID) }
             return cell
         }
     }
@@ -409,6 +458,14 @@ final class SidebarTableController: NSObject, NSTableViewDataSource,
             markRead.isEnabled = false
         }
         items.append(markRead)
+        // A room or channel the account is not in can be closed: out of the list, history kept.
+        if model.roomLabel(for: item) != nil {
+            items.append(
+                symbol(
+                    MenuAction.item(title: Copy.closeChat) { [weak model] in
+                        model?.closeChat(chatID: chatID)
+                    }, "xmark.circle"))
+        }
         guard item.chat.kind == .direct, let jid = try? JID(item.chat.jid),
             jid.bare.description != item.accountJID
         else { return items }
@@ -462,16 +519,18 @@ final class SidebarTableController: NSObject, NSTableViewDataSource,
         return ceil(font.ascender - font.descender + font.leading)
     }
 
-    /// The second line holds the unread badge when there is one, and grows to it.
-    static func rowHeight(badge: Bool, state: Bool) -> CGFloat {
-        verticalPadding * 2
-            + max(ControlHeight.Sidebar.avatar, textHeight(badge: badge, state: state))
+    /// One height whether or not the chat has unread messages: the second line always has
+    /// room for the badge, so a row does not grow and shrink as messages arrive and are read.
+    static func rowHeight(state: Bool) -> CGFloat {
+        verticalPadding * 2 + max(ControlHeight.Sidebar.avatar, textHeight(state: state))
     }
 
-    static func textHeight(badge: Bool, state: Bool) -> CGFloat {
-        let second = badge ? max(lineHeight, ControlHeight.Sidebar.badge) : lineHeight
-        return lineHeight + lineSpacing + second + (state ? lineSpacing + lineHeight : 0)
+    static func textHeight(state: Bool) -> CGFloat {
+        lineHeight + lineSpacing + secondLine + (state ? lineSpacing + lineHeight : 0)
     }
+
+    /// The newest message's line, with room for the unread badge.
+    static var secondLine: CGFloat { max(lineHeight, ControlHeight.Sidebar.badge) }
 }
 
 /// "Pinned", "Chats".
@@ -537,12 +596,50 @@ final class ChatRowCell: NSTableCellView {
     private var stateLabel: String?
     private var showsDraft = false
     private var avatar: NSImage?
+    /// Closes a room the account is not in; shown at the end of its state line.
+    let closeButton = NSButton()
+    var onClose: (() -> Void)?
 
     init() {
         super.init(frame: .zero)
         identifier = Self.identifier
         setAccessibilityElement(true)
         setAccessibilityRole(.cell)
+        closeButton.image = NSImage(
+            systemSymbolName: "xmark.circle.fill", accessibilityDescription: Copy.closeChat)
+        closeButton.imageScaling = .scaleProportionallyUpOrDown
+        closeButton.isBordered = false
+        closeButton.contentTintColor = .secondaryLabelColor
+        closeButton.toolTip = Copy.closeChat
+        closeButton.setAccessibilityLabel(Copy.closeChat)
+        closeButton.setAccessibilityIdentifier("chat-close")
+        closeButton.target = self
+        closeButton.action = #selector(closeClicked)
+        closeButton.isHidden = true
+        addSubview(closeButton)
+    }
+
+    @objc private func closeClicked(_ sender: Any?) {
+        onClose?()
+    }
+
+    /// Where the close button sits: the end of the state line, as `draw` lays the lines out.
+    static func closeButtonFrame(in bounds: NSRect) -> NSRect {
+        let size = ControlHeight.Sidebar.closeButton
+        let lineHeight = SidebarMetrics.lineHeight
+        let textHeight = SidebarMetrics.textHeight(state: true)
+        let second = SidebarMetrics.secondLine
+        let stateY =
+            ((bounds.height - textHeight) / 2).rounded() + lineHeight
+            + SidebarMetrics.lineSpacing * 2 + second
+        return NSRect(
+            x: bounds.width - SidebarMetrics.trailing - size,
+            y: (stateY + (lineHeight - size) / 2).rounded(), width: size, height: size)
+    }
+
+    override func layout() {
+        super.layout()
+        closeButton.frame = Self.closeButtonFrame(in: bounds)
     }
 
     @available(*, unavailable)
@@ -566,6 +663,8 @@ final class ChatRowCell: NSTableCellView {
         self.item = item
         self.stateLabel = stateLabel
         self.showsDraft = showsDraft
+        closeButton.isHidden = stateLabel == nil
+        needsLayout = true
         let name = item.displayName
         setAccessibilityIdentifier("chat:\(name)")
         setAccessibilityLabel(name)
@@ -618,7 +717,7 @@ final class ChatRowCell: NSTableCellView {
 
         // The text block, centred too.
         let lineHeight = SidebarMetrics.lineHeight
-        let textHeight = SidebarMetrics.textHeight(badge: hasBadge, state: stateLabel != nil)
+        let textHeight = SidebarMetrics.textHeight(state: stateLabel != nil)
         let x = avatar.maxX + SidebarMetrics.avatarGap
         let width = bounds.width - x - SidebarMetrics.trailing
         var y = ((bounds.height - textHeight) / 2).rounded()
@@ -640,7 +739,7 @@ final class ChatRowCell: NSTableCellView {
         y += lineHeight + SidebarMetrics.lineSpacing
 
         // The newest message or the draft, and the badges beside it.
-        let secondHeight = hasBadge ? max(lineHeight, ControlHeight.Sidebar.badge) : lineHeight
+        let secondHeight = SidebarMetrics.secondLine
         var previewWidth = width
         if hasBadge {
             let badgesWidth = Self.drawBadges(
@@ -679,7 +778,10 @@ final class ChatRowCell: NSTableCellView {
             y += SidebarMetrics.lineSpacing
             Self.drawLine(
                 stateLabel, font: bodyFont, color: selected ? primary : .systemOrange,
-                in: NSRect(x: x, y: y, width: width, height: lineHeight))
+                in: NSRect(
+                    x: x, y: y,
+                    width: max(width - ControlHeight.Sidebar.closeButton - 6, 0),
+                    height: lineHeight))
         }
     }
 

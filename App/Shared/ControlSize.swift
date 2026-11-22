@@ -12,8 +12,10 @@ enum ControlHeight {
         /// The field grows up to this many lines, then scrolls.
         static let maxLines = 8
         static let cornerRadius: CGFloat = 22
-        /// Space between the bar and the window edges.
+        /// Space between the bar and the window's sides.
         static let margin: CGFloat = 16
+        /// Space between the bar and the window's bottom, as in Messages.
+        static let bottomMargin: CGFloat = 10
         /// The row of files waiting to be sent.
         static let filePreview: CGFloat = 52
         static let fileThumbnail: CGFloat = 40
@@ -31,11 +33,41 @@ enum ControlHeight {
         static let badge: CGFloat = 22
         static let filter: CGFloat = 28
         static let search: CGFloat = 32
+        /// Closes a room the account is not in, on its row.
+        static let closeButton: CGFloat = 16
+    }
+
+    /// The Settings window's account list and header.
+    enum Settings {
+        /// An account's picture in the account lists.
+        static let accountAvatar: CGFloat = 28
+        /// The picture in the account's header, a click away from changing it.
+        static let headerAvatar: CGFloat = 44
     }
 
     /// Controls floating over the transcript.
     enum Transcript {
-        static let jumpButton: CGFloat = 32
+        /// The open chat's picture in the title bar, beside its name.
+        static let titleAvatar: CGFloat = 28
+        /// The pill around the chat's picture and name in the title bar: the name and the line
+        /// under it, with room above and below them.
+        static let titlePill: CGFloat = 44
+        /// Above and below the name and the line under it, inside the pill.
+        static let titleTextVerticalInset: CGFloat = 5
+        /// Between the picture and the pill's round end: as far as above and below it, so the
+        /// two curves run side by side.
+        static let titleAvatarInset: CGFloat = (titlePill - titleAvatar) / 2
+        /// Between the words and the pill's other end, clear of its curve.
+        static let titleTextInset: CGFloat = 16
+        /// The height the toolbar lays its glass out for: it puts a taller item's glass where
+        /// this one's would start, and the item hangs below it.
+        static let toolbarItem: CGFloat = 36
+        /// How far the pill's content is moved down to sit in the middle of its glass: centred
+        /// in the bar, it had 4 points of glass over it and 12 under it.
+        static let titleDrop: CGFloat = (titlePill - toolbarItem) / 2
+        /// The widest the chat's name and subtitle get in the title bar.
+        static let titleWidth: CGFloat = 320
+        static let jumpButton: CGFloat = 36
         static let daySeparator: CGFloat = 40
         /// "Earlier messages not loaded" with Load.
         static let gapRow: CGFloat = 44
@@ -49,9 +81,14 @@ enum ControlHeight {
         /// Play and pause in a voice message, and the cancel or download control of a file.
         static let mediaButton: CGFloat = 28
         /// The add reaction control beside a hovered message.
-        static let reactionButton: CGFloat = 28
+        static let reactionButton: CGFloat = 20
         /// Each choice in the reaction picker.
         static let reactionChoice: CGFloat = 32
+        /// The tabs over the list of who reacted.
+        static let reactionTab: CGFloat = 28
+        /// A line of the list of who reacted, and the picture on it.
+        static let reactorLine: CGFloat = 44
+        static let reactorAvatar: CGFloat = 32
     }
 
     /// The call window and the incoming call panel.

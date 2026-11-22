@@ -46,7 +46,7 @@ extension AppModel {
         guard !password.isEmpty else { return .failed(Copy.passwordRequired) }
         // An existing account's password: what this client can log in with, an emoji in it
         // included. New passwords (registration, a change) are held to the stricter rule.
-        guard SASLSelector.canLogIn(withPassword: password) else {
+        guard SASLSelector.canAuthenticate(withPassword: password) else {
             return .failed(Copy.passwordNotUsable)
         }
         let endpoint: ServerAddress?
@@ -126,6 +126,20 @@ extension AppModel {
         callSources[accountID] = nil
         await reloadAccounts()
         refreshCallTarget()
+    }
+
+    /// Deletes the account on its server (XEP-0077), then removes it here; the reason it was
+    /// not deleted, or nil.
+    func deleteAccount(_ account: AccountRecord) async -> String? {
+        guard let accountID = account.id, let session = await sessions.session(for: accountID)
+        else { return Copy.accountNotDeleted(.notConnected) }
+        do {
+            try await session.deleteFromServer()
+        } catch {
+            return Copy.accountNotDeleted(error)
+        }
+        await removeAccount(account)
+        return nil
     }
 
     /// Pins the certificate on the account and connects again with it trusted.

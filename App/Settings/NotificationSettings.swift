@@ -1,14 +1,42 @@
 import SwiftUI
+import UserNotifications
 import XippiSession
 import XippiStore
 
 struct NotificationSettings: View {
     @Environment(AppSettings.self) private var settings
     @State private var newKeyword = ""
+    /// Whether macOS lets the app notify, read when the tab shows and whenever the app comes
+    /// back to the front: the user changes it in System Settings.
+    @State private var permission: UNAuthorizationStatus?
+
+    /// Turned off in System Settings, nothing the app posts shows, and nothing in the app said
+    /// so: the tab says it, with the way there.
+    static func showsOffNotice(_ permission: UNAuthorizationStatus?) -> Bool {
+        permission == .denied
+    }
+
+    /// System Settings > Notifications > Xippi.
+    static let systemSettingsURL =
+        URL(
+            string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension?id="
+                + (Bundle.main.bundleIdentifier ?? "eu.xippi.Xippi"))
+        ?? URL(filePath: "/System/Applications/System Settings.app")
 
     var body: some View {
         @Bindable var settings = settings
         Form {
+            if Self.showsOffNotice(permission) {
+                Section {
+                    LabeledContent(Copy.notificationsOff) {
+                        Button(Copy.notificationSettings) {
+                            NSWorkspace.shared.open(Self.systemSettingsURL)
+                        }
+                        .pointerStyle(.link)
+                    }
+                    .accessibilityIdentifier("notifications-off")
+                }
+            }
             Section {
                 Picker(selection: $settings.notifyLevelDefault) {
                     Text(Copy.notifyAll).tag(NotifyLevel.all)
@@ -68,6 +96,17 @@ struct NotificationSettings: View {
         .formStyle(.grouped)
         .font(.appBody)
         .accessibilityIdentifier("settings-notifications")
+        .task { await readPermission() }
+        .onReceive(
+            NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)
+        ) { _ in
+            Task { await readPermission() }
+        }
+    }
+
+    private func readPermission() async {
+        permission = await UNUserNotificationCenter.current().notificationSettings()
+            .authorizationStatus
     }
 
     private func add() {

@@ -85,7 +85,7 @@ enum LiveApp {
         let app = XCUIApplication()
         app.launchArguments += [
             "-UITestDatabase", "memory", "-ApplePersistenceIgnoreState", "YES", "-UITestCA",
-            testCA,
+            testCA, "-UITestServer", "localhost",
         ]
         app.launch()
         return app
@@ -110,9 +110,6 @@ enum LiveApp {
         let secret = app.secureTextFields["add-account-password"]
         secret.click()
         secret.typeText("xippi-test")
-        let server = app.textFields["add-account-server"]
-        server.click()
-        server.typeText("localhost")
         app.buttons["add-account-login"].click()
         let footer = app.descendants(matching: .any)["account-status"]
         XCTAssertTrue(footer.waitForExistence(timeout: 10))

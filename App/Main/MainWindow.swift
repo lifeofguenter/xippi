@@ -1,4 +1,5 @@
 import SwiftUI
+import XippiSession
 import XippiStore
 
 /// The main window: chats on the left, the open chat in the middle, its details on the right.
@@ -25,6 +26,11 @@ struct MainWindow: View {
         composer.onWillSend = { [weak transcript] in transcript?.willSendOwnMessage() }
         let sheets = ChatSheets()
         let context = OpenChatContext()
+        // Who is in the open room, for naming who reacted.
+        transcript.roomMembers = { [weak context] chatID in
+            guard let room = context?.room, room.chatID == chatID else { return [] }
+            return room.snapshot?.members ?? []
+        }
         transcript.extraMenuItems = { [weak sheets, weak context] message in
             guard let sheets, let context else { return [] }
             return context.menuItems(for: message, sheets: sheets)
@@ -40,13 +46,21 @@ struct MainWindow: View {
     }
 
     var body: some View {
-        NavigationSplitView(columnVisibility: columns) {
+        // The sidebar is always there: nothing hides it, not a drag nor a menu.
+        NavigationSplitView(columnVisibility: .constant(.all)) {
             SidebarView(model: model)
-                .navigationSplitViewColumnWidth(min: 250, ideal: 300, max: 440)
+                .navigationSplitViewColumnWidth(
+                    min: SidebarWidth.minimum, ideal: SidebarWidth.ideal, max: SidebarWidth.maximum
+                )
+                .background { SidebarPin() }
         } detail: {
             ChatDetailView(model: model, transcript: transcript, composer: composer)
         }
         .frame(minWidth: 780, minHeight: 500)
+        // As in Messages, the bar is clear over the chat and the messages pass under it. The
+        // toolbar's own band stays off: switched on and off with the pointer, it rebuilt the
+        // whole toolbar each time. The chat draws its band itself (TitleBarBand).
+        .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
         .overlay {
             if model.quickSwitcherVisible {
                 QuickSwitcher(model: model)
@@ -108,13 +122,6 @@ struct MainWindow: View {
 }
 
 extension MainWindow {
-    /// The sidebar shown or collapsed, kept on the model so ⇧⌘F can show it again.
-    fileprivate var columns: Binding<NavigationSplitViewVisibility> {
-        Binding(
-            get: { model.sidebarVisible ? .all : .detailOnly },
-            set: { model.sidebarVisible = $0 != .detailOnly })
-    }
-
     /// Opens a chat as soon as it is selected, before the views update.
     fileprivate static func openOnSelection(
         model: AppModel, transcript: TranscriptController, composer: ComposerModel
@@ -160,3 +167,66 @@ extension MainWindow {
         }
     }
 #endif
+
+/// The sidebar's width: a range to drag in, never down to nothing.
+enum SidebarWidth {
+    static let minimum: CGFloat = 250
+    static let ideal: CGFloat = 300
+    static let maximum: CGFloat = 440
+}
+
+/// Keeps the sidebar from collapsing: the split view underneath the window lets a drag past
+/// the sidebar's narrowest width fold it away, whatever the column visibility says.
+private struct SidebarPin: NSViewRepresentable {
+    func makeNSView(context: Context) -> SidebarPinView { SidebarPinView() }
+    func updateNSView(_ view: SidebarPinView, context: Context) { view.pin() }
+}
+
+final class SidebarPinView: NSView {
+    /// The sidebar items held, and the watches on them.
+    private var held: [NSSplitViewItem] = []
+    private var watches: [NSKeyValueObservation] = []
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        pin()
+    }
+
+    override func hitTest(_ point: NSPoint) -> NSView? { nil }
+
+    func pin() {
+        var view = superview
+        while let current = view, !(current is NSSplitView) { view = current.superview }
+        guard let controller = (view as? NSSplitView)?.delegate as? NSSplitViewController else {
+            return
+        }
+        hold(controller)
+    }
+
+    /// Pins the sidebar and keeps it pinned: SwiftUI makes it collapsible again as it updates
+    /// the split view, so every change is put back as it happens.
+    func hold(_ controller: NSSplitViewController) {
+        Self.pin(controller)
+        let items = controller.splitViewItems.filter { $0.behavior == .sidebar }
+        guard items.map(ObjectIdentifier.init) != held.map(ObjectIdentifier.init) else { return }
+        held = items
+        watches = items.flatMap { item in
+            [
+                item.observe(\.canCollapse) { [weak controller] _, _ in
+                    MainActor.assumeIsolated { controller.map(Self.pin) }
+                },
+                item.observe(\.isCollapsed) { [weak controller] _, _ in
+                    MainActor.assumeIsolated { controller.map(Self.pin) }
+                },
+            ]
+        }
+    }
+
+    /// The sidebar cannot be dragged closed, and shows again if anything collapsed it.
+    static func pin(_ controller: NSSplitViewController) {
+        for item in controller.splitViewItems where item.behavior == .sidebar {
+            if item.canCollapse { item.canCollapse = false }
+            if item.isCollapsed { item.isCollapsed = false }
+        }
+    }
+}

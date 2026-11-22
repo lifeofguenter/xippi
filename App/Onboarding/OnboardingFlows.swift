@@ -10,7 +10,8 @@ import XippiSession
         didSet { if address != oldValue { pinned = [] } }
     }
     var password = ""
-    var server = "" {
+    /// Where to connect instead of the server the domain names: only the UI tests set one.
+    var server = TestServer.address {
         didSet { if server != oldValue { pinned = [] } }
     }
     private(set) var connecting = false
@@ -26,10 +27,9 @@ import XippiSession
     @ObservationIgnored private var pinned: [String] = []
     @ObservationIgnored private var task: Task<Void, Never>?
 
-    init(model: AppModel, address: String = "", server: String = "") {
+    init(model: AppModel, address: String = "") {
         self.model = model
         self.address = address
-        self.server = server
     }
 
     var canLogIn: Bool {
@@ -94,8 +94,11 @@ import XippiSession
     var domain: String {
         didSet { if domain != oldValue { pinned = [] } }
     }
+    /// The domain is typed rather than picked from the providers: "Other", or an invite's.
+    var customDomain: Bool
     var invite: String
-    var server = "" {
+    /// Where to connect instead of the server the domain names: only the UI tests set one.
+    var server = TestServer.address {
         didSet { if server != oldValue { pinned = [] } }
     }
     private(set) var step = Step.server
@@ -118,8 +121,15 @@ import XippiSession
     init(model: AppModel, invite: RegistrationInvite? = nil, link: String = "") {
         self.model = model
         preset = invite
-        domain = invite?.server ?? ""
+        domain = invite?.server ?? ProviderDirectory.own
+        customDomain = invite != nil
         self.invite = link
+    }
+
+    /// Picks a provider from the list, or `nil` for one typed in.
+    func choose(provider: String?) {
+        customDomain = provider == nil
+        domain = provider ?? ""
     }
 
     var canContinue: Bool {
@@ -276,5 +286,17 @@ import XippiSession
         case "email": Copy.email
         default: nil
         }
+    }
+}
+
+/// The server the UI tests' accounts connect to, on this Mac (`-UITestServer localhost`): their
+/// domains are not in the DNS. Empty everywhere else, so the domain names the server.
+enum TestServer {
+    static var address: String {
+        #if DEBUG || UITEST_HOOKS
+            UITestLaunch.isActive ? UITestLaunch.value("UITestServer") ?? "" : ""
+        #else
+            ""
+        #endif
     }
 }

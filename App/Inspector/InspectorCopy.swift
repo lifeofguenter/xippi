@@ -27,7 +27,6 @@ extension Copy {
                 localized: "Send ^[\(count) waiting message](inflect: true) unencrypted?"
             ).characters)
     }
-    static let members = String(localized: "Members")
     static let subject = String(localized: "Subject")
     static let noSubject = String(localized: "No subject")
     static let contact = String(localized: "Contact")
@@ -230,6 +229,7 @@ extension Copy {
     static let notifications = String(localized: "Notifications")
     static let muteChat = String(localized: "Mute")
     static let memberDevices = String(localized: "Devices")
+    static let copyAddress = String(localized: "Copy address")
     static let done = String(localized: "Done")
 
     /// "fingerprint changed: now 05a1b2c3 d4e5f607 …", or that the device has none now.

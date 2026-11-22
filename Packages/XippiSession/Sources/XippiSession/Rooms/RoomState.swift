@@ -134,9 +134,14 @@ protocol RoomLifecycleOwner: AnyObject, Sendable {
     func roomNoLongerExists(chatID: Int64) async
     /// Whether an invitation from `inviter` (a bare JID) is shown: never from strangers.
     func acceptsInvitation(from inviter: JID) async -> Bool
+    /// A room (bare JID: its disco#info or its own presence, XEP-0486) or one of its
+    /// occupants (room/nick: their presence, XEP-0153) names its vCard avatar.
+    func avatarAnnounced(_ hash: Presence.AvatarHash, by jid: JID) async
 }
 
 extension RoomLifecycleOwner {
+    func avatarAnnounced(_ hash: Presence.AvatarHash, by jid: JID) async {}
+
     func roomUnreachable(chatID: Int64) async {}
 
     func roomNoLongerExists(chatID: Int64) async {}

@@ -264,7 +264,7 @@
 
         // MARK: The big chat
 
-        private static let nicks = ["alice", "bob", "carol", "dave", "erin", "zash", "mwild"]
+        private static let nicks = ["alice", "bob", "carol", "dave", "erin", "lena", "omar"]
 
         /// `count` messages in "prosody", newest now, with runs from one sender, styling,
         /// replies and reactions. Its own last message is read; the newest few are unread.
@@ -286,7 +286,7 @@
                 let roll = generator.next() % 100
                 if roll < 35 { nick = nicks[Int(generator.next() % UInt64(nicks.count))] }
                 at = at.addingTimeInterval(roll < 70 ? 40 : Double(120 + generator.next() % 900))
-                let outgoing = nick == "mwild" && index % 5 == 0
+                let outgoing = nick == "omar" && index % 5 == 0
                 var text = roomTexts[Int(generator.next() % UInt64(roomTexts.count))]
                 if index == count - 2 { text = "Is 13.1 out yet?" }
                 if index == count - 1 { text = "Yes, since Monday" }
@@ -307,6 +307,21 @@
                         mention: false, id: "r-\(index)")
                     reaction.reactions = ReactionUpdate(targetID: "big-\(index)", emojis: ["👍"])
                     batch.append(reaction)
+                }
+                if index == count - 2 {
+                    // You and others with more than one emoji: the list of who reacted has tabs.
+                    // Not the one who gave 👍: a second reaction would replace theirs.
+                    let others = nicks.filter { $0 != nicks[(index + 1) % nicks.count] }
+                    let more = [("me", "😂"), (others[0], "😂"), (others[1], "❤️"), (others[2], "😂")]
+                    for (who, emoji) in more {
+                        var reaction = message(
+                            nil, at: min(at, now), accountID: accountID, chatID: chatID,
+                            room: room, from: nil, nick: who, outgoing: who == "me",
+                            mention: false, id: "r-\(index)-\(who)")
+                        reaction.reactions = ReactionUpdate(
+                            targetID: "big-\(index)", emojis: [emoji])
+                        batch.append(reaction)
+                    }
                 }
                 if batch.count >= 5_000 {
                     _ = try database.upsertIncoming(batch)

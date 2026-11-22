@@ -21,6 +21,8 @@
 	<string>public.app-category.social-networking</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Video calls</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright © 2026 Günter Grodotzki</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Calls and file transfers on this network</string>
 	<key>NSLocationUsageDescription</key>

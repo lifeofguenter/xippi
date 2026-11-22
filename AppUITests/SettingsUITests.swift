@@ -33,6 +33,7 @@ final class SettingsUITests: XCTestCase {
             ("Advanced", "settings-advanced"),
             ("Accounts", "settings-accounts"),
         ] {
+            // The system's tabs, in the window's toolbar.
             app.toolbars.buttons[tab].click()
             XCTAssertTrue(
                 app.descendants(matching: .any)[identifier].waitForExistence(timeout: 5),

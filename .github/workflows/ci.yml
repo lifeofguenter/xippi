@@ -101,3 +101,6 @@ jobs:
 
       - name: Build UI tests
         run: make build-tests CONFIGURATION=Debug
+
+      - name: App unit tests
+        run: make test-app CONFIGURATION=Debug

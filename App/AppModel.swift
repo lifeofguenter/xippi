@@ -35,7 +35,11 @@ import os
     var selection: Int64? {
         didSet {
             guard selection != oldValue else { return }
-            if let selection { openTiming.begin(chatID: selection) }
+            keptInList = selection
+            if let selection {
+                openTiming.begin(chatID: selection)
+                reopen(chatID: selection)
+            }
             if hasSelection != (selection != nil) { hasSelection = selection != nil }
             updateOpenChat()
             onSelectionChange?(selection)
@@ -44,8 +48,8 @@ import os
     /// Whether a chat is open, for menus and toolbar items that only care about that.
     private(set) var hasSelection = false
     var inspectorVisible = false
-    /// The chat list column is shown (the user can collapse it).
-    var sidebarVisible = true
+    /// The inspector's tab: Info, Background or Media; kept across chats, as in Messages.
+    var inspectorTab: InspectorTab = .info
     var quickSwitcherVisible = false
     var findInChatVisible = false
     /// What File > Save As saves: the file Quick Look shows, else that of the message holding
@@ -53,7 +57,16 @@ import os
     var fileToSave: FileTarget?
     /// Runs File > Save As in the transcript.
     @ObservationIgnored var saveFileAs: (() -> Void)?
-    var sidebarFilter: SidebarFilter = .all
+    /// The pointer is over the open chat's title bar. Only then do the messages under the bar
+    /// blur behind a band, so it is clear over them the rest of the time, as in Messages.
+    var titleBarHovered = false
+    var sidebarFilter: SidebarFilter = .all {
+        didSet { if sidebarFilter != oldValue { keptInList = nil } }
+    }
+    /// The open chat, listed under the filter it was opened under even once that filter would
+    /// leave it out: a chat opened from Unread stays there once read. Another filter lists it
+    /// only where it belongs.
+    private(set) var keptInList: Int64?
     /// The sidebar's search: chats and messages of every account.
     var searchText = ""
     var searchPresented = false
@@ -75,6 +88,17 @@ import os
 
     /// The stored accounts, in the order they were added.
     var accounts: [AccountRecord] = []
+
+    /// Who the account is in the open chat, while there is more than one account to be: a
+    /// message sent as the wrong one tells the other side who is behind it. Nil with one.
+    func identity(for info: OpenChatInfo) -> String? {
+        Self.identity(for: info, accounts: accounts.count)
+    }
+
+    static func identity(for info: OpenChatInfo, accounts: Int) -> String? {
+        guard accounts > 1 else { return nil }
+        return Copy.chattingAs(account: info.accountJID, nick: info.nick)
+    }
     /// The account sheet over the main window.
     var onboarding: OnboardingStart?
     /// A certificate an account's session rejected, for the user to trust or not.
@@ -166,7 +190,8 @@ import os
         }
         let chat = TranscriptChat(
             id: item.id, jid: item.chat.jid, name: item.displayName, isRoom: item.isGroup,
-            avatarHash: item.chat.avatarHash, ownNick: item.isGroup ? item.chat.nick : nil)
+            avatarHash: item.chat.avatarHash, ownNick: item.isGroup ? item.chat.nick : nil,
+            accountJID: item.accountJID)
         let database = database
         let fontSize = Typography.messageSize(settings.messageTextSize)
         Task.detached(priority: .utility) {
@@ -348,9 +373,8 @@ import os
         quickSwitcherVisible = true
     }
 
-    /// Focuses the sidebar's search field, showing the sidebar first when it is collapsed.
+    /// Focuses the sidebar's search field.
     func showSearchEverywhere() {
-        if !sidebarVisible { sidebarVisible = true }
         searchPresented = true
     }
 
@@ -359,10 +383,34 @@ import os
         findInChatVisible = true
     }
 
+    /// Closes the chat: out of the list until it is opened again or a new message arrives.
+    /// History, settings and bookmark stay.
+    func closeChat(chatID: Int64) {
+        if selection == chatID { selection = nil }
+        writeChat(chatID) { $0.closed = true }
+    }
+
+    /// Opening a chat puts it back in the list if it was closed (nothing is written if not).
+    private func reopen(chatID: Int64) {
+        writeChat(chatID) { $0.closed = false }
+    }
+
     func setPinned(_ pinned: Bool, chatID: Int64) {
+        writeChat(chatID) { $0.pinned = pinned }
+    }
+
+    /// The model's chat writes, one after the other in the order they were made: opening a
+    /// chat and closing it right after must end closed, whichever task runs first.
+    @ObservationIgnored private var chatWrites: Task<Void, Never>?
+
+    private func writeChat(
+        _ chatID: Int64, _ change: @escaping @Sendable (inout ChatRecord) -> Void
+    ) {
+        let previous = chatWrites
         let database = database
-        Task {
-            await Self.updateChat(chatID, in: database) { $0.pinned = pinned }
+        chatWrites = Task {
+            await previous?.value
+            await Self.updateChat(chatID, in: database, change)
         }
     }
 
@@ -408,9 +456,11 @@ struct OpenChatSettings: Equatable {
     var encryption: EncryptionMode
     var nick: String?
     var password: String?
+    var background: ChatBackground?
 
     init(_ chat: ChatRecord, id: Int64) {
         self.id = id
+        background = chat.background
         notify = chat.notify
         muted = chat.muted
         encryption = chat.encryption

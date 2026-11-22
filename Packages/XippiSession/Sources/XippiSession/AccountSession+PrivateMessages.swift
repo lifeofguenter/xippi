@@ -28,15 +28,30 @@ extension AccountSession {
         guard room.kind == .room, let roomJID = try? JID(room.jid) else { throw .notAllowed }
         guard !occupantNick.isEmpty, let occupant = try? roomJID.bare.withResource(occupantNick)
         else { throw .invalidInput }
-        if let own = await rooms?.ownOccupant(in: roomChatID), own.jid == occupant {
-            throw .notAllowed
-        }
+        if await isOwnOccupant(occupant, room: room) { throw .notAllowed }
         let chat = try stored {
             try database.ensureChat(
                 accountID: accountID, jid: occupant.description, kind: .roomPrivate)
         }
         guard chat.kind == .roomPrivate, let chatID = chat.id else { throw .notAllowed }
         return chatID
+    }
+
+    /// The account's own occupant in the room: the one the room gave us while joined, else
+    /// the nick the room's chat keeps. A private chat with it is a chat with oneself.
+    func isOwnOccupant(_ occupant: JID, room: ChatRecord) async -> Bool {
+        if let id = room.id, let own = await rooms?.ownOccupant(in: id) {
+            return own.jid == occupant
+        }
+        return Self.isStoredNick(occupant, of: room)
+    }
+
+    /// `occupant` holds the nick the room's chat keeps.
+    nonisolated static func isStoredNick(_ occupant: JID, of room: ChatRecord) -> Bool {
+        guard let nick = room.nick, !nick.isEmpty,
+            let own = try? occupant.bare.withResource(nick)
+        else { return false }
+        return own == occupant
     }
 
     /// The room a private chat goes through: the room's chat, by the occupant's bare address.
@@ -91,6 +106,9 @@ extension AccountSession {
         _ message: ChatMessage, occupant: JID, room: ChatRecord, outgoing: Bool,
         omemo: IncomingOMEMO?, arrivedAt: Date?
     ) async {
+        // A private message to or from our own occupant is not a conversation: no chat with
+        // oneself.
+        if await isOwnOccupant(occupant, room: room) { return }
         let nick = occupant.resourcepart ?? ""
         let trust = roomTrust[occupant.bare] ?? RoomTrust()
         let occupantID = !outgoing && trust.occupantIDs ? message.occupantID : nil

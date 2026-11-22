@@ -21,7 +21,8 @@ struct XippiApp: App {
         // opens the database.
         guard SingleInstance.claim() else { exit(0) }
         LaunchWarmUp.start()
-        let settings = AppSettings()
+        // A test launch keeps preferences of its own: the installed app reads the same ones.
+        let settings = AppSettings(defaults: LaunchDefaults.make("preferences"))
         let presenter = MainWindowPresenter()
         let notifications = NotificationController(settings: settings, presenter: presenter)
         let calls = CallCoordinator(alerts: notifications)
@@ -33,6 +34,7 @@ struct XippiApp: App {
             DebugSnapshot.calls = calls
             DebugSnapshot.notifications = notifications
             DebugSnapshot.links = links
+            DebugSnapshot.settings = settings
         #endif
         _settings = State(initialValue: settings)
         _idle = State(initialValue: idle)
@@ -84,6 +86,7 @@ struct XippiApp: App {
         ToolScenes(model: launch.model, settings: settings)
         Settings {
             SettingsView(settings: settings, model: launch.model)
+                .environment(\.avatarImages, launch.model?.avatars)
                 .preferredColorScheme(settings.appearance.colorScheme)
         }
         Window(Copy.status, id: StatusWindow.windowID) {
@@ -110,6 +113,9 @@ struct MainCommands: Commands {
     @FocusedValue(\.chatSheets) private var sheets
 
     var body: some Commands {
+        CommandGroup(replacing: .appInfo) {
+            Button(Copy.aboutApp) { AboutPanel.show() }
+        }
         CommandGroup(after: .newItem) {
             Button(Copy.newChat) { sheets?.sheet = .newChat }
                 .keyboardShortcut("n")

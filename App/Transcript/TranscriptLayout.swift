@@ -159,6 +159,10 @@ struct MessageLayout: Equatable, Sendable {
     var attachments: [CGRect]
     var reactions: CGRect?
     var meta: CGRect?
+    /// Which attachments show as the picture itself, in order.
+    var pictures: [Bool] = []
+    /// A message of pictures alone has no bubble colour: the pictures are the bubble.
+    var bubbleFilled = true
 
     static func make(
         _ model: MessageRowModel, width: CGFloat, fonts: TranscriptFonts, measurer: TextMeasurer
@@ -205,8 +209,15 @@ struct MessageLayout: Equatable, Sendable {
             contentWidth = max(contentWidth, size.width)
         }
         let attachmentCount = model.message.retracted ? 0 : model.item.attachments.count
-        if attachmentCount > 0 {
-            contentWidth = max(contentWidth, min(M.attachmentWidth, maxContent))
+        // Each picture at its own proportions; any other file as a row.
+        let pictures: [CGSize?] = (0..<attachmentCount).map { index in
+            guard index < model.pictureSizes.count, let pixels = model.pictureSizes[index] else {
+                return nil
+            }
+            return InlinePicture.displaySize(pixels: pixels, width: maxContent)
+        }
+        for picture in pictures {
+            contentWidth = max(contentWidth, picture?.width ?? min(M.attachmentWidth, maxContent))
         }
         let preview = model.message.retracted ? nil : model.linkPreview
         if preview != nil {
@@ -215,14 +226,20 @@ struct MessageLayout: Equatable, Sendable {
         if textSize == nil, replySize == nil, attachmentCount == 0, !hasLocation {
             textSize = CGSize(width: 0, height: lineHeight)
         }
-        contentWidth = min(max(contentWidth, M.minBubbleWidth - 2 * M.bubblePaddingH), maxContent)
-        let bubbleWidth = contentWidth + 2 * M.bubblePaddingH
+        // Pictures alone, with nothing to frame them: no padding around them.
+        let picturesOnly =
+            attachmentCount > 0 && pictures.allSatisfy { $0 != nil } && textSize == nil
+            && replySize == nil && !hasLocation && preview == nil
+        let paddingH = picturesOnly ? 0 : M.bubblePaddingH
+        let paddingV = picturesOnly ? 0 : M.bubblePaddingV
+        contentWidth = min(max(contentWidth, M.minBubbleWidth - 2 * paddingH), maxContent)
+        let bubbleWidth = contentWidth + 2 * paddingH
         let bubbleX =
             model.isOutgoing ? M.sideMargin + available - bubbleWidth : M.sideMargin
-        let innerX = bubbleX + M.bubblePaddingH
+        let innerX = bubbleX + paddingH
 
         let bubbleTop = y
-        var inner = bubbleTop + M.bubblePaddingV
+        var inner = bubbleTop + paddingV
         var replyBar: CGRect?
         var replyName: CGRect?
         var replyText: CGRect?
@@ -264,16 +281,30 @@ struct MessageLayout: Equatable, Sendable {
         var attachments: [CGRect] = []
         if attachmentCount > 0 {
             if textRect != nil || location != nil || linkCard != nil { inner += M.attachmentGap }
-            for _ in 0..<attachmentCount {
-                attachments.append(
-                    CGRect(
-                        x: innerX, y: inner, width: contentWidth, height: fonts.attachmentRow))
-                inner += fonts.attachmentRow
+            for (index, picture) in pictures.enumerated() {
+                // A picture keeps apart from what is above it.
+                if index > 0, picture != nil || pictures[index - 1] != nil {
+                    inner += M.attachmentGap
+                }
+                if let picture {
+                    // Ours line up on the right, as their bubble does.
+                    let x =
+                        model.isOutgoing && picturesOnly
+                        ? innerX + contentWidth - picture.width : innerX
+                    attachments.append(
+                        CGRect(x: x, y: inner, width: picture.width, height: picture.height))
+                    inner += picture.height
+                } else {
+                    attachments.append(
+                        CGRect(
+                            x: innerX, y: inner, width: contentWidth, height: fonts.attachmentRow))
+                    inner += fonts.attachmentRow
+                }
             }
         }
         let bubble = CGRect(
             x: bubbleX, y: bubbleTop, width: bubbleWidth,
-            height: inner + M.bubblePaddingV - bubbleTop)
+            height: inner + paddingV - bubbleTop)
         y = bubble.maxY
 
         var reactions: CGRect?
@@ -312,7 +343,8 @@ struct MessageLayout: Equatable, Sendable {
             height: ceil(y + M.bottomPadding), bubble: bubble, header: header,
             replyBar: replyBar, replyName: replyName, replyText: replyText, text: textRect,
             textContainerWidth: contentWidth, location: location, linkCard: linkCard,
-            attachments: attachments, reactions: reactions, meta: meta)
+            attachments: attachments, reactions: reactions, meta: meta,
+            pictures: pictures.map { $0 != nil }, bubbleFilled: !picturesOnly)
     }
 }
 

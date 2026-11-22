@@ -105,7 +105,8 @@ private struct AccountStatusRow: View {
         let status = model.status(of: account)
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                StatusDot(status: status)
+                OwnAvatar(
+                    model: model, account: account, size: ControlHeight.Settings.accountAvatar)
                 Text(account.jid)
                     .font(.appEmphasized)
                     .lineLimit(1)

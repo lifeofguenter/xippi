@@ -710,6 +710,10 @@ actor RoomManager: RoomLifecycle {
             info.forms.first { $0.formType == Self.roomInfoForm }?
             .field("muc#roominfo_changesubject")?.boolValue == true
         changed(chatID)
+        // The room's avatar, from its vCard (XEP-0486).
+        if let hash = MUC.RoomInfo(info: info)?.avatarHashes.first {
+            await owner?.avatarAnnounced(.hash(hash), by: jid)
+        }
         let trust = RoomTrust(
             stanzaIDs: features.contains(ChatMessage.stanzaIDNamespace),
             occupantIDs: features.contains(MUCPresence.occupantIDNamespace),
@@ -740,8 +744,17 @@ actor RoomManager: RoomLifecycle {
     }
 
     private func available(_ presence: Presence, from: JID, chatID: Int64) async {
-        // The room's own presence (its avatar) is not about anyone in it.
-        guard var room = rooms[chatID], let nick = from.resourcepart else { return }
+        // The room's own presence is not about anyone in it: it names the room's avatar.
+        guard var room = rooms[chatID], let nick = from.resourcepart else {
+            if from.resourcepart == nil, let hash = presence.avatarHash {
+                await owner?.avatarAnnounced(hash, by: from.bare)
+            }
+            return
+        }
+        // An occupant's presence may name their vCard avatar; ours is known already.
+        if let hash = presence.avatarHash, room.own?.jid != from {
+            await owner?.avatarAnnounced(hash, by: from)
+        }
         let muc = presence.muc
         let occupant = Occupant(
             realJID: muc?.realJID, occupantID: muc?.occupantID, role: muc?.role,

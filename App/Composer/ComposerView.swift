@@ -55,7 +55,8 @@ struct ComposerView: View {
                 } else {
                     ComposerTextView(
                         text: $composer.text, height: $composer.fieldHeight,
-                        placeholder: Copy.messagePlaceholder(composer.chatName),
+                        placeholder: Copy.messagePlaceholder(
+                            composer.chatName, as: composer.identity),
                         focusRequest: composer.focusRequest,
                         onSubmit: composer.send,
                         onUpArrowWhenEmpty: editLastMessage,
@@ -109,7 +110,7 @@ struct ComposerView: View {
             ComposerDrop.receive(providers, into: composer)
         }
         .padding(.horizontal, ControlHeight.Composer.margin)
-        .padding(.bottom, ControlHeight.Composer.margin)
+        .padding(.bottom, ControlHeight.Composer.bottomMargin)
         .animation(.snappy, value: composer.reply)
         .animation(.snappy, value: composer.editing)
         .animation(.snappy, value: composer.pendingFiles)
@@ -198,13 +199,15 @@ private struct AttachMenu: View {
         } label: {
             Image(systemName: "plus")
                 .font(.title3.weight(.medium))
+                .foregroundStyle(.primary)
                 .frame(width: ControlHeight.Composer.button, height: ControlHeight.Composer.button)
                 .contentShape(.circle)
         }
+        // Plain, as the bar's other buttons: a bordered menu adds insets that set the + lower.
         .menuStyle(.button)
-        .buttonStyle(.borderless)
+        .buttonStyle(.plain)
         .menuIndicator(.hidden)
-        .fixedSize()
+        .frame(width: ControlHeight.Composer.button, height: ControlHeight.Composer.button)
         .help(Copy.attach)
         .accessibilityLabel(Copy.attach)
         .pointerStyle(.link)

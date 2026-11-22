@@ -19,8 +19,8 @@
     /// - `ff-keys <text>`: types into whatever has the keyboard focus.
     /// - `ff-newchat`, `ff-addcontact`: saves `<name>.newchat.png` or `.addcontact.png`.
     /// - `ff-windows <suffix>`: saves every other visible window (sheets, dialogs).
-    /// - `ff-focus`: the composer takes the keyboard; `ff-collapse`: the sidebar collapses;
-    ///   `ff-searchall`: ⇧⌘F; `ff-midnight`: the day changes.
+    /// - `ff-focus`: the composer takes the keyboard; `ff-searchall`: ⇧⌘F; `ff-midnight`: the
+    ///   day changes.
     /// - `ff-dump`: saves `<name>.ff.txt`: the newest messages' menus, their actions for
     ///   VoiceOver, the quick switcher's contacts and the open chat's label.
     extension DebugSnapshot {
@@ -67,7 +67,6 @@
                 NotificationCenter.default.post(name: .NSCalendarDayChanged, object: nil)
                 try? await Task.sleep(for: .milliseconds(300))
                 midnight = "day rows labelled again: \(DaySeparatorView.labelled - before)"
-            case "ff-collapse": model.sidebarVisible = false
             case "ff-searchall": model.showSearchEverywhere()
             case "ff-dump": await dump(model)
             default: return false
@@ -281,8 +280,7 @@
             let responder = NSApp.windows.first { $0.isVisible && $0.contentView != nil }?
                 .firstResponder
             lines.append(
-                "firstResponder=\(responder.map { String(describing: type(of: $0)) } ?? "-")"
-                    + " sidebarVisible=\(model.sidebarVisible)")
+                "firstResponder=\(responder.map { String(describing: type(of: $0)) } ?? "-")")
             lines.append("textsize=\(model.settings.messageTextSize.map { "\($0)" } ?? "system")")
             write(
                 lines.joined(separator: "\n").data(using: .utf8),

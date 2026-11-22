@@ -83,22 +83,20 @@ import XippiStore
 }
 
 /// A MIX channel's part of the inspector, under `InspectorHeader`: its state, its members,
-/// Join or Leave, and the shared media every chat shows.
+/// Join or Leave. Shared media is the inspector's Media tab.
 struct ChannelDetails: View {
     let model: AppModel
     let info: OpenChatInfo
-    let media: [SharedMediaItem]
     let sheets: ChatSheets
     let context: OpenChatContext
     @State private var inspector: ChannelInspectorModel
 
     init(
-        model: AppModel, info: OpenChatInfo, media: [SharedMediaItem], sheets: ChatSheets,
+        model: AppModel, info: OpenChatInfo, sheets: ChatSheets,
         context: OpenChatContext
     ) {
         self.model = model
         self.info = info
-        self.media = media
         self.sheets = sheets
         self.context = context
         _inspector = State(
@@ -132,11 +130,6 @@ struct ChannelDetails: View {
                     .disabled(inspector.busy)
                 }
                 InspectorError(text: inspector.error)
-            }
-            InspectorSection(title: Copy.sharedMedia, identifier: "inspector-media") {
-                SharedMediaView(items: media) { item in
-                    model.open(chatID: info.id, revealing: item.messageID)
-                }
             }
         }
         .font(.appBody)
@@ -185,7 +178,7 @@ private struct ChannelMemberList: View {
             Text(Copy.noChannelMembers)
                 .foregroundStyle(.secondary)
         case .loaded(let members):
-            VStack(alignment: .leading, spacing: 6) {
+            LazyVStack(alignment: .leading, spacing: 6) {
                 ForEach(members) { member in
                     ChannelMemberRow(member: member, safety: safety)
                 }
@@ -194,7 +187,7 @@ private struct ChannelMemberList: View {
     }
 }
 
-private struct ChannelMemberRow: View {
+struct ChannelMemberRow: View {
     let member: ChannelMember
     let safety: MemberSafety<ChannelMember>?
 
@@ -219,21 +212,9 @@ private struct ChannelMemberRow: View {
                 Text(Copy.you)
                     .foregroundStyle(.secondary)
             } else if let safety, let target = safety.target(member) {
-                Menu {
-                    MemberSafetyItems(
-                        target: target, isBlocked: safety.isBlocked(target), ask: safety.ask,
-                        unblock: safety.unblock)
-                } label: {
-                    Label(Copy.memberActions, systemImage: "ellipsis.circle")
-                        .labelStyle(.iconOnly)
+                MemberMenuButton(identifier: "channel-member-actions-\(member.id)") {
+                    safety.entries(for: target)
                 }
-                .menuStyle(.button)
-                .buttonStyle(.borderless)
-                .menuIndicator(.hidden)
-                .fixedSize()
-                .pointerStyle(.link)
-                .help(Copy.memberActions)
-                .accessibilityIdentifier("channel-member-actions-\(member.id)")
             }
         }
         .accessibilityElement(children: .contain)

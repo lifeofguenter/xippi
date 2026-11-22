@@ -1,15 +1,17 @@
 #if DEBUG || UITEST_HOOKS
     import AVFoundation
     import AppKit
+    import ImageIO
     import SwiftUI
+    import UniformTypeIdentifiers
     import XMPPCore
     import XippiSession
     import XippiStore
     import os
 
     /// Composer and transcript media for the snapshot hook: `-UITestAction "media <step>"`.
-    /// - `seed`: a voice message, a location, a link, a file going up, one not fetched and one
-    ///   that failed, in the open chat.
+    /// - `seed`: a voice message, a location, a link, a received picture and GIF, a file going
+    ///   up, one not fetched and one that failed, in the open chat.
     /// - `attach`: two files waiting in the composer; `attachvoice`: a short voice file.
     /// - `record hold|toggle|armed`: the recording bar, without the microphone.
     /// - `linkpreview`: a preview under the newest message with a link, without fetching.
@@ -182,19 +184,81 @@
             return [picture, notes]
         }
 
+        /// Where a sample file goes, named as the media folder names a file: by its contents,
+        /// with no extension.
+        private static func storedSample(_ name: String) -> URL {
+            let folder = FileManager.default.temporaryDirectory.appending(
+                path: "debug-media", directoryHint: .isDirectory)
+            try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            return folder.appending(path: name)
+        }
+
+        /// A landscape photo's worth of pixels, larger than a picture shows.
+        private static func samplePhoto() -> URL? {
+            let photo = storedSample("9f86d081884c7d65")
+            let size = NSSize(width: 1200, height: 800)
+            let image = NSImage(size: size, flipped: false) { rect in
+                NSGradient(colors: [.systemBlue, .systemTeal])?.draw(in: rect, angle: 90)
+                NSColor.systemYellow.setFill()
+                NSBezierPath(ovalIn: NSRect(x: 820, y: 500, width: 180, height: 180)).fill()
+                NSColor.white.withAlphaComponent(0.8).setFill()
+                NSBezierPath(rect: NSRect(x: 0, y: 0, width: 1200, height: 220)).fill()
+                return true
+            }
+            guard let tiff = image.tiffRepresentation,
+                let png = NSBitmapImageRep(data: tiff)?.representation(
+                    using: .png, properties: [:]),
+                (try? png.write(to: photo)) != nil
+            else { return nil }
+            return photo
+        }
+
+        /// An animated GIF: three frames of colour.
+        private static func sampleAnimation() -> URL? {
+            let url = storedSample("2c26b46b68ffc68f")
+            try? FileManager.default.removeItem(at: url)
+            guard
+                let destination = CGImageDestinationCreateWithURL(
+                    url as CFURL, UTType.gif.identifier as CFString, 3, nil)
+            else { return nil }
+            for color in [NSColor.systemPink, .systemOrange, .systemPurple] {
+                guard
+                    let rep = NSBitmapImageRep(
+                        bitmapDataPlanes: nil, pixelsWide: 240, pixelsHigh: 180,
+                        bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+                        colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)
+                else { return nil }
+                NSGraphicsContext.saveGraphicsState()
+                NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
+                color.setFill()
+                NSRect(x: 0, y: 0, width: 240, height: 180).fill()
+                NSGraphicsContext.restoreGraphicsState()
+                guard let frame = rep.cgImage else { return nil }
+                CGImageDestinationAddImage(
+                    destination, frame,
+                    [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFDelayTime: 0.4]]
+                        as CFDictionary)
+            }
+            return CGImageDestinationFinalize(destination) ? url : nil
+        }
+
         private static func seedMedia(chatID: Int64, database: AppDatabase) async {
             let voice = makeVoiceFile()
             let picture = sampleFiles().first
+            let photo = samplePhoto()
+            let animation = sampleAnimation()
             do {
                 try await insertMedia(
-                    chatID: chatID, voice: voice, picture: picture, database: database)
+                    chatID: chatID, voice: voice, picture: picture, photo: photo,
+                    animation: animation, database: database)
             } catch {
                 appLog.error("Media not seeded: \(String(describing: error), privacy: .private)")
             }
         }
 
         @concurrent private static func insertMedia(
-            chatID: Int64, voice: URL?, picture: URL?, database: AppDatabase
+            chatID: Int64, voice: URL?, picture: URL?, photo: URL?, animation: URL?,
+            database: AppDatabase
         ) async throws {
             guard let chat = try database.chat(id: chatID) else { return }
             let isDirect = chat.kind == .direct
@@ -228,6 +292,28 @@
             }
             _ = try incoming("geo:52.520008,13.404954", kind: .location)
             _ = try incoming("Release notes: https://prosody.im/doc/release/13.0.2")
+            if let photo {
+                let size = (try? photo.resourceValues(forKeys: [.fileSizeKey]).fileSize).map(
+                    Int64.init)
+                _ = try incoming(
+                    nil, kind: .file,
+                    files: [
+                        AttachmentDraft(
+                            localPath: photo.path, mimeType: "image/png", byteSize: size,
+                            fileName: "Harbour.png", state: .local)
+                    ])
+            }
+            if let animation {
+                let size = (try? animation.resourceValues(forKeys: [.fileSizeKey]).fileSize).map(
+                    Int64.init)
+                _ = try incoming(
+                    nil, kind: .file,
+                    files: [
+                        AttachmentDraft(
+                            localPath: animation.path, mimeType: "image/gif", byteSize: size,
+                            fileName: "Wave.gif", state: .local)
+                    ])
+            }
             _ = try incoming(
                 nil, kind: .file,
                 files: [

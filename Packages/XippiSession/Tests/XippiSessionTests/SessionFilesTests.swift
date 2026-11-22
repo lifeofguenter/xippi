@@ -156,6 +156,67 @@ import XippiStore
         await harness.stop()
     }
 
+    /// A picture from history comes by itself once it shows, from a contact, never from a
+    /// stranger: only live messages fetched theirs, so a picture that arrived while the app
+    /// was away stayed a "Size unknown" row.
+    @Test func filesFromHistoryComeWhenTheyShow() async throws {
+        let (media, environment) = try Self.mediaRig()
+        defer { media.cleanUp() }
+        var options = SessionServer.Options()
+        options.roster = .items(
+            ["<item jid='\(Self.bob)' subscription='both'/>"], version: "v2")
+        let harness = try await SessionHarness(options: options, media: environment)
+        harness.server.setResponder { iq in
+            iq.child("query", namespace: MAM.namespace) != nil ? [] : nil
+        }
+        let bytes = MediaRig.bytes(2048)
+        let fromBob = MediaRig.url("https://files.example.test/bob/old.png")
+        let fromStranger = MediaRig.url("https://files.example.test/mallory/old.png")
+        media.transport.serve(fromBob, data: bytes, contentType: "image/png")
+        media.transport.serve(fromStranger, data: bytes, contentType: "image/png")
+        try await harness.goOnline()
+        try await waitUntil("archive asked") { Self.mamQuery(harness.server) != nil }
+        let query = try #require(Self.mamQuery(harness.server))
+        let queryID = try #require(
+            query.child("query", namespace: MAM.namespace)?[attribute: "queryid"])
+        func picture(_ id: String, from sender: String, url: URL, seconds: Int) -> String {
+            "<message to='\(Self.me)'><result xmlns='urn:xmpp:mam:2' queryid='\(queryID)' id='\(id)'>"
+                + "<forwarded xmlns='urn:xmpp:forward:0'>"
+                + "<delay xmlns='urn:xmpp:delay' stamp='2026-11-19T08:00:0\(seconds)Z'/>"
+                + "<message xmlns='jabber:client' from='\(sender)' to='\(Self.me)' type='chat'"
+                + " id='m\(id)'><body>\(url)</body><x xmlns='jabber:x:oob'><url>\(url)</url></x>"
+                + "</message></forwarded></result></message>"
+        }
+        try harness.deliver(
+            picture("h1", from: "\(Self.bob)/phone", url: fromBob, seconds: 1)
+                + picture("h2", from: "mallory@evil.test/x", url: fromStranger, seconds: 2)
+                + "<iq type='result' id='\(query.id ?? "")'><fin xmlns='urn:xmpp:mam:2' complete='true'>"
+                + "<set xmlns='http://jabber.org/protocol/rsm'><first>h1</first><last>h2</last></set>"
+                + "</fin></iq>")
+        try await waitUntil("archive stored") {
+            try harness.database.lastKnownArchiveID(
+                accountID: harness.accountID, archive: "alice@example.test") == "h2"
+        }
+        try await harness.barrier()
+        let rows = try harness.messages()
+        let bobMessage = try #require(rows.first { $0.archiveID == "h1" }?.id)
+        let strangerMessage = try #require(rows.first { $0.archiveID == "h2" }?.id)
+        // Stored from history, nothing comes yet.
+        #expect(try harness.database.attachments(messageID: bobMessage).first?.state == .remote)
+        #expect(media.transport.requests.isEmpty)
+
+        await harness.session.fetchShownAttachments(messageID: bobMessage)
+        await harness.session.fetchShownAttachments(messageID: strangerMessage)
+        try await waitUntil("downloaded") {
+            try harness.database.attachments(messageID: bobMessage).first?.state == .local
+        }
+        #expect(try harness.database.attachments(messageID: bobMessage).first?.byteSize == 2048)
+        #expect(
+            try harness.database.attachments(messageID: strangerMessage).first?.state == .remote)
+        #expect(!media.transport.requests.contains(fromStranger))
+        await harness.stop()
+    }
+
     static let put = "https://upload.example.test/put/1/notes.txt"
     static let get = "https://upload.example.test/get/1/notes.txt"
 
@@ -418,6 +479,41 @@ extension SessionFilesTests {
 }
 
 extension SessionFilesTests {
+    /// At launch the open room shows before it is joined again: a picture from its history
+    /// shown then comes once the room is joined, not before (a room not joined is a stranger).
+    @Test func aRoomsPictureShownBeforeTheJoinComesWithIt() async throws {
+        let (media, environment) = try Self.mediaRig()
+        defer { media.cleanUp() }
+        let room = "room@conference.example.test"
+        let url = MediaRig.url("https://files.example.test/room/cat.gif")
+        media.transport.serve(url, data: MediaRig.bytes(4096), contentType: "image/gif")
+        let harness = try await SessionHarness(media: environment) { database, accountID in
+            let chat = try database.ensureChat(accountID: accountID, jid: room, kind: .room)
+            try database.upsertIncoming(
+                IncomingMessage(
+                    accountID: accountID, chatID: try #require(chat.id),
+                    senderJID: "\(room)/carol", senderNick: "carol", body: url.absoluteString,
+                    archiveID: "r1", timestamp: Date(), kind: .file,
+                    attachments: [AttachmentDraft(remoteURL: url.absoluteString, state: .remote)]))
+        }
+        let lifecycle = FakeRoomLifecycle(state: .notJoined)
+        await harness.session.setRoomLifecycle(lifecycle)
+        try await harness.goOnline()
+        let chatID = try #require(try harness.chat(room)?.id)
+        let messageID = try #require(try harness.messages().first?.id)
+
+        await harness.session.fetchShownAttachments(messageID: messageID)
+        try await harness.barrier()
+        #expect(media.transport.requests.isEmpty)
+
+        await lifecycle.setState(.joined)
+        await harness.session.roomJoined(chatID: chatID, room: try JID(room))
+        try await waitUntil("downloaded") {
+            try harness.database.attachments(messageID: messageID).first?.state == .local
+        }
+        await harness.stop()
+    }
+
     /// The size limit set in the app reaches a running session: "always ask" (0) stops
     /// automatic downloads from then on.
     @Test func aChangedSizeLimitReachesTheRunningSession() async throws {

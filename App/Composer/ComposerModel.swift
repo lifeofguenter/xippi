@@ -16,6 +16,8 @@ import XippiStore
     }
     private(set) var chatID: Int64?
     private(set) var chatName = ""
+    /// Who the account is in this chat, with more than one account ("as alice@example.org").
+    private(set) var identity: String?
     private(set) var reply: ReplyTarget?
     private(set) var editing: OwnMessage?
     private(set) var error: String?
@@ -72,8 +74,9 @@ import XippiStore
         chatID != nil && editing == nil && (recording != nil || !canSend)
     }
 
-    func open(chatID: Int64, name: String, draft: String?) {
+    func open(chatID: Int64, name: String, identity: String? = nil, draft: String?) {
         chatName = name
+        self.identity = identity
         guard chatID != self.chatID else { return }
         leaveChat()
         self.chatID = chatID

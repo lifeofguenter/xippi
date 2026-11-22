@@ -109,8 +109,9 @@ enum LinkText {
 }
 
 /// Which account an `xmpp:` link acts as. Only enabled accounts are offered. With several,
-/// the user is asked, starting from the account that already has a chat with the address
-/// (the most recent), else the one used last, else the first.
+/// the user is always asked, even for a chat only one account has: acting as the wrong
+/// account tells the other side who is behind it. The account that already has a chat with
+/// the address (the most recent) comes first, else the one used last, else the first.
 public enum URIAccountChoice: Sendable, Equatable {
     /// One account fits: no question.
     case use(Int64)
@@ -143,12 +144,6 @@ public enum URIAccountChoice: Sendable, Equatable {
             .filter { $0.jid == target && candidates.contains($0.accountID) }
             .sorted { ($0.lastActivity ?? .distantPast) > ($1.lastActivity ?? .distantPast) }
             .map(\.accountID)
-        // Opening a chat only one account has asks nothing; the sheets are confirmations and
-        // always show.
-        if case .openChat = intent, Set(withChat).count == 1, let only = withChat.first {
-            self = .use(only)
-            return
-        }
         let preferred =
             withChat.first ?? lastUsed.flatMap { candidates.contains($0) ? $0 : nil } ?? first
         self = .ask(candidates, preselected: preferred)

@@ -4,10 +4,11 @@
     import os
 
     /// Whether the UI tests launched the app, with `-UITestSeed <count>`,
-    /// `-UITestDatabase memory` or `-UITestDatabaseFile <name>`. Only then does it use a test
+    /// `-UITestDatabase memory` or `-UITestDatabaseFile <name>`, or it hosts the unit tests. Only then does it use a test
     /// database (in memory, or a file in its container) and show the test probes. With any of
     /// them, `-UITestCA <path>` trusts the test servers' CA (PEM or DER) beside the system's
-    /// roots. Such a launch is not held to one instance (`SingleInstance`) unless
+    /// roots, and `-UITestServer <host>` is where new accounts connect (`TestServer`). Such a
+    /// launch is not held to one instance (`SingleInstance`) unless
     /// `-UITestSingleInstance YES` asks for it. Built only into Debug and the Performance
     /// configuration (the `UITEST_HOOKS` condition), never into Release, and read only from the
     /// process's own arguments: no defaults domain can switch it on.
@@ -23,7 +24,14 @@
 
         static let isActive =
             value("UITestSeed") != nil || value("UITestDatabase") == "memory"
-            || value("UITestDatabaseFile") != nil
+            || value("UITestDatabaseFile") != nil || hostsUnitTests
+
+        /// The app is the host of the unit tests (`XippiTests`): it starts as for the UI tests,
+        /// on an empty database in memory, so the tests never open the user's store or connect
+        /// an account. Read from the environment the test runner sets for its host.
+        static let hostsUnitTests =
+            ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+            || ProcessInfo.processInfo.environment["XCTestBundlePath"] != nil
 
         /// `-UITestDatabaseFile <name>`: an on-disk database of that name in the container's
         /// temporary folder, kept between launches (the launch measurement). Only the file name

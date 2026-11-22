@@ -103,6 +103,16 @@ actor AvatarSync {
         }
     }
 
+    /// The vCard avatar a joined room (bare JID) or one of its occupants (room/nick) names.
+    /// Fetched through the room: the room's vCard, or the occupant's as the room passes it on.
+    func roomHash(_ hash: Presence.AvatarHash, from jid: JID) {
+        switch hash {
+        case .hash(let hash): want(.vcard(hash: hash), for: jid)
+        case .noAvatar: show(nil, for: jid)
+        case .notReady: break
+        }
+    }
+
     /// A chat was created for `jid`: it shows the avatar already known, fetched again when
     /// its file went meanwhile.
     func chatCreated(for jid: JID) {

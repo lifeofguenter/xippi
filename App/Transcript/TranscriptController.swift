@@ -57,6 +57,11 @@ struct OwnMessage: Equatable {
     @ObservationIgnored var media: MediaLibrary?
     /// The contacts' avatars, beside their names.
     @ObservationIgnored var avatars: AvatarImages?
+    @ObservationIgnored private var occupantAvatars: [String: String] = [:]
+    /// The open room's members now, for naming who reacted by occupant id.
+    @ObservationIgnored var roomMembers: (Int64) -> [RoomMember] = { _ in [] }
+    /// The account's own picture, beside "You" among who reacted.
+    @ObservationIgnored private var ownAvatarHash: String?
     /// Reactions can be sent in the open chat (not in legacy OMEMO chats, R47).
     @ObservationIgnored private(set) var reactionsAllowed = true
     /// "chatID:messageID" of the first visible message, or "" at the newest.
@@ -99,11 +104,15 @@ struct OwnMessage: Equatable {
     @ObservationIgnored private var gapsDirty = false
     @ObservationIgnored private let reactionPicker = ReactionPicker()
     @ObservationIgnored let thumbnails = AttachmentThumbnails()
+    /// Pictures shown as themselves: larger than thumbnails, so fewer are kept.
+    @ObservationIgnored let pictures = AttachmentThumbnails(limit: 48)
 
     // Link previews of the open chat, by message, and what decides whether one is fetched.
     @ObservationIgnored private var linkPreviews: [Int64: LinkPreview] = [:]
     /// "<message> <link>" of each preview asked for.
     @ObservationIgnored private var previewRequests: Set<String> = []
+    /// Messages of the open chat whose files were asked for as they showed.
+    @ObservationIgnored private var shownFileRequests: Set<Int64> = []
     @ObservationIgnored private var previewsEnabled = false
     @ObservationIgnored private var previewTrust: SenderTrust?
     @ObservationIgnored private weak var settings: AppSettings?
@@ -133,7 +142,7 @@ struct OwnMessage: Equatable {
     @ObservationIgnored private var layouts: [Int64: CachedLayout] = [:]
     @ObservationIgnored private var eventHeights: [Int64: CachedHeight] = [:]
     @ObservationIgnored private weak var tableView: TranscriptTableView?
-    @ObservationIgnored private weak var scrollView: NSScrollView?
+    @ObservationIgnored private weak var scrollView: TranscriptScrollView?
     @ObservationIgnored private var insets = NSEdgeInsets()
     @ObservationIgnored private var fonts = TranscriptFonts(size: 14)
     /// Whom the account ignores in rooms and channels (R72): hidden here, reactions too.
@@ -212,6 +221,7 @@ struct OwnMessage: Equatable {
         VoicePlayback.shared.stop()
         linkPreviews = [:]
         previewRequests = []
+        shownFileRequests = []
         previewTrust = nil
         reactionsAllowed = true
         loadChatDetails(chat.id)
@@ -553,7 +563,7 @@ struct OwnMessage: Equatable {
             highlighted: highlighted, width: width, fontSize: fonts.size, calendar: .current,
             layouts: layouts, eventHeights: eventHeights, linkPreviews: linkPreviews,
             trust: previewTrust, keywords: keywords, revealed: revealed, gaps: gaps,
-            loadingGaps: loadingGaps)
+            loadingGaps: loadingGaps, media: media)
         Task { [weak self] in
             let output = await TranscriptPreparation.run(input)
             guard let self else { return }
@@ -644,10 +654,12 @@ struct OwnMessage: Equatable {
             return
         }
         let anchor = replacing || stickToBottom ? nil : captureAnchor()
+        // Rows added on top only fit a table that shows `oldRows`: one still to load reloads.
+        let inSync = table.numberOfRows == oldRows.count
         rows = newRows
         rowIDs = newRows.map(\.id)
         let samePrefix =
-            !replacing && !oldRows.isEmpty && newRows.count >= oldRows.count
+            !replacing && inSync && !oldRows.isEmpty && newRows.count >= oldRows.count
             && zip(oldRows, newRows).allSatisfy { $0.id == $1.id }
         if samePrefix {
             let changed = IndexSet(oldRows.indices.filter { oldRows[$0] != newRows[$0] })
@@ -920,17 +932,17 @@ struct OwnMessage: Equatable {
     // MARK: - Table setup
 
     func makeScrollView() -> NSScrollView {
-        let scrollView = NSScrollView()
+        let scrollView = TranscriptScrollView()
         scrollView.hasVerticalScroller = true
         scrollView.hasHorizontalScroller = false
         // A scroller that comes and goes with the chat's length would change the width rows
         // are measured at on every chat switch (with legacy scrollers); keep it.
         scrollView.autohidesScrollers = false
-        scrollView.drawsBackground = true
-        scrollView.backgroundColor = TranscriptColors.background
+        // The chat's background (confetti or plain) is drawn behind the transcript.
+        scrollView.drawsBackground = false
         scrollView.automaticallyAdjustsContentInsets = false
         scrollView.contentInsets = insets
-        scrollView.scrollerInsets = insets
+        scrollView.scrollerInsets = Self.scrollerInsets(insets)
 
         let table = TranscriptTableView()
         table.registerForDraggedTypes([.fileURL] + ComposerPasteboard.imageTypes)
@@ -988,19 +1000,32 @@ struct OwnMessage: Equatable {
         return scrollView
     }
 
+    /// None: AppKit already keeps the scroller's thumb clear of the content insets (the
+    /// toolbar, the composer). Scroller insets on top counted them twice: the thumb started
+    /// far below the toolbar, and with the composer's inset it stopped half way down.
+    static func scrollerInsets(_ content: NSEdgeInsets) -> NSEdgeInsets {
+        NSEdgeInsets()
+    }
+
     func setInsets(top: CGFloat, bottom: CGFloat) {
+        scrollView?.titleBarHeight = top
         let new = NSEdgeInsets(top: top, left: 0, bottom: bottom, right: 0)
         guard let scrollView, new.top != insets.top || new.bottom != insets.bottom else { return }
         let wasAtBottom = isAtBottom
         let anchor = captureAnchor()
         insets = new
         scrollView.contentInsets = new
-        scrollView.scrollerInsets = new
+        scrollView.scrollerInsets = Self.scrollerInsets(new)
         if wasAtBottom {
             scrollToBottom()
         } else if let anchor {
             restore(anchor)
         }
+    }
+
+    /// Blurs the messages under the title bar while the pointer is over the bar.
+    func showTitleBarBand(_ shown: Bool) {
+        scrollView?.showTitleBarBand(shown)
     }
 
     @objc private func boundsDidChange(_ notification: Notification) {
@@ -1231,6 +1256,7 @@ extension TranscriptController: NSTableViewDataSource, NSTableViewDelegate {
             cell.actions = self
             cell.configure(model, layout: messageLayout(model), fonts: fonts)
             requestPreview(for: model)
+            requestShownFiles(for: model)
             return cell
         }
     }
@@ -1265,13 +1291,39 @@ extension TranscriptController: NSTableViewDataSource, NSTableViewDelegate {
 extension TranscriptController: TranscriptCellActions, NSMenuDelegate {
     /// The contact's avatar on their messages in a direct chat; rooms show initials.
     func avatar(for model: MessageRowModel) -> NSImage? {
-        guard let chat, !chat.isRoom, !model.isOutgoing else { return nil }
-        return avatars?.image(for: chat.avatarHash)
+        guard let chat else { return nil }
+        let hash = Self.avatarHash(
+            outgoing: model.isOutgoing, isRoom: chat.isRoom, chatHash: chat.avatarHash,
+            senderNick: model.message.senderNick, occupants: occupantAvatars)
+        return avatars?.image(for: hash)
+    }
+
+    /// Whose picture a message shows: none on our own; in a room the sender's, by the nick on
+    /// the message as the room's presences named it; else the chat's.
+    static func avatarHash(
+        outgoing: Bool, isRoom: Bool, chatHash: String?, senderNick: String?,
+        occupants: [String: String]
+    ) -> String? {
+        guard !outgoing else { return nil }
+        guard isRoom else { return chatHash }
+        return senderNick.flatMap { occupants[$0] }
+    }
+
+    /// The open room's occupant avatars by nick; the rows on screen are drawn again when they
+    /// change.
+    func setOccupantAvatars(_ avatars: [String: String]) {
+        guard avatars != occupantAvatars else { return }
+        occupantAvatars = avatars
+        guard let table = tableView, let visible = visibleRows() else { return }
+        table.reloadData(
+            forRowIndexes: IndexSet(visible), columnIndexes: IndexSet(integer: 0))
     }
 
     func openAttachment(_ attachment: AttachmentRecord) {
         guard let file = fileURL(of: attachment) else { return }
-        tableView?.preview(file, attachmentID: attachment.id)
+        // Under its name and true extension: the stored file has none (PreviewFile).
+        let shown = (try? PreviewFile.link(to: file, attachment: attachment, in: PreviewFile.root))
+        tableView?.preview(shown ?? file, attachmentID: attachment.id)
     }
 
     /// By the file's name in the current library, since the home folder or the container may
@@ -1460,6 +1512,39 @@ extension TranscriptController {
         }
     }
 
+    /// Every reaction to the message, with who gave it: names from the room's members and
+    /// the loaded messages, pictures from the room's presences and the account's profile.
+    func givenReactions(forMessage messageID: Int64) -> [GivenReaction] {
+        guard let chat, let item = window.messages.first(where: { $0.id == messageID }) else {
+            return []
+        }
+        let occupants =
+            chat.isRoom
+            ? Reactors.Occupants(
+                messages: window.messages.map(\.message), members: roomMembers(chat.id),
+                avatars: occupantAvatars)
+            : .init()
+        let own = ownAvatarHash
+        return Reactors.given(item.reactions) { key in
+            Reactors.person(of: key, chat: chat, occupants: occupants, ownAvatarHash: own)
+        }
+    }
+
+    func avatarImage(for hash: String?) -> NSImage? {
+        avatars?.image(for: hash)
+    }
+
+    /// The account's own reaction with that emoji is added, or taken back when given
+    /// already: "Click to remove" in the list of who reacted.
+    func toggleOwnReaction(_ emoji: String, messageID: Int64) {
+        guard reactionsAllowed else { return }
+        let commands = commands
+        Task { [weak self] in
+            let given = await commands.ownReactions(messageID: messageID)
+            self?.toggleReaction(emoji, messageID: messageID, given: given)
+        }
+    }
+
     /// A chosen emoji is added to the account's reactions, or taken back when given already.
     private func toggleReaction(_ emoji: String, messageID: Int64, given: [String]) {
         var emojis = given
@@ -1569,7 +1654,9 @@ extension TranscriptController {
         Task { [weak self] in
             let trust = await Self.previewTrust(chatID: chatID, in: database)
             let allowed = await commands.canReact(chatID: chatID)
+            let own = await Self.ownAvatarHash(of: trust?.chat, in: database)
             guard let self, self.generation == generation else { return }
+            self.ownAvatarHash = own
             self.reactionsAllowed = allowed
             self.previewTrust = trust
             if trust?.chat.encryption == .omemo { self.linkPreviews = [:] }
@@ -1578,6 +1665,13 @@ extension TranscriptController {
             self.updateReactButtons()
             self.requestVisiblePreviews()
         }
+    }
+
+    @concurrent private static func ownAvatarHash(of chat: ChatRecord?, in database: AppDatabase)
+        async -> String?
+    {
+        guard let chat else { return nil }
+        return try? database.ownProfile(accountID: chat.accountID)?.avatarHash
     }
 
     @concurrent private static func previewTrust(chatID: Int64, in database: AppDatabase) async
@@ -1590,12 +1684,31 @@ extension TranscriptController {
 
     private func requestVisiblePreviews() {
         guard let visible = visibleRows() else { return }
-        for row in visible {
+        for row in visible where rows.indices.contains(row) {
             if case .message(let model) = rows[row] { requestPreview(for: model) }
         }
     }
 
     /// Asks for the preview of a shown message's link, once per message and link.
+    /// An incoming message with files not fetched yet shows: the session fetches those its
+    /// rules let come by themselves (from history, which only live messages did before).
+    /// Asked once per message while the chat is open.
+    func requestShownFiles(for model: MessageRowModel) {
+        guard Self.fetchesWhenShown(model.message, attachments: model.item.attachments),
+            shownFileRequests.insert(model.id).inserted
+        else { return }
+        let commands = commands
+        let messageID = model.id
+        Task { await commands.fetchShownFiles(messageID: messageID) }
+    }
+
+    nonisolated static func fetchesWhenShown(
+        _ message: MessageRecord, attachments: [AttachmentRecord]
+    ) -> Bool {
+        message.direction == .incoming && !message.retracted
+            && attachments.contains { $0.state == .remote }
+    }
+
     private func requestPreview(for model: MessageRowModel) {
         guard previewsEnabled, let trust = previewTrust, let link = model.link,
             model.linkPreview == nil, !model.message.retracted
@@ -1644,6 +1757,16 @@ extension TranscriptController {
                 let cell = table.view(atColumn: 0, row: row, makeIfNecessary: false)
             else { return }
             showReactions(forMessage: item.id, from: cell)
+        }
+
+        /// Opens the list of who reacted to the newest message with reactions.
+        func debugShowReactors() {
+            guard let item = window.messages.last(where: { !$0.reactions.isEmpty }),
+                let table = tableView, let row = rowIDs.lastIndex(of: .message(item.id)),
+                let cell = table.view(atColumn: 0, row: row, makeIfNecessary: false)
+                    as? MessageCellView
+            else { return }
+            cell.debugShowReactors()
         }
 
         /// Shows the add reaction control of the newest incoming message.

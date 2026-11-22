@@ -381,7 +381,6 @@ enum SharedMedia {
         return files.compactMap { file in
             let attachment = file.attachment
             guard let id = attachment.id else { return nil }
-            let type = attachment.sniffedMimeType ?? attachment.mimeType ?? ""
             let local = attachment.localPath.flatMap { path in
                 library?.existingFile(for: path)
                     ?? (FileManager.default.fileExists(atPath: path)
@@ -389,7 +388,9 @@ enum SharedMedia {
             }
             return SharedMediaItem(
                 id: id, messageID: file.messageID, fileName: attachment.fileName ?? Copy.file,
-                isImage: UTType(mimeType: type)?.conforms(to: .image) == true, file: local,
+                // By the bytes, the declared type, else the name: links shared as a bare URL
+                // come with no type, only a name ending in .jpg.
+                isImage: PreviewFile.type(of: attachment).conforms(to: .image), file: local,
                 date: file.timestamp)
         }
     }

@@ -23,6 +23,10 @@ final class FakeArchive: StanzaSending {
         var deliverLate = false
         var forge = false
         var sent: [Element] = []
+        var held = false
+        var waiting: [CheckedContinuation<Void, Never>] = []
+        var inFlight = 0
+        var mostInFlight = 0
     }
 
     let account: JID
@@ -50,6 +54,24 @@ final class FakeArchive: StanzaSending {
         state.withLock { $0.forge = forge }
     }
 
+    /// Queries wait unanswered until `release()`.
+    func hold() {
+        state.withLock { $0.held = true }
+    }
+
+    func release() {
+        let waiting = state.withLock { state in
+            state.held = false
+            defer { state.waiting = [] }
+            return state.waiting
+        }
+        for continuation in waiting { continuation.resume() }
+    }
+
+    /// Queries asked and not answered yet, and the most there were at once.
+    var inFlight: Int { state.withLock { $0.inFlight } }
+    var mostInFlight: Int { state.withLock { $0.mostInFlight } }
+
     /// The `<query/>` of every request, in order.
     var queries: [Element] { state.withLock { $0.queries } }
 
@@ -67,6 +89,18 @@ final class FakeArchive: StanzaSending {
         guard let query = iq.child("query", namespace: MAM.namespace),
             let queryID = query[attribute: "queryid"]
         else { throw .error(StanzaError(type: .cancel, condition: .serviceUnavailable)) }
+        state.withLock { state in
+            state.inFlight += 1
+            state.mostInFlight = Swift.max(state.mostInFlight, state.inFlight)
+        }
+        defer { state.withLock { $0.inFlight -= 1 } }
+        await withCheckedContinuation { continuation in
+            let held = state.withLock { state in
+                if state.held { state.waiting.append(continuation) }
+                return state.held
+            }
+            if !held { continuation.resume() }
+        }
         let archiveJID = iq.to?.bare.description ?? account.description
         let setup = state.withLock { state in
             state.queries.append(query)
@@ -583,6 +617,83 @@ extension MAMCatchUpTests {
         try await waitUntil("room caught up") { try f.rows(room).count == 1 }
 
         #expect(try f.rows(room).map(\.senderRealJID) == [nil])
+    }
+
+    /// A private message with the nick the room's chat keeps is with ourselves: no chat for
+    /// it, either way. Another occupant's has its chat.
+    @Test func noPrivateChatWithOurOwnNickFromTheArchive() async throws {
+        let f = try CatchUpFixture()
+        let room = CatchUpFixture.room
+        var chat = try f.database.ensureChat(accountID: f.accountID, jid: room, kind: .room)
+        chat.nick = "alice"
+        try f.database.updateChat(chat)
+        let mucUser = Element("x", namespace: "http://jabber.org/protocol/muc#user")
+        func marked(_ message: Element) -> Element {
+            var message = message
+            message.append(mucUser)
+            return message
+        }
+        let me = "\(CatchUpFixture.account)/res"
+        f.archive.set(
+            CatchUpFixture.account,
+            [
+                FakeArchive.Entry(
+                    id: "p1",
+                    message: marked(FakeArchive.chat(from: "\(room)/alice", to: me, "from me")),
+                    stamp: CatchUpFixture.base),
+                FakeArchive.Entry(
+                    id: "p2",
+                    message: marked(FakeArchive.chat(from: me, to: "\(room)/alice", "to me")),
+                    stamp: CatchUpFixture.base.addingTimeInterval(1)),
+                FakeArchive.Entry(
+                    id: "p3",
+                    message: marked(FakeArchive.chat(from: "\(room)/bob", to: me, "hi")),
+                    stamp: CatchUpFixture.base.addingTimeInterval(2)),
+            ])
+
+        await f.catchUp.run(archive: nil, since: nil)
+
+        #expect(try f.database.chat(accountID: f.accountID, jid: "\(room)/alice") == nil)
+        #expect(
+            try f.database.chat(accountID: f.accountID, jid: "\(room)/bob")?.kind == .roomPrivate)
+        #expect(try f.rows("\(room)/bob").map(\.body) == ["hi"])
+    }
+
+    /// Rooms joined together (at login) page at most `maxRunsAtOnce` archives at once, so
+    /// whatever else the account asks for is not answered behind all of them; the others
+    /// wait their turn and all catch up.
+    @Test func atMostAFewArchivesPageAtOnce() async throws {
+        let f = try CatchUpFixture()
+        f.archive.hold()
+        let rooms = (1...6).map { "room\($0)@muc.example.test" }
+        for room in rooms {
+            f.archive.set(
+                room,
+                [
+                    FakeArchive.Entry(
+                        id: "\(room)-1",
+                        message: FakeArchive.groupchat(room: room, nick: "bob", "hello"),
+                        stamp: CatchUpFixture.base)
+                ])
+            let chatID = try #require(
+                try f.database.ensureChat(accountID: f.accountID, jid: room, kind: .room).id)
+            await f.catchUp.roomJoined(
+                RoomArchive(
+                    chatID: chatID, room: try JID(room), ownOccupant: nil,
+                    trust: RoomTrust(stanzaIDs: true, occupantIDs: false, nonAnonymous: false),
+                    nick: "alice"))
+        }
+        try await waitUntil("the first queries out") {
+            f.archive.inFlight == MAMCatchUp.maxRunsAtOnce
+        }
+        try await Task.sleep(for: .milliseconds(100))
+        #expect(f.archive.inFlight == MAMCatchUp.maxRunsAtOnce)
+
+        f.archive.release()
+        try await waitUntil("every room caught up") {
+            try rooms.allSatisfy { try f.rows($0).count == 1 }
+        }
+        #expect(f.archive.mostInFlight == MAMCatchUp.maxRunsAtOnce)
     }
 }
 
