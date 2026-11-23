@@ -16,6 +16,7 @@ skip_docs
 ROOT = File.expand_path("..", __dir__)
 PROJECT = File.join(ROOT, "Xippi.xcodeproj")
 RELEASE = File.join(ROOT, "scripts", "release.py")
+AGE_RATING = File.join(ROOT, "fastlane", "age_rating.json")
 KEYCHAIN = "xippi-release.keychain"
 
 def env!(name)
@@ -52,11 +53,16 @@ platform :mac do
     app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
     app = Spaceship::ConnectAPI::App.find(app_identifier)
     UI.user_error!("No app #{app_identifier} in App Store Connect: create it first") unless app
+    client = Spaceship::ConnectAPI.client.tunes_request_client
     StoreSetup.prepare(
-      app, Spaceship::ConnectAPI.client.tunes_request_client,
+      app, client,
       ->(outcome, text) { outcome == :done ? UI.success(text) : UI.important(text) },
       france: StoreSetup.sold_in_france?(Plist.parse_xml(File.join(ROOT, "App", "Info.plist")))
     )
+    unless prerelease
+      problem = StoreSetup.age_rating_problem(app, client, JSON.parse(File.read(AGE_RATING)))
+      UI.user_error!(problem) if problem
+    end
 
     # The two certificates and the profile, from secrets, in a keychain of the run's own.
     work = Dir.mktmpdir("xippi-release")
@@ -148,7 +154,7 @@ platform :mac do
       metadata_path: File.join(ROOT, "fastlane", "metadata"),
       screenshots_path: File.join(ROOT, "fastlane", "screenshots"),
       overwrite_screenshots: true,
-      app_rating_config_path: File.join(ROOT, "fastlane", "age_rating.json"),
+      app_rating_config_path: AGE_RATING,
       app_review_information: {
         first_name: env!("REVIEW_FIRST_NAME"),
         last_name: env!("REVIEW_LAST_NAME"),

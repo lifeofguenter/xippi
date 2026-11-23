@@ -8,6 +8,9 @@
 # app available everywhere, France included.
 # A step that fails is reported with what to set by hand, and the run goes on: a TestFlight
 # build needs none of it, and App Review refuses a version that lacks one.
+# Before a build for App Review, `age_rating_problem` names any age rating question that
+# fastlane/age_rating.json leaves unanswered: Apple adds questions, and refuses the version
+# at the very end ("unfulfilled compliance requirement") while one has no answer.
 #
 # `client` answers get(path, params), post(path, body) and patch(path, body) as spaceship's
 # App Store Connect client does; `app` is spaceship's app.
@@ -16,6 +19,9 @@ module StoreSetup
   # The price is set in this territory's currency; everywhere else follows it.
   BASE_TERRITORY = "USA"
   NOT_SOLD_IN = ["FRA"].freeze
+  # Age rating fields App Store Connect leaves empty without anything being unanswered: a
+  # Kids category band, an optional link, Korea's number for games.
+  AGE_RATING_OPTIONAL = %w[kidsAgeBand developerAgeRatingInfoUrl gracRatingClassificationNumber].freeze
 
   module_function
 
@@ -93,6 +99,26 @@ module StoreSetup
       })
     end
     on.empty? ? nil : "turned off (no encryption declaration)"
+  end
+
+  # What to fix before App Review, or nil: the age rating questions App Store Connect has no
+  # answer to, in any of the app's infos (the live one and the one being edited), that
+  # `answers` (fastlane/age_rating.json) does not answer either.
+  def age_rating_problem(app, client, answers)
+    included = client.get("v1/apps/#{app.id}/appInfos", { include: "ageRatingDeclaration", limit: 10 })
+                     .body.fetch("included", [])
+    declarations = included.select { |item| item["type"] == "ageRatingDeclarations" }.map { |item| item["attributes"] }
+    missing = unanswered_age_rating(declarations, answers)
+    "Age rating: fastlane/age_rating.json has no answer for #{missing.join(', ')}" unless missing.empty?
+  end
+
+  # The questions left empty in `declarations` (age rating attributes) and not in `answers`.
+  # Whether social media is restricted by age is asked only of an app that is social media.
+  def unanswered_age_rating(declarations, answers)
+    optional = AGE_RATING_OPTIONAL
+    optional += ["socialMediaAgeRestricted"] unless answers["socialMedia"]
+    declarations.flat_map { |attributes| attributes.select { |_, value| value.nil? }.keys }.uniq.sort -
+      optional - answers.keys
   end
 
   # The id of the price point that costs nothing.

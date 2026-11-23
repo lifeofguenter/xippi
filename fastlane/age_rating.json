@@ -14,11 +14,13 @@
   "violenceRealisticProlongedGraphicOrSadistic": "NONE",
   "advertising": false,
   "ageAssurance": false,
+  "datingAndRelationships": false,
   "gambling": false,
   "healthOrWellnessTopics": false,
   "lootBox": false,
   "messagingAndChat": true,
   "parentalControls": false,
+  "sharedLocation": true,
   "unrestrictedWebAccess": false,
   "userGeneratedContent": true,
   "socialMedia": false

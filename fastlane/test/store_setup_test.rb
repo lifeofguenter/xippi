@@ -1,6 +1,7 @@
 # What the release lane sets in App Store Connect the first time, against a stand-in for
 # Apple's API: ruby fastlane/test/store_setup_test.rb (make test-scripts).
 
+require "json"
 require "minitest/autorun"
 require_relative "../store_setup"
 
@@ -197,5 +198,53 @@ class StoreSetupTest < Minitest::Test
     store = FakeStore.new("v1/x" => RuntimeError.new("not allowed"))
     assert_raises(RuntimeError) { StoreSetup.missing?(store, "v1/x") }
     assert StoreSetup.missing?(store, "v1/y")
+  end
+
+  # The app's age rating in App Store Connect when App Review refused v0.1.0 (23 Nov 2026),
+  # "unfulfilled compliance requirement": Apple had added two questions, location sharing
+  # and dating, and age_rating.json answered neither.
+  DECLARATION = {
+    "advertising" => false, "ageAssurance" => false, "ageRatingOverride" => "NONE",
+    "ageRatingOverrideV2" => "NONE", "alcoholTobaccoOrDrugUseOrReferences" => "NONE",
+    "contests" => "NONE", "datingAndRelationships" => nil, "developerAgeRatingInfoUrl" => nil,
+    "gambling" => false, "gamblingSimulated" => "NONE", "gracRatingClassificationNumber" => nil,
+    "gunsOrOtherWeapons" => "NONE", "healthOrWellnessTopics" => false, "horrorOrFearThemes" => "NONE",
+    "kidsAgeBand" => nil, "koreaAgeRatingOverride" => "NONE", "lootBox" => false,
+    "matureOrSuggestiveThemes" => "NONE", "medicalOrTreatmentInformation" => "NONE",
+    "messagingAndChat" => true, "parentalControls" => false, "profanityOrCrudeHumor" => "NONE",
+    "sexualContentGraphicAndNudity" => "NONE", "sexualContentOrNudity" => "NONE",
+    "sharedLocation" => nil, "socialMedia" => false, "socialMediaAgeRestricted" => nil,
+    "unrestrictedWebAccess" => false, "userGeneratedContent" => true,
+    "violenceCartoonOrFantasy" => "NONE", "violenceRealistic" => "NONE",
+    "violenceRealisticProlongedGraphicOrSadistic" => "NONE"
+  }.freeze
+
+  def test_the_repos_age_rating_answers_every_question_app_store_connect_asked
+    answers = JSON.parse(File.read(File.expand_path("../age_rating.json", __dir__)))
+    assert_empty StoreSetup.unanswered_age_rating([DECLARATION], answers)
+  end
+
+  def test_a_question_apple_adds_is_named
+    declaration = { "lootBox" => nil, "newQuestion" => nil, "kidsAgeBand" => nil }
+    assert_equal ["newQuestion"], StoreSetup.unanswered_age_rating([declaration], { "lootBox" => false })
+  end
+
+  def test_the_social_media_follow_up_counts_only_with_social_media
+    declaration = { "socialMedia" => nil, "socialMediaAgeRestricted" => nil }
+    assert_empty StoreSetup.unanswered_age_rating([declaration], { "socialMedia" => false })
+    assert_equal ["socialMediaAgeRestricted"],
+                 StoreSetup.unanswered_age_rating([declaration], { "socialMedia" => true })
+  end
+
+  def test_the_age_rating_problem_names_what_every_app_info_lacks
+    declaration = ->(attributes) { { "type" => "ageRatingDeclarations", "attributes" => attributes } }
+    store = FakeStore.new("v1/apps/123/appInfos" => {
+      "data" => [{ "id" => "live" }, { "id" => "edit" }],
+      "included" => [declaration.call("a" => true, "b" => nil), declaration.call("a" => nil, "b" => nil),
+                     { "type" => "appCategories", "attributes" => { "platforms" => nil } }]
+    })
+    assert_equal "Age rating: fastlane/age_rating.json has no answer for a, b",
+                 StoreSetup.age_rating_problem(FakeApp.new, store, {})
+    assert_nil StoreSetup.age_rating_problem(FakeApp.new, store, { "a" => true, "b" => false })
   end
 end
