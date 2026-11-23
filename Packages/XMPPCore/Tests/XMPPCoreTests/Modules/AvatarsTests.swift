@@ -342,10 +342,12 @@ import XMPPTestSupport
         #expect(sender.sent.isEmpty)
     }
 
-    /// Ruling R36: at most 96 KiB is published, which fits a 256 KiB stanza limit (Prosody's
-    /// and ejabberd's) once base64 adds a third.
-    @Test func publishRefusesMoreThan96KiB() async throws {
-        #expect(Avatars.maxPublishBytes == 96 * 1024)
+    /// Ruling R36 (amended): at most 20 KiB is published, so even a server that reads only
+    /// 3,000 bytes a second from a client has the publish IQ in under 10 seconds, a third of
+    /// the request timeout. At 96 KiB it took xippi.eu, then set to 3,000, about 40 seconds and
+    /// timed out.
+    @Test func publishRefusesMoreThan20KiB() async throws {
+        #expect(Avatars.maxPublishBytes == 20 * 1024)
         let header = Self.png(extra: 0).count
         let sender = FakeStanzaSender()
         await #expect(throws: AvatarError.tooLarge) {
@@ -359,9 +361,9 @@ import XMPPTestSupport
             png: Self.png(extra: Avatars.maxPublishBytes - header), via: sender)
         #expect(info.bytes == Avatars.maxPublishBytes)
         #expect(sender.sent.count == 2)
-        // Base64 of the largest avatar, in its publish IQ, stays below 256 KiB.
+        // The largest avatar's publish IQ, at 3,000 bytes a second.
         let largest = try #require(sender.sent.first)
-        #expect(largest.xml().utf8.count < 256 * 1024)
+        #expect(Double(largest.xml().utf8.count) / 3_000 < 10)
     }
 
     @Test func disableMatchesTheXEP() async throws {
@@ -496,7 +498,7 @@ extension AvatarsTests {
     }
 
     /// Ruling R37: the data node carries PNG only (XEP-0084 4.1). A picture whose PNG does not
-    /// fit at 256 pixels is made smaller (192, 128, 96, 64) until it does.
+    /// fit at 256 pixels is made smaller, a step down `publishSides` at a time, until it does.
     @Test func preparingStepsDownUntilThePNGFits() throws {
         let noise = try Self.encode(
             try Self.image(width: 256, height: 256, noise: true), as: "public.png")
@@ -504,7 +506,7 @@ extension AvatarsTests {
         let prepared = try Avatars.prepareForPublishing(imageData: noise)
         #expect(prepared.type == "image/png")
         #expect(prepared.data.count <= Avatars.maxPublishBytes)
-        #expect([192, 128, 96, 64].contains(prepared.width))
+        #expect(Avatars.publishSides.dropFirst().contains(prepared.width))
         #expect(prepared.height == prepared.width)
         let decoded = try Self.decode(prepared.data)
         #expect(decoded.type == "public.png")

@@ -41,6 +41,11 @@ jobs:
       - name: Lint
         run: make lint
 
+      # The release tag's logic and the App Store text check.
+      - name: Script tests
+        if: ${{ !cancelled() }}
+        run: make test-scripts
+
       # Unit tests of every package with coverage, run even when lint failed so one run shows
       # both. Every package runs even after one fails. The integration tests need the Docker
       # test servers, which macOS runners do not have; they skip themselves without
@@ -112,3 +117,50 @@ jobs:
         with:
           name: app-test-results
           path: test-results/
+
+  # A v* tag: build, sign and upload to TestFlight; a plain tag also goes to App Review and
+  # is released once approved (fastlane/Fastfile). Its secrets are in the environment
+  # app-store, which only v* tags may use.
+  release:
+    name: release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [test, build]
+    runs-on: xcode-27
+    timeout-minutes: 60
+    environment: app-store
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Every tag, for the previous release's notes, and main, for the check.
+          fetch-depth: 0
+
+      - uses: actions/cache@v6
+        with:
+          path: ~/Library/Caches/org.swift.swiftpm
+          key: swiftpm-${{ hashFiles('Packages/*/Package.swift', 'Packages/*/Package.resolved') }}
+          restore-keys: swiftpm-
+
+      # The Ruby in .ruby-version, and the gems in Gemfile.lock, cached.
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Release
+        run: make release
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          DIST_CERT_P12: ${{ secrets.DIST_CERT_P12 }}
+          DIST_CERT_PASSWORD: ${{ secrets.DIST_CERT_PASSWORD }}
+          INSTALLER_CERT_P12: ${{ secrets.INSTALLER_CERT_P12 }}
+          INSTALLER_CERT_PASSWORD: ${{ secrets.INSTALLER_CERT_PASSWORD }}
+          MAS_PROFILE: ${{ secrets.MAS_PROFILE }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          REVIEW_FIRST_NAME: ${{ secrets.REVIEW_FIRST_NAME }}
+          REVIEW_LAST_NAME: ${{ secrets.REVIEW_LAST_NAME }}
+          REVIEW_PHONE: ${{ secrets.REVIEW_PHONE }}
+          REVIEW_DEMO_USER: ${{ secrets.REVIEW_DEMO_USER }}
+          REVIEW_DEMO_PASSWORD: ${{ secrets.REVIEW_DEMO_PASSWORD }}
+          FASTLANE_SKIP_UPDATE_CHECK: "1"
+          FASTLANE_OPT_OUT_USAGE: "1"

@@ -1,0 +1,1 @@
+Native XMPP chat for your Mac: OMEMO encryption, group chats, calls and reactions, on any server.

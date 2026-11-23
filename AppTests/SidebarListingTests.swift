@@ -24,6 +24,15 @@ import Testing
         return ChatListItem(id: id, chat: chat, accountJID: "me@example.org", lastMessage: preview)
     }
 
+    /// An account shown by its address (the account list) takes its initials from the address's
+    /// name, not from its domain: "sam@xippi.eu" is "S", not "SE".
+    @Test func anAddressTakesItsInitialsFromItsName() {
+        #expect(ChatDisplay.initials(of: "sam@xippi.eu") == "S")
+        #expect(ChatDisplay.initials(of: "sam.lee@studio.example") == "SL")
+        #expect(ChatDisplay.initials(of: "Alice Martin") == "AM")
+        #expect(ChatDisplay.initials(of: "") == "#")
+    }
+
     static func listed(_ items: [ChatListItem], selection: Int64? = nil) -> [Int64] {
         SidebarFilter.listed(items, filter: .all, selection: selection).map(\.id)
     }

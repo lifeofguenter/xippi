@@ -37,6 +37,8 @@
             case "form": await renderForm(argument, showingProblems: false)
             case "formproblems": await renderForm(argument, showingProblems: true)
             default:
+                // The App Store screenshots: see `DebugSnapshot+Store.swift`.
+                if await performStore(parts) { return }
                 // The final fix wave's views: see `DebugSnapshot+FinalFix.swift`.
                 if await performFinalFix(parts) { return }
                 // The power tools and channels: see `DebugSnapshot+Tools.swift`.

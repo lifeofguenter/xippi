@@ -123,9 +123,11 @@ enum ChatDisplay {
         return content
     }
 
-    /// Up to two initials for an avatar.
+    /// Up to two initials for an avatar; an address's come from its name, before the "@".
     static func initials(of name: String) -> String {
-        let words = name.split(whereSeparator: { $0 == " " || $0 == "." || $0 == "-" || $0 == "_" })
+        let local = name.split(separator: "@", omittingEmptySubsequences: false).first ?? ""
+        let words = local.split(whereSeparator: { $0 == " " || $0 == "." || $0 == "-" || $0 == "_" }
+        )
         let letters = words.prefix(2).compactMap { $0.first.map(String.init) }
         let result = letters.joined().uppercased()
         return result.isEmpty ? "#" : result

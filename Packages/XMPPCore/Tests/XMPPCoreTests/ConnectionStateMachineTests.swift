@@ -398,6 +398,30 @@ struct ConnectionStateMachineTests {
         #expect(await pending.value == .failure(.timeout))
     }
 
+    /// A long request (an avatar) gets a second more per 1,000 bytes: a server that reads
+    /// slowly from clients is still reading it after 30 seconds (some read only 3,000 bytes a
+    /// second), and its answer comes only after.
+    @Test func aLongRequestGetsASecondMorePerThousandBytes() async throws {
+        let harness = try await ConnectionHarness()
+        defer { harness.finish() }
+        try await harness.goOnline()
+        let connection = harness.connection
+        let iq = Element.iq(
+            type: .set, id: "long-1", to: nil,
+            payload: Element(
+                "data", namespace: "urn:xmpp:avatar:data",
+                children: [.text(String(repeating: "A", count: 30_000))]))
+        let finished = Locked(false)
+        let pending = Self.request(iq, on: connection, finished: finished)
+        try await harness.waitForOutgoing("id='long-1'")
+
+        // 30 seconds, and 30 more for the 30,000 bytes and some.
+        try await harness.advance(by: .seconds(59))
+        #expect(!finished.value)
+        try await harness.advance(by: .seconds(2))
+        #expect(await pending.value == .failure(.timeout))
+    }
+
     @Test func answerResolvesTheRequestAndIsNotReported() async throws {
         let harness = try await ConnectionHarness()
         defer { harness.finish() }

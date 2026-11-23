@@ -50,6 +50,9 @@
             value("UITestChats").flatMap(Int.init).map { min(max($0, 1), 500) } ?? 40
         }
 
+        /// `-UITestSeed store`: the App Store screenshots' chats (`StoreSample`).
+        static var seedsStore: Bool { value("UITestSeed") == "store" }
+
         /// The number of messages to seed into the big chat, when seeding.
         static var seedCount: Int? {
             value("UITestSeed").map { max(Int($0) ?? 0, 0) }

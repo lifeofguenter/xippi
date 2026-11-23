@@ -82,6 +82,7 @@
                 default: break
                 }
                 try? await Task.sleep(for: .seconds(delay))
+                await placeWindowIfAsked()
                 if let chatName, let chat = model.chats.first(where: { $0.displayName == chatName })
                 {
                     model.selection = chat.id
@@ -440,7 +441,7 @@
 
         /// The window as it shows on screen; the largest visible one (the main window, not a
         /// popover over it) when none is named.
-        private static func captureWindow(to url: URL, window named: NSWindow? = nil) async {
+        static func captureWindow(to url: URL, window named: NSWindow? = nil) async {
             guard
                 let window = named
                     ?? NSApp.windows.filter({ $0.isVisible && $0.contentView != nil })

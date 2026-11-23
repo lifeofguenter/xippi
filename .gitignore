@@ -31,3 +31,11 @@ xcuserdata/
 coverage/
 test-results/
 *.profraw
+
+# fastlane: the gems, its own output, and the release notes CI writes per release
+/vendor/bundle/
+/.bundle/
+/fastlane/report.xml
+/fastlane/build/
+/fastlane/README.md
+/fastlane/metadata/en-US/release_notes.txt

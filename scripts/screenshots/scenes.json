@@ -1,0 +1,50 @@
+[
+  {
+    "file": "1-chat",
+    "look": "light",
+    "chat": "Weekend in the Alps",
+    "steps": "",
+    "title": "Chat freely, on your Mac.",
+    "lead": "Native, modern, secure and works on any XMPP server."
+  },
+  {
+    "file": "2-encryption",
+    "look": "light",
+    "chat": "Alice Martin",
+    "steps": "inspector;verified",
+    "question": "Private groups too?",
+    "answer": "Yes. OMEMO covers one-to-one chats and private group chats."
+  },
+  {
+    "file": "3-replies",
+    "look": "dark",
+    "chat": "",
+    "steps": "read Design team;open Design team;reply;type On it, notes in 10 minutes 👍",
+    "question": "Replies and reactions?",
+    "answer": "Replies, reactions, edits, mentions, and moderation in rooms."
+  },
+  {
+    "file": "4-pictures",
+    "look": "light",
+    "chat": "Carol Diaz",
+    "steps": "",
+    "question": "Pictures and GIFs?",
+    "answer": "Shown in the chat. Files and voice messages as well."
+  },
+  {
+    "file": "5-calls",
+    "look": "light",
+    "chat": "Alice Martin",
+    "steps": "call outgoing-video;wait 8;float 470 170",
+    "question": "Calls?",
+    "answer": "Audio and video, from the chat, device to device where the network allows it."
+  },
+  {
+    "file": "6-accounts",
+    "look": "light",
+    "chat": "Self-hosting",
+    "steps": "click 80 752;wait 1",
+    "question": "Which server?",
+    "answer": "Any XMPP server, and several accounts side by side."
+  }
+]
