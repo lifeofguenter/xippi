@@ -7,11 +7,12 @@ require_relative "../store_setup"
 # Answers like App Store Connect: the paths it knows, "does not exist" for the others.
 class FakeStore
   Response = Struct.new(:body)
-  attr_reader :posts
+  attr_reader :posts, :patches
 
   def initialize(known)
     @known = known
     @posts = []
+    @patches = []
   end
 
   def get(path, _params)
@@ -23,6 +24,11 @@ class FakeStore
 
   def post(path, body)
     @posts << [path, body]
+    Response.new({})
+  end
+
+  def patch(path, body)
+    @patches << [path, body]
     Response.new({})
   end
 end
@@ -60,14 +66,27 @@ POINTS = {
 
 TERRITORIES = { "data" => [{ "id" => "USA" }, { "id" => "FRA" }, { "id" => "SWE" }] }.freeze
 
+AVAILABILITIES = "v2/appAvailabilities/123/territoryAvailabilities"
+
+# The countries as App Store Connect lists them, available or not.
+def availabilities(available)
+  { "data" => available.map do |territory, on|
+    { "id" => "ta-#{territory}", "attributes" => { "available" => on },
+      "relationships" => { "territory" => { "data" => { "type" => "territories", "id" => territory } } } }
+  end }
+end
+
 class StoreSetupTest < Minitest::Test
   def new_app_store
-    FakeStore.new("v1/apps/123/appPricePoints" => POINTS, "v1/territories" => TERRITORIES)
+    FakeStore.new(
+      "v1/apps/123/appPricePoints" => POINTS, "v1/territories" => TERRITORIES,
+      AVAILABILITIES => availabilities("USA" => true, "FRA" => false, "SWE" => true)
+    )
   end
 
-  def prepare(app, store)
+  def prepare(app, store, france: false)
     reports = []
-    StoreSetup.prepare(app, store, ->(outcome, text) { reports << [outcome, text] })
+    StoreSetup.prepare(app, store, ->(outcome, text) { reports << [outcome, text] }, france: france)
     reports
   end
 
@@ -78,6 +97,7 @@ class StoreSetupTest < Minitest::Test
     assert_equal [{ group_name: "Xippi", is_internal_group: true, has_access_to_all_builds: true }], app.created
     assert_equal %w[v1/appPriceSchedules v2/appAvailabilities], store.posts.map(&:first)
     assert_equal [:done, :done, :done], reports.map(&:first)
+    assert_empty store.patches
   end
 
   def test_the_free_price_point_is_the_one_that_costs_nothing
@@ -106,11 +126,52 @@ class StoreSetupTest < Minitest::Test
     store = FakeStore.new(
       "v1/appPriceSchedules/123" => {},
       "v1/appPriceSchedules/123/manualPrices" => { "data" => [{ "id" => "a-price" }] },
-      "v2/appAvailabilities/123" => {}
+      "v2/appAvailabilities/123" => {},
+      AVAILABILITIES => availabilities("USA" => true, "FRA" => false, "SWE" => false)
     )
     assert_empty prepare(app, store)
     assert_empty app.created
     assert_empty store.posts
+    assert_empty store.patches
+  end
+
+  # The beta.1 run: App Store Connect had made the app available everywhere, France
+  # included, so the countries step found them set and left France on.
+  def test_france_is_turned_off_where_app_store_connect_turned_it_on
+    store = FakeStore.new(
+      "v1/appPriceSchedules/123" => {},
+      "v1/appPriceSchedules/123/manualPrices" => { "data" => [{ "id" => "a-price" }] },
+      "v2/appAvailabilities/123" => {},
+      AVAILABILITIES => availabilities("USA" => true, "FRA" => true, "SWE" => true)
+    )
+    reports = prepare(FakeApp.new([Group.new(true)]), store)
+    assert_equal [["v1/territoryAvailabilities/ta-FRA",
+                   { data: { type: "territoryAvailabilities", id: "ta-FRA", attributes: { available: false } } }]],
+                 store.patches
+    assert_equal [[:done, "France: turned off (no encryption declaration)"]], reports
+    assert_empty store.posts
+  end
+
+  def test_with_the_encryption_declaration_france_is_left_as_it_is
+    store = FakeStore.new(
+      "v1/appPriceSchedules/123" => {},
+      "v1/appPriceSchedules/123/manualPrices" => { "data" => [{ "id" => "a-price" }] },
+      "v2/appAvailabilities/123" => {},
+      AVAILABILITIES => availabilities("FRA" => true)
+    )
+    assert_empty prepare(FakeApp.new([Group.new(true)]), store, france: true)
+    assert_empty store.patches
+  end
+
+  def test_sold_in_france_only_with_the_declaration_code
+    refute StoreSetup.sold_in_france?("ITSAppUsesNonExemptEncryption" => false)
+    refute StoreSetup.sold_in_france?("ITSAppUsesNonExemptEncryption" => true)
+    refute StoreSetup.sold_in_france?(
+      "ITSAppUsesNonExemptEncryption" => true, "ITSEncryptionExportComplianceCode" => " "
+    )
+    assert StoreSetup.sold_in_france?(
+      "ITSAppUsesNonExemptEncryption" => true, "ITSEncryptionExportComplianceCode" => "a1b2-c3"
+    )
   end
 
   def test_a_schedule_without_prices_gets_the_free_one
@@ -124,7 +185,8 @@ class StoreSetupTest < Minitest::Test
 
   def test_an_error_is_reported_and_the_other_steps_still_run
     store = FakeStore.new(
-      "v1/apps/123/appPricePoints" => RuntimeError.new("forbidden"), "v1/territories" => TERRITORIES
+      "v1/apps/123/appPricePoints" => RuntimeError.new("forbidden"), "v1/territories" => TERRITORIES,
+      AVAILABILITIES => availabilities("FRA" => false)
     )
     reports = prepare(FakeApp.new([Group.new(true)]), store)
     assert_equal [[:failed, "Price not set: forbidden. Set it in App Store Connect."]], reports.select { |outcome, _| outcome == :failed }

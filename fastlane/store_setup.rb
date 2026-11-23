@@ -1,14 +1,16 @@
 # What App Store Connect needs before a build is tested or reviewed, set by the release lane
-# only where nothing is set yet, so whatever is changed there later (a price, France) stays:
+# only where nothing is set yet, so whatever is changed there later (a price) stays:
 # - an internal TestFlight group that gets every build;
 # - a price: free;
-# - the countries: every one but France, until the ANSSI declaration
-#   (docs/app-store-setup.md), and any Apple adds later.
+# - the countries: every one but France, and any Apple adds later.
+# France is the exception: it is turned off on every run until the app carries the ANSSI
+# declaration's code (docs/app-store-setup.md), since App Store Connect itself makes a new
+# app available everywhere, France included.
 # A step that fails is reported with what to set by hand, and the run goes on: a TestFlight
 # build needs none of it, and App Review refuses a version that lacks one.
 #
-# `client` answers get(path, params) and post(path, body) as spaceship's App Store Connect
-# client does; `app` is spaceship's app.
+# `client` answers get(path, params), post(path, body) and patch(path, body) as spaceship's
+# App Store Connect client does; `app` is spaceship's app.
 module StoreSetup
   TESTERS = "Xippi"
   # The price is set in this territory's currency; everywhere else follows it.
@@ -17,12 +19,14 @@ module StoreSetup
 
   module_function
 
-  # `report` takes (:done or :failed, text).
-  def prepare(app, client, report)
+  # `report` takes (:done or :failed, text). `france`: whether the app may be sold there
+  # (`sold_in_france?`).
+  def prepare(app, client, report, france: false)
     {
       "TestFlight group" => -> { tester_group(app) },
       "Price" => -> { first_price(app, client) },
-      "Countries" => -> { first_countries(app, client) }
+      "Countries" => -> { first_countries(app, client) },
+      "France" => -> { not_in_france(app, client) unless france }
     }.each do |what, step|
       done = step.call
       report.call(:done, "#{what}: #{done}") if done
@@ -66,6 +70,29 @@ module StoreSetup
     territories = client.get("v1/territories", { limit: 200 }).body["data"].map { |territory| territory["id"] }
     client.post("v2/appAvailabilities", availability(app.id, territories))
     "every one but #{NOT_SOLD_IN.join(', ')}"
+  end
+
+  # Whether `plist` (App/Info.plist) lets the app be sold in France: only with the code Apple
+  # gives for the encryption documentation, the ANSSI declaration among it.
+  def sold_in_france?(plist)
+    plist["ITSAppUsesNonExemptEncryption"] == true &&
+      !plist["ITSEncryptionExportComplianceCode"].to_s.strip.empty?
+  end
+
+  # France turned off wherever it is on.
+  def not_in_france(app, client)
+    path = "v2/appAvailabilities/#{app.id}/territoryAvailabilities"
+    items = client.get(path, { limit: 200, include: "territory" }).body["data"]
+    on = items.select do |item|
+      NOT_SOLD_IN.include?(item.dig("relationships", "territory", "data", "id")) &&
+        item.dig("attributes", "available")
+    end
+    on.each do |item|
+      client.patch("v1/territoryAvailabilities/#{item['id']}", {
+        data: { type: "territoryAvailabilities", id: item["id"], attributes: { available: false } }
+      })
+    end
+    on.empty? ? nil : "turned off (no encryption declaration)"
   end
 
   # The id of the price point that costs nothing.

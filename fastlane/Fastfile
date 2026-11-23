@@ -5,6 +5,7 @@
 
 require "base64"
 require "json"
+require "plist"
 require "securerandom"
 require "tmpdir"
 require_relative "store_setup"
@@ -53,7 +54,8 @@ platform :mac do
     UI.user_error!("No app #{app_identifier} in App Store Connect: create it first") unless app
     StoreSetup.prepare(
       app, Spaceship::ConnectAPI.client.tunes_request_client,
-      ->(outcome, text) { outcome == :done ? UI.success(text) : UI.important(text) }
+      ->(outcome, text) { outcome == :done ? UI.success(text) : UI.important(text) },
+      france: StoreSetup.sold_in_france?(Plist.parse_xml(File.join(ROOT, "App", "Info.plist")))
     )
 
     # The two certificates and the profile, from secrets, in a keychain of the run's own.
