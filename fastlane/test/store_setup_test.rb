@@ -65,7 +65,7 @@ POINTS = {
   ]
 }.freeze
 
-TERRITORIES = { "data" => [{ "id" => "USA" }, { "id" => "FRA" }, { "id" => "SWE" }] }.freeze
+TERRITORIES = { "data" => [{ "id" => "USA" }, { "id" => "FRA" }, { "id" => "CHN" }, { "id" => "SWE" }] }.freeze
 
 AVAILABILITIES = "v2/appAvailabilities/123/territoryAvailabilities"
 
@@ -85,19 +85,30 @@ class StoreSetupTest < Minitest::Test
     )
   end
 
+  # An app whose group, price and countries are set, with the countries as `available`.
+  def set_up_store(available)
+    FakeStore.new(
+      "v1/appPriceSchedules/123" => {},
+      "v1/appPriceSchedules/123/manualPrices" => { "data" => [{ "id" => "a-price" }] },
+      "v2/appAvailabilities/123" => {},
+      AVAILABILITIES => availabilities(available)
+    )
+  end
+
   def prepare(app, store, france: false)
     reports = []
     StoreSetup.prepare(app, store, ->(outcome, text) { reports << [outcome, text] }, france: france)
     reports
   end
 
-  def test_a_new_app_gets_a_group_a_free_price_and_every_country_but_france
+  def test_a_new_app_gets_a_group_a_free_price_and_every_country_but_france_and_china
     app = FakeApp.new
     store = new_app_store
     reports = prepare(app, store)
     assert_equal [{ group_name: "Xippi", is_internal_group: true, has_access_to_all_builds: true }], app.created
     assert_equal %w[v1/appPriceSchedules v2/appAvailabilities], store.posts.map(&:first)
     assert_equal [:done, :done, :done], reports.map(&:first)
+    assert_includes reports, [:done, "Countries: every one but FRA, CHN"]
     assert_empty store.patches
   end
 
@@ -113,10 +124,10 @@ class StoreSetupTest < Minitest::Test
     assert_equal body.dig(:data, :relationships, :manualPrices, :data, 0, :id), body.dig(:included, 0, :id)
   end
 
-  def test_france_is_the_only_country_left_out
-    body = StoreSetup.availability("123", %w[USA FRA SWE])
+  def test_the_countries_left_out_are_off_and_the_rest_on
+    body = StoreSetup.availability("123", %w[USA FRA CHN SWE], %w[FRA CHN])
     available = body[:included].to_h { |item| [item.dig(:relationships, :territory, :data, :id), item.dig(:attributes, :available)] }
-    assert_equal({ "USA" => true, "FRA" => false, "SWE" => true }, available)
+    assert_equal({ "USA" => true, "FRA" => false, "CHN" => false, "SWE" => true }, available)
     assert_equal true, body.dig(:data, :attributes, :availableInNewTerritories)
     assert_equal body[:included].map { |item| item[:id] },
                  body.dig(:data, :relationships, :territoryAvailabilities, :data).map { |item| item[:id] }
@@ -139,12 +150,7 @@ class StoreSetupTest < Minitest::Test
   # The beta.1 run: App Store Connect had made the app available everywhere, France
   # included, so the countries step found them set and left France on.
   def test_france_is_turned_off_where_app_store_connect_turned_it_on
-    store = FakeStore.new(
-      "v1/appPriceSchedules/123" => {},
-      "v1/appPriceSchedules/123/manualPrices" => { "data" => [{ "id" => "a-price" }] },
-      "v2/appAvailabilities/123" => {},
-      AVAILABILITIES => availabilities("USA" => true, "FRA" => true, "SWE" => true)
-    )
+    store = set_up_store("USA" => true, "FRA" => true, "SWE" => true)
     reports = prepare(FakeApp.new([Group.new(true)]), store)
     assert_equal [["v1/territoryAvailabilities/ta-FRA",
                    { data: { type: "territoryAvailabilities", id: "ta-FRA", attributes: { available: false } } }]],
@@ -154,14 +160,30 @@ class StoreSetupTest < Minitest::Test
   end
 
   def test_with_the_encryption_declaration_france_is_left_as_it_is
-    store = FakeStore.new(
-      "v1/appPriceSchedules/123" => {},
-      "v1/appPriceSchedules/123/manualPrices" => { "data" => [{ "id" => "a-price" }] },
-      "v2/appAvailabilities/123" => {},
-      AVAILABILITIES => availabilities("FRA" => true)
-    )
+    store = set_up_store("FRA" => true)
     assert_empty prepare(FakeApp.new([Group.new(true)]), store, france: true)
     assert_empty store.patches
+  end
+
+  # The second v0.1.0 run (23 Nov 2026): App Review still refused the version, "unfulfilled
+  # compliance requirement" twice, while Xippi was on sale in China mainland. Apps there must
+  # declare a Security Assessment, which covers end-to-end encrypted messaging, and AI
+  # generated content; "No" holds only where the feature is not offered in China mainland.
+  def test_china_is_turned_off_on_every_run_even_with_the_encryption_declaration
+    store = set_up_store("USA" => true, "FRA" => true, "CHN" => true)
+    reports = prepare(FakeApp.new([Group.new(true)]), store, france: true)
+    assert_equal [["v1/territoryAvailabilities/ta-CHN",
+                   { data: { type: "territoryAvailabilities", id: "ta-CHN", attributes: { available: false } } }]],
+                 store.patches
+    assert_equal [[:done, "China mainland: turned off (no security assessment)"]], reports
+  end
+
+  def test_without_the_encryption_declaration_france_and_china_are_both_turned_off
+    store = set_up_store("USA" => true, "FRA" => true, "CHN" => true)
+    reports = prepare(FakeApp.new([Group.new(true)]), store)
+    assert_equal %w[v1/territoryAvailabilities/ta-FRA v1/territoryAvailabilities/ta-CHN], store.patches.map(&:first)
+    assert_equal ["France: turned off (no encryption declaration)", "China mainland: turned off (no security assessment)"],
+                 reports.map(&:last)
   end
 
   def test_sold_in_france_only_with_the_declaration_code

@@ -2,10 +2,12 @@
 # only where nothing is set yet, so whatever is changed there later (a price) stays:
 # - an internal TestFlight group that gets every build;
 # - a price: free;
-# - the countries: every one but France, and any Apple adds later.
-# France is the exception: it is turned off on every run until the app carries the ANSSI
-# declaration's code (docs/app-store-setup.md), since App Store Connect itself makes a new
-# app available everywhere, France included.
+# - the countries: every one but France and China mainland, and any Apple adds later.
+# Those two are the exception: they are turned off on every run, since App Store Connect
+# itself makes a new app available everywhere. France until the app carries the ANSSI
+# declaration's code (docs/app-store-setup.md); China mainland for good, as its Security
+# Assessment covers end-to-end encrypted messaging, and App Review refuses the version
+# ("unfulfilled compliance requirement") while the app is on sale there without one.
 # A step that fails is reported with what to set by hand, and the run goes on: a TestFlight
 # build needs none of it, and App Review refuses a version that lacks one.
 # Before a build for App Review, `age_rating_problem` names any age rating question that
@@ -18,7 +20,11 @@ module StoreSetup
   TESTERS = "Xippi"
   # The price is set in this territory's currency; everywhere else follows it.
   BASE_TERRITORY = "USA"
-  NOT_SOLD_IN = ["FRA"].freeze
+  # The countries left out, with their names and why, as the run reports them.
+  NOT_SOLD_IN = {
+    "FRA" => ["France", "no encryption declaration"],
+    "CHN" => ["China mainland", "no security assessment"]
+  }.freeze
   # Age rating fields App Store Connect leaves empty without anything being unanswered: a
   # Kids category band, an optional link, Korea's number for games.
   AGE_RATING_OPTIONAL = %w[kidsAgeBand developerAgeRatingInfoUrl gracRatingClassificationNumber].freeze
@@ -28,12 +34,16 @@ module StoreSetup
   # `report` takes (:done or :failed, text). `france`: whether the app may be sold there
   # (`sold_in_france?`).
   def prepare(app, client, report, france: false)
-    {
+    left_out = france ? NOT_SOLD_IN.except("FRA") : NOT_SOLD_IN
+    steps = {
       "TestFlight group" => -> { tester_group(app) },
       "Price" => -> { first_price(app, client) },
-      "Countries" => -> { first_countries(app, client) },
-      "France" => -> { not_in_france(app, client) unless france }
-    }.each do |what, step|
+      "Countries" => -> { first_countries(app, client, left_out.keys) }
+    }
+    left_out.each do |territory, (name, reason)|
+      steps[name] = -> { turn_off(app, client, territory, reason) }
+    end
+    steps.each do |what, step|
       done = step.call
       report.call(:done, "#{what}: #{done}") if done
     rescue StandardError => e
@@ -70,12 +80,12 @@ module StoreSetup
     "free"
   end
 
-  def first_countries(app, client)
+  def first_countries(app, client, left_out)
     return nil unless missing?(client, "v2/appAvailabilities/#{app.id}")
 
     territories = client.get("v1/territories", { limit: 200 }).body["data"].map { |territory| territory["id"] }
-    client.post("v2/appAvailabilities", availability(app.id, territories))
-    "every one but #{NOT_SOLD_IN.join(', ')}"
+    client.post("v2/appAvailabilities", availability(app.id, territories, left_out))
+    "every one but #{left_out.join(', ')}"
   end
 
   # Whether `plist` (App/Info.plist) lets the app be sold in France: only with the code Apple
@@ -85,20 +95,19 @@ module StoreSetup
       !plist["ITSEncryptionExportComplianceCode"].to_s.strip.empty?
   end
 
-  # France turned off wherever it is on.
-  def not_in_france(app, client)
+  # `territory` turned off wherever it is on.
+  def turn_off(app, client, territory, reason)
     path = "v2/appAvailabilities/#{app.id}/territoryAvailabilities"
     items = client.get(path, { limit: 200, include: "territory" }).body["data"]
     on = items.select do |item|
-      NOT_SOLD_IN.include?(item.dig("relationships", "territory", "data", "id")) &&
-        item.dig("attributes", "available")
+      item.dig("relationships", "territory", "data", "id") == territory && item.dig("attributes", "available")
     end
     on.each do |item|
       client.patch("v1/territoryAvailabilities/#{item['id']}", {
         data: { type: "territoryAvailabilities", id: item["id"], attributes: { available: false } }
       })
     end
-    on.empty? ? nil : "turned off (no encryption declaration)"
+    on.empty? ? nil : "turned off (#{reason})"
   end
 
   # What to fix before App Review, or nil: the age rating questions App Store Connect has no
@@ -143,11 +152,11 @@ module StoreSetup
     }
   end
 
-  def availability(app_id, territories)
+  def availability(app_id, territories, left_out)
     included = territories.map do |territory|
       {
         type: "territoryAvailabilities", id: "${#{territory}}",
-        attributes: { available: !NOT_SOLD_IN.include?(territory) },
+        attributes: { available: !left_out.include?(territory) },
         relationships: { territory: { data: { type: "territories", id: territory } } }
       }
     end
